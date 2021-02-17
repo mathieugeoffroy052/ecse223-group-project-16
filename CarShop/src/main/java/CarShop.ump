@@ -1,0 +1,69 @@
+namespace CarShop.model;
+
+//association{
+//	1 User -> 0..1 UserAccount;
+//}
+
+
+class CarShop{
+	Date date;
+	String generalInfo;
+	String address;
+	String emailAddress;
+	String phoneNUmber;	
+	
+	//Associations
+1--1 Owner;	
+1 shop --* WeeklyBusinessHours weeklySchedules;
+}
+
+class Owner{
+	isA UserAccount;
+
+}
+
+class WeeklyBusinessHours{
+
+}
+
+class TechnicianAccount{
+	isA UserAccount;
+	TechnicianType technicianType;
+	
+	enum TechnicianType{
+		Tires,
+		Engine,
+		Transmission,
+		Electronics,
+		Fluids}
+		
+}
+
+class User{
+	String name;
+	Boolean isSignedUp;
+}
+
+class UserAccount{
+	String username;
+	String password;
+	Boolean isLoggedIn;
+}
+
+class CustomerAccount{
+	isA UserAccount;
+}
+
+class Garage{
+1--* Schedule activeDays;
+}
+
+class Schedule{
+	Boolean isHoliday;
+	Boolean isBreakDay;
+	Date startTime;
+	Date endTime;
+7 days -- 1 WeeklyBusinessHours week;
+}
+
+
