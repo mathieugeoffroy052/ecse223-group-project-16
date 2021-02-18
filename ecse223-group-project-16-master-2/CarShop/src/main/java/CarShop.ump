@@ -1,0 +1,138 @@
+namespace CarShop.model;
+
+/*
+Constraints
+
+1. One of each technician type
+2. User account can only be logged in if the user is signed up
+3. Garage opening hours must be within the weekly business hours
+4. Garage business hours must not conflict with garage holidays or breaks
+5. You can't have two appointments with the same technician at the same time
+6. A service combo cannot have two of the same services
+7. Every service should see its duration rounded up to the nearest 30 minute interval
+
+*/
+
+
+
+
+class CarShop{
+	Date date;
+	String generalInfo;
+	String address;
+	String emailAddress;
+	String phoneNUmber;	
+    1--1 Owner;	
+
+}
+
+class Owner{
+	isA UserAccount;
+}
+
+class WeeklySchedule{
+	Date[] holidaySchedule;
+}
+
+class TechnicianAccount{
+	isA UserAccount;
+	unique JobType technicianType;
+	
+	enum JobType{
+	Tires,
+	Engine,
+	Transmission,
+	Electronics,
+	Fluids}
+	
+	1 -- 1 Garage worksAt;
+		
+}
+
+class User{
+	String name;
+	1 -- 0..1 UserAccount;
+	
+}
+
+//need to be abstract
+class UserAccount{
+	abstract;
+	unique String username;
+	String password;
+	Boolean isLoggedIn;
+}
+
+class CustomerAccount{
+	isA UserAccount;
+}
+
+class Garage{
+	1 scheduleForGarage-- * DailySchedule;
+	
+	enum JobType{
+	Tires,
+	Engine,
+	Transmission,
+	Electronics,
+	Fluids}
+	
+	JobType garageType;
+}
+
+class Schedule{
+	Boolean isHoliday;
+	Boolean isBreakDay;
+	Date startTime;
+	Date endTime;
+7 days -- 1 WeeklySchedule week;
+}
+
+ class DailySchedule {
+ 	DayType dayType;
+ 	enum DayType {Holiday, Break, Work}
+ 	Date openingTime;
+ 	Date closingTime;
+	1  <@>- 0..1 TimeSlot firstAppointment; 
+}
+
+class TimeSlot {
+    Date startTime;
+    Date endTime;
+	1 <@>- 0..1 ServiceList;
+	0..1 prevTimeSlot -- 0..1 TimeSlot nextTimeSlot;
+}
+
+class Service{
+	unique String name;
+	before constructor, setName{
+		if (aName == null || aName.length() == 0) {
+			throw new RuntimeException("Please enter a valid name");
+			}
+	}
+	Double durationInHours;
+	0..1 prerequesite -- 0..1 Service successor;
+	0..* -- 1 Garage workingGarage;
+	0..* -- 1 CarShop;
+	0..* -- 1 Owner;
+}
+	
+	
+class ServiceList{
+	Service firstItem;
+	enum ComboType {Required, Optional}
+	ComboType comboType;
+	Boolean isServiceCombo;
+	0..1 <@>- 0..1 Service firstTerm; 
+	0..1 -> 1 Service mainService;
+}
+
+
+associationClass AppointmentInfo{
+	Integer daysBeforeAppt;
+	* CustomerAccount;
+	1 TimeSlot;
+}
+
+
+
