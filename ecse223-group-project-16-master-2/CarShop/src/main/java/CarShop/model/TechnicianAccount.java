@@ -4,7 +4,7 @@
 package CarShop.model;
 import java.util.*;
 
-// line 37 "../../CarShop.ump"
+// line 34 "../../CarShop.ump"
 public class TechnicianAccount extends UserAccount
 {
 

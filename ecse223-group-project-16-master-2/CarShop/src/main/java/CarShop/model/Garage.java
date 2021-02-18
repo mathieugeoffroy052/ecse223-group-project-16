@@ -5,7 +5,7 @@ package CarShop.model;
 import java.util.*;
 import java.sql.Date;
 
-// line 70 "../../CarShop.ump"
+// line 67 "../../CarShop.ump"
 public class Garage
 {
 

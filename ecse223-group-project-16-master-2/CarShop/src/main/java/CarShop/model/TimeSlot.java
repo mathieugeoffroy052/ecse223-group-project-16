@@ -4,7 +4,7 @@
 package CarShop.model;
 import java.sql.Date;
 
-// line 99 "../../CarShop.ump"
+// line 88 "../../CarShop.ump"
 public class TimeSlot
 {
 

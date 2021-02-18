@@ -4,7 +4,7 @@
 package CarShop.model;
 import java.sql.Date;
 
-// line 131 "../../CarShop.ump"
+// line 120 "../../CarShop.ump"
 public class AppointmentInfo
 {
 

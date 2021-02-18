@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * need to be abstract
  */
-// line 59 "../../CarShop.ump"
+// line 56 "../../CarShop.ump"
 public abstract class UserAccount
 {
 

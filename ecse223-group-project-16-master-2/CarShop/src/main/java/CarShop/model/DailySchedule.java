@@ -4,7 +4,7 @@
 package CarShop.model;
 import java.sql.Date;
 
-// line 91 "../../CarShop.ump"
+// line 80 "../../CarShop.ump"
 public class DailySchedule
 {
 

@@ -3,7 +3,7 @@
 
 package CarShop.model;
 
-// line 121 "../../CarShop.ump"
+// line 110 "../../CarShop.ump"
 public class ServiceList
 {
 

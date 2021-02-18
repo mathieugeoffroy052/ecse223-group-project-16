@@ -4,7 +4,7 @@
 package CarShop.model;
 import java.util.*;
 
-// line 106 "../../CarShop.ump"
+// line 95 "../../CarShop.ump"
 public class Service
 {
 
@@ -36,7 +36,7 @@ public class Service
 
   public Service(String aName, double aDurationInHours, Garage aWorkingGarage, CarShop aCarShop, Owner aOwner)
   {
-    // line 109 "../../CarShop.ump"
+    // line 98 "../../CarShop.ump"
     if (aName == null || aName.length() == 0) {
     			throw new RuntimeException("Please enter a valid name");
     			}
@@ -70,7 +70,7 @@ public class Service
   public boolean setName(String aName)
   {
     boolean wasSet = false;
-    // line 109 "../../CarShop.ump"
+    // line 98 "../../CarShop.ump"
     if (aName == null || aName.length() == 0) {
     			throw new RuntimeException("Please enter a valid name");
     			}

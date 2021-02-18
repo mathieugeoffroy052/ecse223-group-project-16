@@ -4,7 +4,7 @@
 package CarShop.model;
 import java.util.*;
 
-// line 52 "../../CarShop.ump"
+// line 49 "../../CarShop.ump"
 public class User
 {
 
