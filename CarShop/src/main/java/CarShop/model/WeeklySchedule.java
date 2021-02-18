@@ -2,18 +2,21 @@
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
 
 package CarShop.model;
-import java.util.*;
 import java.sql.Date;
+import java.util.*;
 
-// line 25 "../../CarShop.ump"
-public class WeeklyBusinessHours
+// line 36 "../../CarShop.ump"
+public class WeeklySchedule
 {
 
   //------------------------
   // MEMBER VARIABLES
   //------------------------
 
-  //WeeklyBusinessHours Associations
+  //WeeklySchedule Attributes
+  private List<Date> holidaySchedule;
+
+  //WeeklySchedule Associations
   private CarShop shop;
   private List<Schedule> days;
 
@@ -21,8 +24,9 @@ public class WeeklyBusinessHours
   // CONSTRUCTOR
   //------------------------
 
-  public WeeklyBusinessHours(CarShop aShop)
+  public WeeklySchedule(CarShop aShop)
   {
+    holidaySchedule = new ArrayList<Date>();
     boolean didAddShop = setShop(aShop);
     if (!didAddShop)
     {
@@ -34,6 +38,50 @@ public class WeeklyBusinessHours
   //------------------------
   // INTERFACE
   //------------------------
+  /* Code from template attribute_SetMany */
+  public boolean addHolidaySchedule(Date aHolidaySchedule)
+  {
+    boolean wasAdded = false;
+    wasAdded = holidaySchedule.add(aHolidaySchedule);
+    return wasAdded;
+  }
+
+  public boolean removeHolidaySchedule(Date aHolidaySchedule)
+  {
+    boolean wasRemoved = false;
+    wasRemoved = holidaySchedule.remove(aHolidaySchedule);
+    return wasRemoved;
+  }
+  /* Code from template attribute_GetMany */
+  public Date getHolidaySchedule(int index)
+  {
+    Date aHolidaySchedule = holidaySchedule.get(index);
+    return aHolidaySchedule;
+  }
+
+  public Date[] getHolidaySchedule()
+  {
+    Date[] newHolidaySchedule = holidaySchedule.toArray(new Date[holidaySchedule.size()]);
+    return newHolidaySchedule;
+  }
+
+  public int numberOfHolidaySchedule()
+  {
+    int number = holidaySchedule.size();
+    return number;
+  }
+
+  public boolean hasHolidaySchedule()
+  {
+    boolean has = holidaySchedule.size() > 0;
+    return has;
+  }
+
+  public int indexOfHolidaySchedule(Date aHolidaySchedule)
+  {
+    int index = holidaySchedule.indexOf(aHolidaySchedule);
+    return index;
+  }
   /* Code from template association_GetOne */
   public CarShop getShop()
   {
@@ -131,7 +179,7 @@ public class WeeklyBusinessHours
       return wasAdded;
     }
 
-    WeeklyBusinessHours existingWeek = aDay.getWeek();
+    WeeklySchedule existingWeek = aDay.getWeek();
     boolean isNewWeek = existingWeek != null && !this.equals(existingWeek);
 
     if (isNewWeek && existingWeek.numberOfDays() <= minimumNumberOfDays())
@@ -185,4 +233,10 @@ public class WeeklyBusinessHours
     }
   }
 
+
+  public String toString()
+  {
+    return super.toString() + "["+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "shop = "+(getShop()!=null?Integer.toHexString(System.identityHashCode(getShop())):"null");
+  }
 }

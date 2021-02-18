@@ -3,7 +3,7 @@
 
 package CarShop.model;
 
-// line 29 "../../CarShop.ump"
+// line 40 "../../CarShop.ump"
 public class TechnicianAccount extends UserAccount
 {
 
@@ -11,20 +11,20 @@ public class TechnicianAccount extends UserAccount
   // ENUMERATIONS
   //------------------------
 
-  public enum TechnicianType { Tires, Engine, Transmission, Electronics, Fluids }
+  public enum JobType { Tires, Engine, Transmission, Electronics, Fluids }
 
   //------------------------
   // MEMBER VARIABLES
   //------------------------
 
   //TechnicianAccount Attributes
-  private TechnicianType technicianType;
+  private JobType technicianType;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public TechnicianAccount(String aUsername, String aPassword, boolean aIsLoggedIn, TechnicianType aTechnicianType)
+  public TechnicianAccount(String aUsername, String aPassword, boolean aIsLoggedIn, JobType aTechnicianType)
   {
     super(aUsername, aPassword, aIsLoggedIn);
     technicianType = aTechnicianType;
@@ -34,7 +34,7 @@ public class TechnicianAccount extends UserAccount
   // INTERFACE
   //------------------------
 
-  public boolean setTechnicianType(TechnicianType aTechnicianType)
+  public boolean setTechnicianType(JobType aTechnicianType)
   {
     boolean wasSet = false;
     technicianType = aTechnicianType;
@@ -42,7 +42,7 @@ public class TechnicianAccount extends UserAccount
     return wasSet;
   }
 
-  public TechnicianType getTechnicianType()
+  public JobType getTechnicianType()
   {
     return technicianType;
   }

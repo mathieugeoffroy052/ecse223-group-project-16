@@ -5,7 +5,7 @@ package CarShop.model;
 import java.util.*;
 import java.sql.Date;
 
-// line 57 "../../CarShop.ump"
+// line 71 "../../CarShop.ump"
 public class Garage
 {
 
@@ -15,14 +15,29 @@ public class Garage
 
   //Garage Associations
   private List<Schedule> activeDays;
+  private AppointmentCalendar appointmentSchedule;
+  private List<Service> services;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Garage()
+  public Garage(AppointmentCalendar aAppointmentSchedule)
   {
     activeDays = new ArrayList<Schedule>();
+    if (aAppointmentSchedule == null || aAppointmentSchedule.getGarage() != null)
+    {
+      throw new RuntimeException("Unable to create Garage due to aAppointmentSchedule. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    appointmentSchedule = aAppointmentSchedule;
+    services = new ArrayList<Service>();
+  }
+
+  public Garage(CustomerAccount aCustomerForAppointmentSchedule)
+  {
+    activeDays = new ArrayList<Schedule>();
+    appointmentSchedule = new AppointmentCalendar(aCustomerForAppointmentSchedule, this);
+    services = new ArrayList<Service>();
   }
 
   //------------------------
@@ -58,13 +73,48 @@ public class Garage
     int index = activeDays.indexOf(aActiveDay);
     return index;
   }
+  /* Code from template association_GetOne */
+  public AppointmentCalendar getAppointmentSchedule()
+  {
+    return appointmentSchedule;
+  }
+  /* Code from template association_GetMany */
+  public Service getService(int index)
+  {
+    Service aService = services.get(index);
+    return aService;
+  }
+
+  public List<Service> getServices()
+  {
+    List<Service> newServices = Collections.unmodifiableList(services);
+    return newServices;
+  }
+
+  public int numberOfServices()
+  {
+    int number = services.size();
+    return number;
+  }
+
+  public boolean hasServices()
+  {
+    boolean has = services.size() > 0;
+    return has;
+  }
+
+  public int indexOfService(Service aService)
+  {
+    int index = services.indexOf(aService);
+    return index;
+  }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfActiveDays()
   {
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Schedule addActiveDay(boolean aIsHoliday, boolean aIsBreakDay, Date aStartTime, Date aEndTime, WeeklyBusinessHours aWeek)
+  public Schedule addActiveDay(boolean aIsHoliday, boolean aIsBreakDay, Date aStartTime, Date aEndTime, WeeklySchedule aWeek)
   {
     return new Schedule(aIsHoliday, aIsBreakDay, aStartTime, aEndTime, aWeek, this);
   }
@@ -130,6 +180,78 @@ public class Garage
     }
     return wasAdded;
   }
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfServices()
+  {
+    return 0;
+  }
+  /* Code from template association_AddManyToOne */
+  public Service addService(String aName, Service.WorkType aGeneralService, double aDurationInHours, CarShop aCarShop)
+  {
+    return new Service(aName, aGeneralService, aDurationInHours, this, aCarShop);
+  }
+
+  public boolean addService(Service aService)
+  {
+    boolean wasAdded = false;
+    if (services.contains(aService)) { return false; }
+    Garage existingWorkingGarage = aService.getWorkingGarage();
+    boolean isNewWorkingGarage = existingWorkingGarage != null && !this.equals(existingWorkingGarage);
+    if (isNewWorkingGarage)
+    {
+      aService.setWorkingGarage(this);
+    }
+    else
+    {
+      services.add(aService);
+    }
+    wasAdded = true;
+    return wasAdded;
+  }
+
+  public boolean removeService(Service aService)
+  {
+    boolean wasRemoved = false;
+    //Unable to remove aService, as it must always have a workingGarage
+    if (!this.equals(aService.getWorkingGarage()))
+    {
+      services.remove(aService);
+      wasRemoved = true;
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addServiceAt(Service aService, int index)
+  {  
+    boolean wasAdded = false;
+    if(addService(aService))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfServices()) { index = numberOfServices() - 1; }
+      services.remove(aService);
+      services.add(index, aService);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveServiceAt(Service aService, int index)
+  {
+    boolean wasAdded = false;
+    if(services.contains(aService))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfServices()) { index = numberOfServices() - 1; }
+      services.remove(aService);
+      services.add(index, aService);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addServiceAt(aService, index);
+    }
+    return wasAdded;
+  }
 
   public void delete()
   {
@@ -137,6 +259,17 @@ public class Garage
     {
       Schedule aActiveDay = activeDays.get(i - 1);
       aActiveDay.delete();
+    }
+    AppointmentCalendar existingAppointmentSchedule = appointmentSchedule;
+    appointmentSchedule = null;
+    if (existingAppointmentSchedule != null)
+    {
+      existingAppointmentSchedule.delete();
+    }
+    for(int i=services.size(); i > 0; i--)
+    {
+      Service aService = services.get(i - 1);
+      aService.delete();
     }
   }
 

@@ -6,11 +6,17 @@ import java.sql.Date;
 import java.util.*;
 
 /**
- * association{
- * 1 User -> 0..1 UserAccount;
- * }
+ * Constraints
+ * 
+ * 1. One of each technician type
+ * 2. User account can only be logged in if the user is signed up
+ * 3. Garage opening hours must be within the weekly business hours
+ * 4. Garage business hours must not conflict with garage holidays or breaks
+ * 5. You can't have two appointments with the same technician at the same time
+ * 6. A service combo cannot have two of the same services
+ * 7. Every service should see its duration rounded up to the nearest 30 minute interval
  */
-// line 8 "../../CarShop.ump"
+// line 19 "../../CarShop.ump"
 public class CarShop
 {
 
@@ -27,7 +33,8 @@ public class CarShop
 
   //CarShop Associations
   private Owner owner;
-  private List<WeeklyBusinessHours> weeklySchedules;
+  private List<WeeklySchedule> weeklySchedule;
+  private List<Service> services;
 
   //------------------------
   // CONSTRUCTOR
@@ -45,7 +52,8 @@ public class CarShop
       throw new RuntimeException("Unable to create CarShop due to aOwner. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
     owner = aOwner;
-    weeklySchedules = new ArrayList<WeeklyBusinessHours>();
+    weeklySchedule = new ArrayList<WeeklySchedule>();
+    services = new ArrayList<Service>();
   }
 
   public CarShop(Date aDate, String aGeneralInfo, String aAddress, String aEmailAddress, String aPhoneNUmber, String aUsernameForOwner, String aPasswordForOwner, boolean aIsLoggedInForOwner)
@@ -56,7 +64,8 @@ public class CarShop
     emailAddress = aEmailAddress;
     phoneNUmber = aPhoneNUmber;
     owner = new Owner(aUsernameForOwner, aPasswordForOwner, aIsLoggedInForOwner, this);
-    weeklySchedules = new ArrayList<WeeklyBusinessHours>();
+    weeklySchedule = new ArrayList<WeeklySchedule>();
+    services = new ArrayList<Service>();
   }
 
   //------------------------
@@ -133,50 +142,80 @@ public class CarShop
     return owner;
   }
   /* Code from template association_GetMany */
-  public WeeklyBusinessHours getWeeklySchedule(int index)
+  public WeeklySchedule getWeeklySchedule(int index)
   {
-    WeeklyBusinessHours aWeeklySchedule = weeklySchedules.get(index);
+    WeeklySchedule aWeeklySchedule = weeklySchedule.get(index);
     return aWeeklySchedule;
   }
 
-  public List<WeeklyBusinessHours> getWeeklySchedules()
+  public List<WeeklySchedule> getWeeklySchedule()
   {
-    List<WeeklyBusinessHours> newWeeklySchedules = Collections.unmodifiableList(weeklySchedules);
-    return newWeeklySchedules;
+    List<WeeklySchedule> newWeeklySchedule = Collections.unmodifiableList(weeklySchedule);
+    return newWeeklySchedule;
   }
 
-  public int numberOfWeeklySchedules()
+  public int numberOfWeeklySchedule()
   {
-    int number = weeklySchedules.size();
+    int number = weeklySchedule.size();
     return number;
   }
 
-  public boolean hasWeeklySchedules()
+  public boolean hasWeeklySchedule()
   {
-    boolean has = weeklySchedules.size() > 0;
+    boolean has = weeklySchedule.size() > 0;
     return has;
   }
 
-  public int indexOfWeeklySchedule(WeeklyBusinessHours aWeeklySchedule)
+  public int indexOfWeeklySchedule(WeeklySchedule aWeeklySchedule)
   {
-    int index = weeklySchedules.indexOf(aWeeklySchedule);
+    int index = weeklySchedule.indexOf(aWeeklySchedule);
+    return index;
+  }
+  /* Code from template association_GetMany */
+  public Service getService(int index)
+  {
+    Service aService = services.get(index);
+    return aService;
+  }
+
+  public List<Service> getServices()
+  {
+    List<Service> newServices = Collections.unmodifiableList(services);
+    return newServices;
+  }
+
+  public int numberOfServices()
+  {
+    int number = services.size();
+    return number;
+  }
+
+  public boolean hasServices()
+  {
+    boolean has = services.size() > 0;
+    return has;
+  }
+
+  public int indexOfService(Service aService)
+  {
+    int index = services.indexOf(aService);
     return index;
   }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfWeeklySchedules()
+  public static int minimumNumberOfWeeklySchedule()
   {
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public WeeklyBusinessHours addWeeklySchedule()
+  public WeeklySchedule addWeeklySchedule()
   {
-    return new WeeklyBusinessHours(this);
+    return new WeeklySchedule(this);
   }
 
-  public boolean addWeeklySchedule(WeeklyBusinessHours aWeeklySchedule)
+  public boolean addWeeklySchedule(WeeklySchedule aWeeklySchedule)
   {
     boolean wasAdded = false;
-    if (weeklySchedules.contains(aWeeklySchedule)) { return false; }
+    if (weeklySchedule.contains(aWeeklySchedule)) { return false; }
     CarShop existingShop = aWeeklySchedule.getShop();
     boolean isNewShop = existingShop != null && !this.equals(existingShop);
     if (isNewShop)
@@ -185,52 +224,124 @@ public class CarShop
     }
     else
     {
-      weeklySchedules.add(aWeeklySchedule);
+      weeklySchedule.add(aWeeklySchedule);
     }
     wasAdded = true;
     return wasAdded;
   }
 
-  public boolean removeWeeklySchedule(WeeklyBusinessHours aWeeklySchedule)
+  public boolean removeWeeklySchedule(WeeklySchedule aWeeklySchedule)
   {
     boolean wasRemoved = false;
     //Unable to remove aWeeklySchedule, as it must always have a shop
     if (!this.equals(aWeeklySchedule.getShop()))
     {
-      weeklySchedules.remove(aWeeklySchedule);
+      weeklySchedule.remove(aWeeklySchedule);
       wasRemoved = true;
     }
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addWeeklyScheduleAt(WeeklyBusinessHours aWeeklySchedule, int index)
+  public boolean addWeeklyScheduleAt(WeeklySchedule aWeeklySchedule, int index)
   {  
     boolean wasAdded = false;
     if(addWeeklySchedule(aWeeklySchedule))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfWeeklySchedules()) { index = numberOfWeeklySchedules() - 1; }
-      weeklySchedules.remove(aWeeklySchedule);
-      weeklySchedules.add(index, aWeeklySchedule);
+      if(index > numberOfWeeklySchedule()) { index = numberOfWeeklySchedule() - 1; }
+      weeklySchedule.remove(aWeeklySchedule);
+      weeklySchedule.add(index, aWeeklySchedule);
       wasAdded = true;
     }
     return wasAdded;
   }
 
-  public boolean addOrMoveWeeklyScheduleAt(WeeklyBusinessHours aWeeklySchedule, int index)
+  public boolean addOrMoveWeeklyScheduleAt(WeeklySchedule aWeeklySchedule, int index)
   {
     boolean wasAdded = false;
-    if(weeklySchedules.contains(aWeeklySchedule))
+    if(weeklySchedule.contains(aWeeklySchedule))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfWeeklySchedules()) { index = numberOfWeeklySchedules() - 1; }
-      weeklySchedules.remove(aWeeklySchedule);
-      weeklySchedules.add(index, aWeeklySchedule);
+      if(index > numberOfWeeklySchedule()) { index = numberOfWeeklySchedule() - 1; }
+      weeklySchedule.remove(aWeeklySchedule);
+      weeklySchedule.add(index, aWeeklySchedule);
       wasAdded = true;
     } 
     else 
     {
       wasAdded = addWeeklyScheduleAt(aWeeklySchedule, index);
+    }
+    return wasAdded;
+  }
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfServices()
+  {
+    return 0;
+  }
+  /* Code from template association_AddManyToOne */
+  public Service addService(String aName, Service.WorkType aGeneralService, double aDurationInHours, Garage aWorkingGarage)
+  {
+    return new Service(aName, aGeneralService, aDurationInHours, aWorkingGarage, this);
+  }
+
+  public boolean addService(Service aService)
+  {
+    boolean wasAdded = false;
+    if (services.contains(aService)) { return false; }
+    CarShop existingCarShop = aService.getCarShop();
+    boolean isNewCarShop = existingCarShop != null && !this.equals(existingCarShop);
+    if (isNewCarShop)
+    {
+      aService.setCarShop(this);
+    }
+    else
+    {
+      services.add(aService);
+    }
+    wasAdded = true;
+    return wasAdded;
+  }
+
+  public boolean removeService(Service aService)
+  {
+    boolean wasRemoved = false;
+    //Unable to remove aService, as it must always have a carShop
+    if (!this.equals(aService.getCarShop()))
+    {
+      services.remove(aService);
+      wasRemoved = true;
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addServiceAt(Service aService, int index)
+  {  
+    boolean wasAdded = false;
+    if(addService(aService))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfServices()) { index = numberOfServices() - 1; }
+      services.remove(aService);
+      services.add(index, aService);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveServiceAt(Service aService, int index)
+  {
+    boolean wasAdded = false;
+    if(services.contains(aService))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfServices()) { index = numberOfServices() - 1; }
+      services.remove(aService);
+      services.add(index, aService);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addServiceAt(aService, index);
     }
     return wasAdded;
   }
@@ -243,10 +354,15 @@ public class CarShop
     {
       existingOwner.delete();
     }
-    for(int i=weeklySchedules.size(); i > 0; i--)
+    for(int i=weeklySchedule.size(); i > 0; i--)
     {
-      WeeklyBusinessHours aWeeklySchedule = weeklySchedules.get(i - 1);
+      WeeklySchedule aWeeklySchedule = weeklySchedule.get(i - 1);
       aWeeklySchedule.delete();
+    }
+    for(int i=services.size(); i > 0; i--)
+    {
+      Service aService = services.get(i - 1);
+      aService.delete();
     }
   }
 

@@ -3,7 +3,10 @@
 
 package CarShop.model;
 
-// line 47 "../../CarShop.ump"
+/**
+ * need to be abstract
+ */
+// line 60 "../../CarShop.ump"
 public class UserAccount
 {
 
@@ -55,6 +58,9 @@ public class UserAccount
     return wasSet;
   }
 
+  /**
+   * make username unique
+   */
   public String getUsername()
   {
     return username;

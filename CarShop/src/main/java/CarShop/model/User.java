@@ -3,7 +3,7 @@
 
 package CarShop.model;
 
-// line 42 "../../CarShop.ump"
+// line 54 "../../CarShop.ump"
 public class User
 {
 

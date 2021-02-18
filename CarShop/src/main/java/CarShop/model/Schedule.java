@@ -4,7 +4,7 @@
 package CarShop.model;
 import java.sql.Date;
 
-// line 61 "../../CarShop.ump"
+// line 76 "../../CarShop.ump"
 public class Schedule
 {
 
@@ -19,14 +19,14 @@ public class Schedule
   private Date endTime;
 
   //Schedule Associations
-  private WeeklyBusinessHours week;
+  private WeeklySchedule week;
   private Garage garage;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Schedule(boolean aIsHoliday, boolean aIsBreakDay, Date aStartTime, Date aEndTime, WeeklyBusinessHours aWeek, Garage aGarage)
+  public Schedule(boolean aIsHoliday, boolean aIsBreakDay, Date aStartTime, Date aEndTime, WeeklySchedule aWeek, Garage aGarage)
   {
     isHoliday = aIsHoliday;
     isBreakDay = aIsBreakDay;
@@ -110,7 +110,7 @@ public class Schedule
     return isBreakDay;
   }
   /* Code from template association_GetOne */
-  public WeeklyBusinessHours getWeek()
+  public WeeklySchedule getWeek()
   {
     return week;
   }
@@ -120,7 +120,7 @@ public class Schedule
     return garage;
   }
   /* Code from template association_SetOneToAtMostN */
-  public boolean setWeek(WeeklyBusinessHours aWeek)
+  public boolean setWeek(WeeklySchedule aWeek)
   {
     boolean wasSet = false;
     //Must provide week to day
@@ -130,12 +130,12 @@ public class Schedule
     }
 
     //week already at maximum (7)
-    if (aWeek.numberOfDays() >= WeeklyBusinessHours.maximumNumberOfDays())
+    if (aWeek.numberOfDays() >= WeeklySchedule.maximumNumberOfDays())
     {
       return wasSet;
     }
     
-    WeeklyBusinessHours existingWeek = week;
+    WeeklySchedule existingWeek = week;
     week = aWeek;
     if (existingWeek != null && !existingWeek.equals(aWeek))
     {
@@ -172,7 +172,7 @@ public class Schedule
 
   public void delete()
   {
-    WeeklyBusinessHours placeholderWeek = week;
+    WeeklySchedule placeholderWeek = week;
     this.week = null;
     if(placeholderWeek != null)
     {
