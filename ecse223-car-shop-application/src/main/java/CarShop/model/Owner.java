@@ -30,10 +30,10 @@ public class Owner extends UserAccount
     owns = aOwns;
   }
 
-  public Owner(String aUsername, String aPassword, boolean aIsLoggedIn, String aWarningMessage, User aUser, Date aDateForOwns, String aGeneralInfoForOwns, String aAddressForOwns, String aEmailAddressForOwns, String aPhoneNumberForOwns, GeneralDailySchedule aGeneralDailyScheduleForOwns)
+  public Owner(String aUsername, String aPassword, boolean aIsLoggedIn, String aWarningMessage, User aUser, Date aDateForOwns, String aGeneralInfoForOwns, String aAddressForOwns, String aEmailAddressForOwns, String aPhoneNumberForOwns)
   {
     super(aUsername, aPassword, aIsLoggedIn, aWarningMessage, aUser);
-    owns = new CarShop(aDateForOwns, aGeneralInfoForOwns, aAddressForOwns, aEmailAddressForOwns, aPhoneNumberForOwns, this, aGeneralDailyScheduleForOwns);
+    owns = new CarShop(aDateForOwns, aGeneralInfoForOwns, aAddressForOwns, aEmailAddressForOwns, aPhoneNumberForOwns, this);
   }
 
   //------------------------

@@ -21,9 +21,9 @@ public class TechnicianDailySchedule extends GeneralDailySchedule
   // CONSTRUCTOR
   //------------------------
 
-  public TechnicianDailySchedule(DayType aDayType, Date aOpeningTime, Date aClosingTime, Date aCurrentDate)
+  public TechnicianDailySchedule(DayType aDayType, Date aOpeningTime, Date aClosingTime, Date aCurrentDate, CarShop aCarShop)
   {
-    super(aDayType, aOpeningTime, aClosingTime, aCurrentDate);
+    super(aDayType, aOpeningTime, aClosingTime, aCurrentDate, aCarShop);
     timeSlots = new ArrayList<TimeSlot>();
   }
 

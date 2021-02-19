@@ -93,7 +93,7 @@ class GeneralDailySchedule{
  	Date openingTime;
  	Date closingTime;
     Date currentDate;
-    1 --  * CarShop;
+    * --  1 CarShop;
 }
 
 associationClass AppointmentInfo{

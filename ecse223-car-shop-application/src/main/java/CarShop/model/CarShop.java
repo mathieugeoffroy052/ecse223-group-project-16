@@ -25,13 +25,13 @@ public class CarShop
   private List<TechnicianAccount> employee;
   private List<Service> servicesOffered;
   private List<ServiceList> serviceListsOffered;
-  private GeneralDailySchedule generalDailySchedule;
+  private List<GeneralDailySchedule> generalDailySchedules;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public CarShop(Date aDate, String aGeneralInfo, String aAddress, String aEmailAddress, String aPhoneNumber, Owner aOwnedBy, GeneralDailySchedule aGeneralDailySchedule)
+  public CarShop(Date aDate, String aGeneralInfo, String aAddress, String aEmailAddress, String aPhoneNumber, Owner aOwnedBy)
   {
     date = aDate;
     generalInfo = aGeneralInfo;
@@ -46,14 +46,10 @@ public class CarShop
     employee = new ArrayList<TechnicianAccount>();
     servicesOffered = new ArrayList<Service>();
     serviceListsOffered = new ArrayList<ServiceList>();
-    boolean didAddGeneralDailySchedule = setGeneralDailySchedule(aGeneralDailySchedule);
-    if (!didAddGeneralDailySchedule)
-    {
-      throw new RuntimeException("Unable to create carShop due to generalDailySchedule. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
+    generalDailySchedules = new ArrayList<GeneralDailySchedule>();
   }
 
-  public CarShop(Date aDate, String aGeneralInfo, String aAddress, String aEmailAddress, String aPhoneNumber, String aUsernameForOwnedBy, String aPasswordForOwnedBy, boolean aIsLoggedInForOwnedBy, String aWarningMessageForOwnedBy, User aUserForOwnedBy, GeneralDailySchedule aGeneralDailySchedule)
+  public CarShop(Date aDate, String aGeneralInfo, String aAddress, String aEmailAddress, String aPhoneNumber, String aUsernameForOwnedBy, String aPasswordForOwnedBy, boolean aIsLoggedInForOwnedBy, String aWarningMessageForOwnedBy, User aUserForOwnedBy)
   {
     date = aDate;
     generalInfo = aGeneralInfo;
@@ -64,11 +60,7 @@ public class CarShop
     employee = new ArrayList<TechnicianAccount>();
     servicesOffered = new ArrayList<Service>();
     serviceListsOffered = new ArrayList<ServiceList>();
-    boolean didAddGeneralDailySchedule = setGeneralDailySchedule(aGeneralDailySchedule);
-    if (!didAddGeneralDailySchedule)
-    {
-      throw new RuntimeException("Unable to create carShop due to generalDailySchedule. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
+    generalDailySchedules = new ArrayList<GeneralDailySchedule>();
   }
 
   //------------------------
@@ -234,10 +226,35 @@ public class CarShop
     int index = serviceListsOffered.indexOf(aServiceListsOffered);
     return index;
   }
-  /* Code from template association_GetOne */
-  public GeneralDailySchedule getGeneralDailySchedule()
+  /* Code from template association_GetMany */
+  public GeneralDailySchedule getGeneralDailySchedule(int index)
   {
-    return generalDailySchedule;
+    GeneralDailySchedule aGeneralDailySchedule = generalDailySchedules.get(index);
+    return aGeneralDailySchedule;
+  }
+
+  public List<GeneralDailySchedule> getGeneralDailySchedules()
+  {
+    List<GeneralDailySchedule> newGeneralDailySchedules = Collections.unmodifiableList(generalDailySchedules);
+    return newGeneralDailySchedules;
+  }
+
+  public int numberOfGeneralDailySchedules()
+  {
+    int number = generalDailySchedules.size();
+    return number;
+  }
+
+  public boolean hasGeneralDailySchedules()
+  {
+    boolean has = generalDailySchedules.size() > 0;
+    return has;
+  }
+
+  public int indexOfGeneralDailySchedule(GeneralDailySchedule aGeneralDailySchedule)
+  {
+    int index = generalDailySchedules.indexOf(aGeneralDailySchedule);
+    return index;
   }
   /* Code from template association_IsNumberOfValidMethod */
   public boolean isNumberOfEmployeeValid()
@@ -464,24 +481,77 @@ public class CarShop
     }
     return wasAdded;
   }
-  /* Code from template association_SetOneToMany */
-  public boolean setGeneralDailySchedule(GeneralDailySchedule aGeneralDailySchedule)
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfGeneralDailySchedules()
   {
-    boolean wasSet = false;
-    if (aGeneralDailySchedule == null)
-    {
-      return wasSet;
-    }
+    return 0;
+  }
+  /* Code from template association_AddManyToOne */
+  public GeneralDailySchedule addGeneralDailySchedule(GeneralDailySchedule.DayType aDayType, Date aOpeningTime, Date aClosingTime, Date aCurrentDate)
+  {
+    return new GeneralDailySchedule(aDayType, aOpeningTime, aClosingTime, aCurrentDate, this);
+  }
 
-    GeneralDailySchedule existingGeneralDailySchedule = generalDailySchedule;
-    generalDailySchedule = aGeneralDailySchedule;
-    if (existingGeneralDailySchedule != null && !existingGeneralDailySchedule.equals(aGeneralDailySchedule))
+  public boolean addGeneralDailySchedule(GeneralDailySchedule aGeneralDailySchedule)
+  {
+    boolean wasAdded = false;
+    if (generalDailySchedules.contains(aGeneralDailySchedule)) { return false; }
+    CarShop existingCarShop = aGeneralDailySchedule.getCarShop();
+    boolean isNewCarShop = existingCarShop != null && !this.equals(existingCarShop);
+    if (isNewCarShop)
     {
-      existingGeneralDailySchedule.removeCarShop(this);
+      aGeneralDailySchedule.setCarShop(this);
     }
-    generalDailySchedule.addCarShop(this);
-    wasSet = true;
-    return wasSet;
+    else
+    {
+      generalDailySchedules.add(aGeneralDailySchedule);
+    }
+    wasAdded = true;
+    return wasAdded;
+  }
+
+  public boolean removeGeneralDailySchedule(GeneralDailySchedule aGeneralDailySchedule)
+  {
+    boolean wasRemoved = false;
+    //Unable to remove aGeneralDailySchedule, as it must always have a carShop
+    if (!this.equals(aGeneralDailySchedule.getCarShop()))
+    {
+      generalDailySchedules.remove(aGeneralDailySchedule);
+      wasRemoved = true;
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addGeneralDailyScheduleAt(GeneralDailySchedule aGeneralDailySchedule, int index)
+  {  
+    boolean wasAdded = false;
+    if(addGeneralDailySchedule(aGeneralDailySchedule))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfGeneralDailySchedules()) { index = numberOfGeneralDailySchedules() - 1; }
+      generalDailySchedules.remove(aGeneralDailySchedule);
+      generalDailySchedules.add(index, aGeneralDailySchedule);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveGeneralDailyScheduleAt(GeneralDailySchedule aGeneralDailySchedule, int index)
+  {
+    boolean wasAdded = false;
+    if(generalDailySchedules.contains(aGeneralDailySchedule))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfGeneralDailySchedules()) { index = numberOfGeneralDailySchedules() - 1; }
+      generalDailySchedules.remove(aGeneralDailySchedule);
+      generalDailySchedules.add(index, aGeneralDailySchedule);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addGeneralDailyScheduleAt(aGeneralDailySchedule, index);
+    }
+    return wasAdded;
   }
 
   public void delete()
@@ -507,11 +577,10 @@ public class CarShop
       ServiceList aServiceListsOffered = serviceListsOffered.get(i - 1);
       aServiceListsOffered.delete();
     }
-    GeneralDailySchedule placeholderGeneralDailySchedule = generalDailySchedule;
-    this.generalDailySchedule = null;
-    if(placeholderGeneralDailySchedule != null)
+    for(int i=generalDailySchedules.size(); i > 0; i--)
     {
-      placeholderGeneralDailySchedule.removeCarShop(this);
+      GeneralDailySchedule aGeneralDailySchedule = generalDailySchedules.get(i - 1);
+      aGeneralDailySchedule.delete();
     }
   }
 
@@ -524,7 +593,6 @@ public class CarShop
             "emailAddress" + ":" + getEmailAddress()+ "," +
             "phoneNumber" + ":" + getPhoneNumber()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "date" + "=" + (getDate() != null ? !getDate().equals(this)  ? getDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "ownedBy = "+(getOwnedBy()!=null?Integer.toHexString(System.identityHashCode(getOwnedBy())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "generalDailySchedule = "+(getGeneralDailySchedule()!=null?Integer.toHexString(System.identityHashCode(getGeneralDailySchedule())):"null");
+            "  " + "ownedBy = "+(getOwnedBy()!=null?Integer.toHexString(System.identityHashCode(getOwnedBy())):"null");
   }
 }
