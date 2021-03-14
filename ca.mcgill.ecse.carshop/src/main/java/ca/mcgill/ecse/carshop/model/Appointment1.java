@@ -16,7 +16,7 @@ public class Appointment
   private Customer customer;
   private BookableService bookableService;
   private List<ServiceBooking> serviceBookings;
-  private CarShop carShop;
+  private CarShop carShop; 
 
   //------------------------
   // CONSTRUCTOR
