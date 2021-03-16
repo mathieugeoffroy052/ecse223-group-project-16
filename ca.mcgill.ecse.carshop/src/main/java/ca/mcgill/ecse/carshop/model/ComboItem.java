@@ -3,7 +3,7 @@
 
 package ca.mcgill.ecse.carshop.model;
 
-// line 92 "../../../../../carshop.ump"
+// line 130 "../../../../../carshop.ump"
 public class ComboItem
 {
 
@@ -113,6 +113,12 @@ public class ComboItem
     {
       placeholderServiceCombo.removeService(this);
     }
+  }
+
+  // line 134 "../../../../../carshop.ump"
+   public String isMandatory(){
+    if(this.mandatory == true) return "mandatory";
+  else return "";
   }
 
 

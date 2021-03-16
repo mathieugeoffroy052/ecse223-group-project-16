@@ -932,4 +932,21 @@ public class CarShop
     
   }
 
+  // line 15 "../../../../../carshop.ump"
+   public int getTechnicianWithString(String str){
+    int iend = str.indexOf("-");
+		String subString = null;
+		if (iend != -1) 
+		{
+		    subString = str.substring(0, iend); //this will give abc
+		}
+		subString = subString.toLowerCase();
+		for(int i = 0; i < this.numberOfTechnicians(); i++) {
+			String userName = this.getTechnician(i).getUsername();
+			userName = userName.toLowerCase();
+			if(userName.contains(subString)) return i;
+		}
+		return -1;
+  }
+
 }

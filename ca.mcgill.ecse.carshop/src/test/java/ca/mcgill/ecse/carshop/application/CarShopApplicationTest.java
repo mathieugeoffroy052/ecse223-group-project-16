@@ -10,6 +10,5 @@ import org.junit.jupiter.api.Test;
 class CarShopApplicationTest {
     @Test void appHasAGreeting() {
         CarShopApplication classUnderTest = new CarShopApplication();
-        assertNotNull(classUnderTest.getGreeting(), "app should have a greeting");
     }
 }

@@ -4,7 +4,7 @@
 package ca.mcgill.ecse.carshop.model;
 import java.util.*;
 
-// line 29 "../../../../../carshop.ump"
+// line 46 "../../../../../carshop.ump"
 public class Technician extends User
 {
 
@@ -146,6 +146,14 @@ public class Technician extends User
       placeholderCarShop.removeTechnician(this);
     }
     super.delete();
+  }
+
+  // line 56 "../../../../../carshop.ump"
+   public TechnicianType getTechnicianType(String string){
+    string = string.toLowerCase();
+	  int toCheck = carShop.getTechnicianWithString(string);
+	  if(toCheck == -1) return null;
+	  return carShop.getTechnician(toCheck).getType();
   }
 
 

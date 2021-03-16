@@ -1,11 +1,11 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
 
-package ca.mcgill.ecse.carshop.model;
+package ca.mcgill.ecse.carshop.controller;
 import java.sql.Time;
 
-// line 81 "../../../../../carshop.ump"
-public class BusinessHour
+// line 35 "../../../../../CarShopTransferObjects.ump"
+public class TOBusinessHour
 {
 
   //------------------------
@@ -18,28 +18,20 @@ public class BusinessHour
   // MEMBER VARIABLES
   //------------------------
 
-  //BusinessHour Attributes
+  //TOBusinessHour Attributes
   private DayOfWeek dayOfWeek;
   private Time startTime;
   private Time endTime;
-
-  //BusinessHour Associations
-  private CarShop carShop;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public BusinessHour(DayOfWeek aDayOfWeek, Time aStartTime, Time aEndTime, CarShop aCarShop)
+  public TOBusinessHour(DayOfWeek aDayOfWeek, Time aStartTime, Time aEndTime)
   {
     dayOfWeek = aDayOfWeek;
     startTime = aStartTime;
     endTime = aEndTime;
-    boolean didAddCarShop = setCarShop(aCarShop);
-    if (!didAddCarShop)
-    {
-      throw new RuntimeException("Unable to create hour due to carShop. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
   }
 
   //------------------------
@@ -84,40 +76,9 @@ public class BusinessHour
   {
     return endTime;
   }
-  /* Code from template association_GetOne */
-  public CarShop getCarShop()
-  {
-    return carShop;
-  }
-  /* Code from template association_SetOneToMany */
-  public boolean setCarShop(CarShop aCarShop)
-  {
-    boolean wasSet = false;
-    if (aCarShop == null)
-    {
-      return wasSet;
-    }
-
-    CarShop existingCarShop = carShop;
-    carShop = aCarShop;
-    if (existingCarShop != null && !existingCarShop.equals(aCarShop))
-    {
-      existingCarShop.removeHour(this);
-    }
-    carShop.addHour(this);
-    wasSet = true;
-    return wasSet;
-  }
 
   public void delete()
-  {
-    CarShop placeholderCarShop = carShop;
-    this.carShop = null;
-    if(placeholderCarShop != null)
-    {
-      placeholderCarShop.removeHour(this);
-    }
-  }
+  {}
 
 
   public String toString()
@@ -125,7 +86,6 @@ public class BusinessHour
     return super.toString() + "["+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "dayOfWeek" + "=" + (getDayOfWeek() != null ? !getDayOfWeek().equals(this)  ? getDayOfWeek().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "startTime" + "=" + (getStartTime() != null ? !getStartTime().equals(this)  ? getStartTime().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "endTime" + "=" + (getEndTime() != null ? !getEndTime().equals(this)  ? getEndTime().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "carShop = "+(getCarShop()!=null?Integer.toHexString(System.identityHashCode(getCarShop())):"null");
+            "  " + "endTime" + "=" + (getEndTime() != null ? !getEndTime().equals(this)  ? getEndTime().toString().replaceAll("  ","    ") : "this" : "null");
   }
 }

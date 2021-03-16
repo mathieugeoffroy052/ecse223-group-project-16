@@ -10,6 +10,23 @@ class CarShop  {
   1 <@>- * Appointment appointments;
   1 <@>- * TimeSlot timeSlots;
   1 <@>- * BookableService bookableServices;
+  
+  	public int getTechnicianWithString(String str) {
+		int iend = str.indexOf("-");
+		String subString = null;
+		if (iend != -1) 
+		{
+		    subString = str.substring(0, iend); //this will give abc
+		}
+		subString = subString.toLowerCase();
+		for(int i = 0; i < this.numberOfTechnicians(); i++) {
+			String userName = this.getTechnician(i).getUsername();
+			userName = userName.toLowerCase();
+			if(userName.contains(subString)) return i;
+		}
+		return -1;
+	}
+
 }
 
 class User {
@@ -32,7 +49,16 @@ class Technician {
   }
   1 -- 0..1 Garage garage;
   TechnicianType type;
+  
   isA User;
+  
+    public TechnicianType getTechnicianType(String string) {
+	  string = string.toLowerCase();
+	  int toCheck = carShop.getTechnicianWithString(string);
+	  if(toCheck == -1) return null;
+	  return carShop.getTechnician(toCheck).getType();
+  }
+  
 }
 
 class Business {
@@ -74,6 +100,18 @@ class Garage {
 class BookableService {
   abstract;
   unique name;
+  
+    public ComboItem getMainService()
+  {
+    return null;
+  }
+  
+    public int getDuration() {
+	  if(this instanceof Service) {
+		  return this.getDuration();
+	  }
+	  else return 0;
+  }
 }
 
 class Service {
@@ -92,6 +130,10 @@ class ServiceCombo {
 class ComboItem {
   boolean mandatory;
   * -> 1 Service service;
+  public String isMandatory() {
+  if(this.mandatory == true) return "mandatory";
+  else return "";
+  }
 }
 
 
