@@ -3,12 +3,110 @@
  */
 package ca.mcgill.ecse.carshop.application;
 
+import java.util.Date;
+
+import ca.mcgill.ecse.carshop.model.CarShop;
+import ca.mcgill.ecse.carshop.model.Customer;
+import ca.mcgill.ecse.carshop.model.Owner;
+import ca.mcgill.ecse.carshop.model.Technician;
+import ca.mcgill.ecse.carshop.model.User;
+
 public class CarShopApplication {
-    public String getGreeting() {
-        return "Hello World!";
+	private static CarShop carShop = null;	//all applications are associated with the same CarShop carShop
+	private static User user = null;	//might need to remove static
+	public static AccountType accountType = null;
+	private static boolean isLoggedIn = false;
+	static Date currentDate = null;
+	
+    public enum AccountType{EngineTechnician, TireTechnician, TransmissionTechnician, ElectronicsTechnician, FluidsTechnician, 
+    	Customer, Owner};
+
+    public static CarShop getCarShop() {
+    	if(carShop == null) {
+    		carShop = new CarShop();
+    	}
+    	return carShop;
+    }
+    
+    public static void logIn(String username, String password) {
+    	username = username.toLowerCase();
+    	if(username.equals(carShop.getOwner().getUsername()) && password.equals(carShop.getOwner().getPassword())) {
+    		accountType = CarShopApplication.AccountType.Owner;
+    		isLoggedIn = true;
+    	}
+    	else if(username.contains("technician")) {
+    		int i = carShop.getTechnicianWithString(username);
+    		String comparePassword = carShop.getTechnician(i).getPassword();
+    		if(password.equals(comparePassword)) {
+    			Technician.TechnicianType a = carShop.getTechnician(0).getTechnicianType(username);
+    			if(a.equals(Technician.TechnicianType.Engine)) {
+    				accountType = CarShopApplication.AccountType.EngineTechnician;
+        			isLoggedIn = true;
+    			}
+    			else if(a.equals(Technician.TechnicianType.Tire)) {
+    				accountType = CarShopApplication.AccountType.TireTechnician;
+        			isLoggedIn = true;
+    			}
+    			else if(a.equals(Technician.TechnicianType.Transmission)) {
+    				accountType = CarShopApplication.AccountType.TransmissionTechnician;
+        			isLoggedIn = true;
+    			}
+    			else if(a.equals(Technician.TechnicianType.Electronics)) {
+    				accountType = CarShopApplication.AccountType.ElectronicsTechnician;
+        			isLoggedIn = true;
+    			}
+    			else {
+    				accountType = CarShopApplication.AccountType.FluidsTechnician;
+        			isLoggedIn = true;
+    			}
+    		}
+    	}
+    	else {
+    		for(int i = 0; i < carShop.getCustomers().size(); i++) {
+    			if(carShop.getCustomer(i).getUsername().equals(username)) {
+    				if(carShop.getCustomer(i).getPassword().equals(password)) {
+    		    		accountType = CarShopApplication.AccountType.Customer;
+            			isLoggedIn = true;
+    				}
+    			}
+    		}
+    	}
+    	
+    }
+    
+    public static User getUser() {
+		return user;
+    }
+    
+    public static void setUser(User newUser) {
+    	user = newUser;
+    }
+    
+    public static void setAccountType(AccountType type) {
+    	accountType = type;
     }
 
-    public static void main(String[] args) {
-        System.out.println(new CarShopApplication().getGreeting());
+    
+    public static void logOut() {
+    	accountType = null;
+    	isLoggedIn = false;
     }
+    
+    public static void setLoggedIn(Boolean bool) {
+    	isLoggedIn = bool;
+    }
+    
+    public AccountType getAccountType() {
+    	return accountType;
+    }
+    
+    public boolean getLoggedIn() {
+    	return isLoggedIn;
+    }
+    
+    public static void setDate(Date date) {
+    	currentDate = date;
+    }
+    
+    
 }

@@ -4,7 +4,7 @@
 package ca.mcgill.ecse.carshop.model;
 import java.util.*;
 
-// line 74 "../../../../../carshop.ump"
+// line 100 "../../../../../carshop.ump"
 public abstract class BookableService
 {
 
@@ -221,6 +221,19 @@ public abstract class BookableService
       Appointment aAppointment = appointments.get(i - 1);
       aAppointment.delete();
     }
+  }
+
+  // line 106 "../../../../../carshop.ump"
+   public ComboItem getMainService(){
+    return null;
+  }
+
+  // line 110 "../../../../../carshop.ump"
+   public int getDuration(){
+    if(this instanceof Service) {
+		  return this.getDuration();
+	  }
+	  else return 0;
   }
 
 

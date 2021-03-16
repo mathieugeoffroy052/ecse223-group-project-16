@@ -1,0 +1,87 @@
+namespace ca.mcgill.ecse.carshop.controller;
+
+class TOCarShop  {
+
+}
+
+class TOUser {
+  username;
+  password;
+}
+
+class TOOwner {
+	username;
+	password;
+}
+
+class TOCustomer {
+	username;
+	password;
+}
+
+class TOTechnician {
+  enum TechnicianType {
+    Tire, Engine, Transmission, Electronics, Fluids
+  }
+  TechnicianType type;
+  username;
+  password;
+  
+}
+
+class TOBusiness {
+  name;
+  address;
+  phoneNumber;
+  email;
+}
+
+class TOBusinessHour {
+  enum DayOfWeek { Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday }
+  DayOfWeek dayOfWeek;
+  Time startTime;
+  Time endTime;
+}
+
+class TOTimeSlot {
+  Date startDate;
+  Time startTime;
+  Date endDate;
+  Time endTime;
+}
+
+class TOGarage {
+	name;
+
+}
+
+class TOBookableService {
+  name;
+  
+}
+
+class TOService {
+  int duration;
+  name;
+}
+
+class TOServiceCombo {
+	name;
+
+}
+
+class TOComboItem {
+  boolean mandatory;
+  name;
+
+}
+
+
+class TOAppointment {
+	name;
+
+}
+
+class TOServiceBooking {
+	name;
+}
