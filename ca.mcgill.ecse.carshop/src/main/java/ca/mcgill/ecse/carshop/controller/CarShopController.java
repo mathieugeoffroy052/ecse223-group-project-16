@@ -18,10 +18,13 @@ import ca.mcgill.ecse.carshop.model.CarShop;
 import ca.mcgill.ecse.carshop.model.ComboItem;
 import ca.mcgill.ecse.carshop.model.Customer;
 import ca.mcgill.ecse.carshop.model.Garage;
+import ca.mcgill.ecse.carshop.model.Owner;
 import ca.mcgill.ecse.carshop.model.Service;
 import ca.mcgill.ecse.carshop.model.ServiceCombo;
 import ca.mcgill.ecse.carshop.model.Technician;
+import ca.mcgill.ecse.carshop.model.Technician.TechnicianType;
 import ca.mcgill.ecse.carshop.model.TimeSlot;
+import ca.mcgill.ecse.carshop.model.User;
 
 
 public class CarShopController {
@@ -365,5 +368,145 @@ public class CarShopController {
 	}
 
 	}
+	
+	
+	//Kalvin
+	
+	static CarShop cs = CarShopApplication.getCarShop();
+	
+	
+
+	public static User signUpUser(String username, String password, CarShopApplication.AccountType userType) throws InvalidInputException
+	{
+		
+		User user = null;
+		if (User.hasWithUsername(username))
+		{
+			throw new InvalidInputException("The username already exists");
+		}
+		
+		else if (username.equals(""))
+		{
+			throw new InvalidInputException("The user name cannot be empty");
+		}
+		
+		else if (password.equals(""))
+		{
+			throw new InvalidInputException("The password cannot be empty");
+		}
+		
+		else if (CarShopApplication.getLoggedIn())
+		{
+			if (CarShopApplication.getAccountType().equals(CarShopApplication.AccountType.Owner))
+			{
+				throw new InvalidInputException("You must log out of the owner account before creating a customer account");
+			}
+			else 
+			{
+				throw new InvalidInputException("You must log out of the technician account before creating a customer account");
+			}
+			
+		}
+		
+		CarShop carShop = CarShopApplication.getCarShop();
+		
+		if (userType.equals(CarShopApplication.AccountType.Customer))
+		{
+			user = cs.addCustomer(username, password);
+		}
+		
+		else if (userType.equals(CarShopApplication.AccountType.Owner))
+		{
+			// Constraint: the username of the owner account is always owner
+			if (cs.getOwner() != null)
+			{
+				throw new InvalidInputException("The password cannot be empty");
+			}
+			Owner owner = new Owner("owner", password, carShop);
+			cs.setOwner(owner);
+			user = owner;
+			
+		}
+		
+		else // Technician 
+		{
+			
+			// Constraint: username of the technician
+			TechnicianType technicianType = TechnicianType.Engine;
+			switch (userType) 
+			{
+			case EngineTechnician:
+				technicianType = TechnicianType.Engine;
+				break;
+			case TireTechnician:
+				technicianType = TechnicianType.Tire;
+				break;
+			case TransmissionTechnician:
+				technicianType = TechnicianType.Transmission;
+				break;
+			case ElectronicsTechnician:
+				technicianType = TechnicianType.Electronics;
+				break;
+			case FluidsTechnician:
+				technicianType = TechnicianType.Fluids;
+				break;
+			default:
+				break;
+			}
+			String technicianUsername = technicianType.toString() + "-Technician";
+			user = cs.addTechnician(technicianUsername, password, technicianType);
+		}	
+		
+		return user;
+		
+	}
+	
+	
+	public static void updateUser(String username, String password) throws InvalidInputException
+	{
+		
+		if (! CarShopApplication.getLoggedIn())
+		{
+			throw new InvalidInputException("Must be logged in to update");
+		}
+		
+		User loggedInUser = User.getWithUsername(CarShopApplication.getUser().getUsername()); 
+		if (loggedInUser == null)
+		{
+			// Not the actual error
+			throw new InvalidInputException("User not found");
+		}
+		
+		if (loggedInUser instanceof Owner && !(username.equals("owner")))
+		{
+			throw new InvalidInputException("Changing username of owner is not allowed");
+		}
+		if (loggedInUser instanceof Technician && !(username.equals(loggedInUser.getUsername())))
+		{
+			throw new InvalidInputException("Changing username of technician is not allowed");
+		}
+		if (!loggedInUser.getUsername().equals(username) && User.hasWithUsername(username))
+		{
+			throw new InvalidInputException("Username not available");
+		}
+		
+		else if (username.equals(""))
+		{
+			throw new InvalidInputException("The user name cannot be empty");
+
+		}
+		else if (password.equals(""))
+		{
+			throw new InvalidInputException("The password cannot be empty");
+		}
+		
+		loggedInUser.setUsername(username);
+		loggedInUser.setPassword(password);
+		
+		
+		
+	}
+	
+	
 	
 }

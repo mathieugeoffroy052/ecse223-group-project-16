@@ -388,5 +388,177 @@ public class CucumberStepDefinitions {
        assertEquals(string2, cs.getBookableService(0).getName());
        assertEquals(Integer.parseInt(string3), cs.getBookableService(0).getDuration());
     }
+    
+    
+    
+    
+    // Sign Up Customer Account
+    
+
+    
+    /*
+	 * Given is to setup fkn everything u need in life (for testing)
+	 * When is to call the method needed (try catch type of shit) can used some inputs and shit
+	 * Then is to check if the system is the same state
+	 * */
+	
+	// Variables for sign Up
+		private String username;
+		private String password;
+		
+	
+		User user = null;
+
+		
+		private int numberOfChanges;
+
+	
+	@Before
+	public static void setUp()
+	{
+		CarShopApplication.getCarShop().delete();
+	}
+	
+
+	// Sign Up
+	
+	
+
+	@Given("there is no existing username {string}")
+	public void there_is_no_existing_username(String string) {
+		if (User.hasWithUsername(string)) 
+		{
+			User.getWithUsername(string).delete();
+		}
+		
+	}
+
+	@When("the user provides a new username {string} and a password {string}")
+	public void the_user_provides_a_new_username_and_a_password(String string, String string2) {
+
+		// use controller and do some operations
+		try {
+			user = CarShopController.signUpUser(string, string2, CarShopApplication.AccountType.Customer);
+			numberOfChanges++;
+		} catch (Exception e) {
+			error += e.getMessage();
+			errorCntr ++;
+			user = null;
+		}
+	}
+
+	@Then("a new customer account shall be created")
+	public void a_new_customer_account_shall_be_created() {
+		assertTrue(user != null);
+	}
+
+	@Then("the account shall have username {string} and password {string}")
+	public void the_account_shall_have_username_and_password(String string, String string2) 
+	{
+		
+		assertTrue(user != null && user.getUsername().equals(string) && user.getPassword().equals(string2)); 
+
+	}
+
+	@Then("no new account shall be created")
+	public void no_new_account_shall_be_created() {
+		assertTrue(user == null);
+
+	}
+
+	@Then("an error message {string} shall be raised")
+	public void an_error_message_shall_be_raised(String string) {
+	    
+		assertTrue(error.contains(string));
+		
+	}
+
+	@Given("there is an existing username {string}")
+	public void there_is_an_existing_username(String string) throws InvalidInputException {
+
+		
+		if (string.equals("owner") )
+		{
+			Owner owner = new Owner("owner", "owner", cs);
+			cs.setOwner(owner); // unnecessary step
+		}
+		else if (string.contains("Technician"))
+		{
+			user = cs.addTechnician(string, string, TechnicianType.Tire);
+		}
+		
+		else
+		{
+			user = cs.addCustomer(string, string);
+		}
+		errorCntr = 0;
+		
+	}
+
+	@Given("the user is logged in to an account with username {string}")
+	public void the_user_is_logged_in_to_an_account_with_username(String string) {
+	
+	    CarShopApplication.logIn(string, User.getWithUsername(string).getPassword());
+	    
+	}
+	
+	//
+	
+	
+	
+
+	// Update 
+	
+	
+	@Given("an owner account exists in the system with username {string} and password {string}")
+	public void an_owner_account_exists_in_the_system_with_username_and_password(String string, String string2) {
+		Owner owner = new Owner(string, string2, cs);
+		cs.setOwner(owner); // unnecessary step
+	    
+	}
+
+	
+
+
+
+
+
+	@When("the user tries to update account with a new username {string} and password {string}")
+	public void the_user_tries_to_update_account_with_a_new_username_and_password(String string, String string2)  {
+
+		
+		user = CarShopApplication.getUser();
+		try {
+			CarShopController.updateUser(string, string2);
+		} catch (Exception e) {
+			error += e.getMessage();
+			errorCntr++;
+		}
+		
+	}
+
+	@Then("the account shall not be updated")
+	public void the_account_shall_not_be_updated(){
+		assertTrue(errorCntr>0);		
+	}
+	
+	@After 
+	public void tearDown()
+	{
+		CarShopApplication.getCarShop().delete();
+		user = null;
+		errorCntr = 0;
+
+	}
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 }

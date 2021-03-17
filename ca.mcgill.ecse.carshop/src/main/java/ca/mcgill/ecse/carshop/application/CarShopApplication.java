@@ -29,16 +29,18 @@ public class CarShopApplication {
     }
     
     public static void logIn(String username, String password) {
-    	username = username.toLowerCase();
-    	if(username.equals(carShop.getOwner().getUsername()) && password.equals(carShop.getOwner().getPassword())) {
+    	//username = username.toLowerCase();
+    	if(carShop.getOwner() != null && username.equals(carShop.getOwner().getUsername()) && password.equals(carShop.getOwner().getPassword())) {
+    		
     		accountType = CarShopApplication.AccountType.Owner;
     		isLoggedIn = true;
+    		setUser(carShop.getOwner());
     	}
-    	else if(username.contains("technician")) {
+    	else if(username.contains("Technician")) {
     		int i = carShop.getTechnicianWithString(username);
     		String comparePassword = carShop.getTechnician(i).getPassword();
     		if(password.equals(comparePassword)) {
-    			Technician.TechnicianType a = carShop.getTechnician(0).getTechnicianType(username);
+    			Technician.TechnicianType a = carShop.getTechnician(i).getTechnicianType(username);
     			if(a.equals(Technician.TechnicianType.Engine)) {
     				accountType = CarShopApplication.AccountType.EngineTechnician;
         			isLoggedIn = true;
@@ -59,6 +61,7 @@ public class CarShopApplication {
     				accountType = CarShopApplication.AccountType.FluidsTechnician;
         			isLoggedIn = true;
     			}
+    			setUser (carShop.getTechnician(i));
     		}
     	}
     	else {
@@ -67,6 +70,7 @@ public class CarShopApplication {
     				if(carShop.getCustomer(i).getPassword().equals(password)) {
     		    		accountType = CarShopApplication.AccountType.Customer;
             			isLoggedIn = true;
+            			setUser(carShop.getCustomer(i));
     				}
     			}
     		}
@@ -96,11 +100,11 @@ public class CarShopApplication {
     	isLoggedIn = bool;
     }
     
-    public AccountType getAccountType() {
+    public static AccountType getAccountType() {
     	return accountType;
     }
     
-    public boolean getLoggedIn() {
+    public static boolean getLoggedIn() {
     	return isLoggedIn;
     }
     
