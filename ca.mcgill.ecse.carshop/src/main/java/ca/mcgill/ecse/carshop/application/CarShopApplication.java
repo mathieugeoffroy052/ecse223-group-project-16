@@ -35,6 +35,8 @@ public class CarShopApplication {
 		carShop = null;
 		user = null;
 		accountType = null;
+		isLoggedIn = false;
+		currentDate = null;
 	}
     
     public static void logIn(String username, String password) {

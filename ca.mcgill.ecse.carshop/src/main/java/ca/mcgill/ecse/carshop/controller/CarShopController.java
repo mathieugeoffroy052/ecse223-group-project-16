@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
+import ca.mcgill.ecse.carshop.application.CarShopApplication.AccountType;
 import ca.mcgill.ecse.carshop.model.Appointment;
 import ca.mcgill.ecse.carshop.model.BookableService;
 import ca.mcgill.ecse.carshop.model.BusinessHour;
@@ -192,7 +193,7 @@ public class CarShopController {
 //		System.out.println("THIS IS THE USERNAME==================== "+ user.getUsername());
 		if(user != null && user.getPassword().equals(password)) {
 			CarShopApplication.setUser(user);
-			CarShopApplication.setAccountType(CarShopApplication.AccountType.Customer);
+			CarShopApplication.setAccountType(getApplicationTechnicianType(user.getUsername()));
 			CarShopApplication.setLoggedIn(true);
 		}else {
 			throw new InvalidInputException("Username/password not found");
@@ -249,6 +250,26 @@ public class CarShopController {
 		else return null;
 	}
 	
+	public static AccountType getApplicationTechnicianType(String str) {
+		str = str.toLowerCase();
+		if(str.contains("tire")) {
+			return CarShopApplication.AccountType.TireTechnician;
+		}
+		else if(str.contains("engine")) {
+			return CarShopApplication.AccountType.EngineTechnician;
+		}
+		else if(str.contains("transmission")) {
+			return CarShopApplication.AccountType.TransmissionTechnician;
+		}
+		else if(str.contains("electronics")) {
+			return CarShopApplication.AccountType.ElectronicsTechnician;
+		}
+		else if(str.contains("fluids")) {
+			return CarShopApplication.AccountType.FluidsTechnician;
+		}
+		else return null;
+	}
+	
 	public static int getTechnician(String str, CarShop cs) {
 		int iend = str.indexOf("-");
 		String subString = null;
@@ -293,22 +314,25 @@ public class CarShopController {
 	}
 	
 	
-	public static DayOfWeek getWeekDay(String day) {
+	public static DayOfWeek getWeekDay(String day) throws InvalidInputException {
 		DayOfWeek dayOfWeek = null;
 		if(day.equals("Monday")) {
 			dayOfWeek = DayOfWeek.Monday;
 		}
-		if(day.equals("Tuesday")) {
+		else if(day.equals("Tuesday")) {
 			dayOfWeek = DayOfWeek.Tuesday;
 		}
-		if(day.equals("Wednesday")) {
+		else if(day.equals("Wednesday")) {
 			dayOfWeek = DayOfWeek.Wednesday;
 		}
-		if(day.equals("Thursday")) {
+		else if(day.equals("Thursday")) {
 			dayOfWeek = DayOfWeek.Thursday;
 		}
-		if(day.equals("Friday")) {
+		else if(day.equals("Friday")) {
 			dayOfWeek = DayOfWeek.Friday;
+		}
+		else if(day.equals("Saturday") || day.equals("Sunday")) {
+			throw new InvalidInputException("The opening hours are not within the opening hours of the business");
 		}
 		return dayOfWeek;
 	}

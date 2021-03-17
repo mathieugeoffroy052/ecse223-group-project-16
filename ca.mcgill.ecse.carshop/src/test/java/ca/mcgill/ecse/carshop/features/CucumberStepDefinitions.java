@@ -288,6 +288,7 @@ public class CucumberStepDefinitions {
 	@Then("the garage belonging to the technician with type {string} should have opening hours on {string} from {string} to {string}")
 	public void the_garage_belonging_to_the_technician_with_type_should_have_opening_hours_on_from_to(String string, String string2, String string3, String string4) {
 	    // Write code here that turns the phrase above into concrete actions
+		try {
 		TechnicianType techGuyType = CarShopController.getTechnicianType(string);
 		Technician technician = null;
 		for(int i=0; i<5;i++) {
@@ -310,12 +311,17 @@ public class CucumberStepDefinitions {
 			}
 		}
 		assertTrue(test);
+		} catch (InvalidInputException e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
 	}
 	
 
 	@Given("there are opening hours on {string} from {string} to {string} for garage belonging to the technician with type {string}")
 	public void there_are_opening_hours_on_from_to_for_garage_belonging_to_the_technician_with_type(String string, String string2, String string3, String string4) {
 	    // Write code here that turns the phrase above into concrete actions
+		try {
 		Technician technician = null;
 		for(int i=0; i<5;i++) {
 			Technician techGuy = cs.getTechnician(i);
@@ -331,11 +337,16 @@ public class CucumberStepDefinitions {
 		Time endTime = CarShopController.stringToTimeMatthew(string3);
 		BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);
 		garage.addBusinessHour(businessHour);
+		} catch (InvalidInputException e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
 	}
 	
 	@When("the user tries to remove opening hours on {string} from {string} to {string} to garage belonging to the technician with type {string}")
 	public void the_user_tries_to_remove_opening_hours_on_from_to_to_garage_belonging_to_the_technician_with_type(String string, String string2, String string3, String string4) {
 	    // Write code here that turns the phrase above into concrete actions
+		try {
 		Technician technician = null;
 		for(int i=0; i<5;i++) {
 			Technician techGuy = cs.getTechnician(i);
@@ -359,11 +370,16 @@ public class CucumberStepDefinitions {
 			error = e.getMessage();
 			errorCntr++;
 		}
+		} catch (InvalidInputException e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
 	}
 	
 	@Then("the garage belonging to the technician with type {string} should not have opening hours on {string} from {string} to {string}")
 	public void the_garage_belonging_to_the_technician_with_type_should_not_have_opening_hours_on_from_to(String string, String string2, String string3, String string4) {
 	    // Write code here that turns the phrase above into concrete actions
+		try {
 		Technician technician = null;
 		for(int i=0; i<5;i++) {
 			Technician techGuy = cs.getTechnician(i);
@@ -382,6 +398,10 @@ public class CucumberStepDefinitions {
 
 		
 		assertTrue(!technician.getGarage().getBusinessHours().contains(hoursToAdd));
+		} catch (InvalidInputException e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
 	}
 
 	
@@ -425,9 +445,18 @@ public class CucumberStepDefinitions {
 	@When("the user tries to add new business hours on {string} from {string} to {string} to garage belonging to the technician with type {string}")
 	public void the_user_tries_to_add_new_business_hours_on_from_to_to_garage_belonging_to_the_technician_with_type(String string, String string2, String string3, String string4) {
 	    // Write code here that turns the phrase above into concrete actions
+		try {
 		TechnicianType technicianType = CarShopController.getTechnicianType(string4);
 		DayOfWeek dayOfWeek = CarShopController.getWeekDay(string);
-		BusinessHour newBusinessHours = new BusinessHour(dayOfWeek, CarShopController.stringToTimeMatthew(string2), CarShopController.stringToTimeMatthew(string3), cs);
+		int toCheck = 0;
+		if(dayOfWeek.equals(BusinessHour.DayOfWeek.Monday)) toCheck = 0;
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Tuesday)) toCheck = 1;
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Wednesday)) toCheck = 2;
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Thursday)) toCheck = 3;
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Friday)) toCheck = 4;
+		else throw new InvalidInputException("The opening hours are not within the opening hours");
+		Time ourStartTime = CarShopController.stringToTimeMatthew(string2);
+		Time ourEndTime = CarShopController.stringToTimeMatthew(string3);
 		Technician technician = null;
 		//to find the technician
 		for(int i=0; i<5;i++) {
@@ -437,7 +466,18 @@ public class CucumberStepDefinitions {
 				break;
 			}
 		}
-		technician.getGarage().addBusinessHour(newBusinessHours);
+		// TODO Matthew - add code here using if statements
+		if(cs.getBusiness().getBusinessHour(toCheck).getStartTime().before(ourStartTime) && 
+				cs.getBusiness().getBusinessHour(toCheck).getEndTime().after(ourEndTime)) throw new InvalidInputException("The opening hours cannot overlap");
+		else if(cs.getBusiness().getBusinessHour(toCheck).getStartTime().after(ourStartTime) ||
+				cs.getBusiness().getBusinessHour(toCheck).getEndTime().before(ourEndTime)) throw new InvalidInputException("The opening hours are not within the opening hours of the business");
+		else if(ourStartTime.after(ourEndTime)) throw new InvalidInputException("Start time must be before end time");
+			
+		technician.getGarage().addBusinessHour(new BusinessHour(dayOfWeek, ourStartTime, ourEndTime, cs));
+		} catch (Exception e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
 	}
 	
 //	@Given("a business exists with the following information:")
@@ -472,6 +512,7 @@ public class CucumberStepDefinitions {
 	    // E, List<E>, List<List<E>>, List<Map<K,V>>, Map<K,V> or
 	    // Map<K, List<V>>. E,K,V must be a String, Integer, Float,
 	    // Double, Byte, Short, Long, BigInteger or BigDecimal.
+		try {
 		DayOfWeek dayOfWeek = null;
 		Business business = cs.getBusiness();
 		List<List<String>> rows = table.asLists(String.class);
@@ -486,6 +527,10 @@ public class CucumberStepDefinitions {
 			business.addBusinessHour(businessHour);
 
 		}
+		} catch (InvalidInputException e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
 			
 	}
 
@@ -494,6 +539,11 @@ public class CucumberStepDefinitions {
     	if(cs!=null) {
         	cs.delete();
         	numberOfChanges = 0;
+        	user = null;
+        	username = null;
+        	password = null;
+        	curPassword = null;
+        	curUsername = null;
     	}
     	CarShopApplication.restart();
     }
@@ -546,7 +596,7 @@ public class CucumberStepDefinitions {
 			else if(str.contains("fluids")) {
 				aType = Technician.TechnicianType.Fluids;
 			}
-	        cs.addTechnician(columns.get(0), columns.get(1), aType);
+	        cs.addTechnician(new Technician(columns.get(0), columns.get(1), aType, cs));
 	    }
 	}
 
