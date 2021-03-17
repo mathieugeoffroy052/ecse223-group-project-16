@@ -95,59 +95,6 @@ public class CucumberStepDefinitions {
 			oldBusinessHourInfo = new String[3];
 		}
 
-//		@Given("a Carshop system exists")
-//		public void a_carshop_system_exists() {
-//			cs = CarShopApplication.getCarShop();
-//			error = "";
-//			errorCounter = 0;
-//		}
-
-		
-//		@Given("an owner account exists in the system with username {string} and password {string}")
-//		public void an_owner_account_exists_in_the_system_with_username_and_password(String username, String password) {
-//			if (cs.getOwner() == null || !cs.getOwner().getUsername().equals(username)
-//					|| cs.getOwner().getPassword().equals(password)) {
-//				cs.setOwner(new Owner(username, password, cs));
-//			}
-//		}
-
-//		@Given("the following customers exist in the system:")
-//		public void the_following_customers_exist_in_the_system(io.cucumber.datatable.DataTable dataTable) {
-//			cs = CarShopApplication.getCarShop();
-//			List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
-	//
-//			for (Map<String, String> columns : rows) {
-//				String username = columns.get("username");
-//				String password = columns.get("password");
-//				Customer newCustomer = new Customer(username, password, cs);
-//				cs.addCustomer(newCustomer);
-//			}
-//		}
-
-//		@Given("the following technicians exist in the system:")
-//		public void the_following_technicians_exist_in_the_system(io.cucumber.datatable.DataTable dataTable) {
-//			cs = CarShopApplication.getCarShop();
-//			List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
-	//
-//			for (Map<String, String> columns : rows) {
-//				String username = columns.get("username");
-//				String password = columns.get("password");
-//				String type = columns.get("type");
-	//
-//				Technician newTechnician = new Technician(username, password, TechnicianType.valueOf(type), cs);
-//				cs.addTechnician(newTechnician);
-//			}
-//		}
-
-//		@Given("each technician has their own garage")
-//		public void each_technician_has_their_own_garage() {
-//			cs = CarShopApplication.getCarShop();
-//			List<Technician> technicians = cs.getTechnicians();
-//			for (Technician technician : technicians) {
-//				Garage newGarage = new Garage(cs, technician);
-//				technician.setGarage(newGarage);
-//			}
-//		}
 
 		@Given("no business exists")
 		public void no_business_exists() {
@@ -575,11 +522,6 @@ public class CucumberStepDefinitions {
 		}
 		
 		
-		// TODO
-		// TODO
-	
-
-
 	@Given("there is no existing username {string}")
 	public void there_is_no_existing_username(String string) {
 		if (User.hasWithUsername(string)) 
@@ -652,7 +594,6 @@ public class CucumberStepDefinitions {
 	@When("the user tries to update account with a new username {string} and password {string}")
 	public void the_user_tries_to_update_account_with_a_new_username_and_password(String string, String string2)  {
 
-		
 		user = CarShopApplication.getUser();
 		try {
 			CarShopController.updateUser(string, string2);
@@ -673,252 +614,6 @@ public class CucumberStepDefinitions {
 	private String curPassword;
 	
 	
-	
-//	@Given("the following customers exist in the system:")
-//	public void the_following_customers_exist_in_the_system(Map<String,String> table) {
-//	    // Write code here that turns the phrase above into concrete actions
-//		
-//		for (Map.Entry<String, String> entry : table.entrySet()) {
-//			Customer customer = new Customer(entry.getKey(), entry.getValue(), cs);
-//			//do we not need to add customer in a different way, such that they aren't stored in the same Customer object (called "customer" in this case)
-//		}
-//
-//	}
-
-	@When("the user tries to log in with username {string} and password {string}")
-	public void the_user_tries_to_log_in_with_username_and_password(String string, String string2) {
-		try {
-			//do we need to include which type of user they are in the constructor for a user (or somewhere else)?
-
-			curUsername = string;
-			curPassword = string2;
-			CarShopController.login(string, string2);
-		}catch(Exception e) {
-			error+=e.getMessage();
-			errorCntr++;
-		}
-	    // Write code here that turns the phrase above into concrete actions
-	}
-
-	@Then("the user should be successfully logged in")
-	public void the_user_should_be_successfully_logged_in() {
-	    // Write code here that turns the phrase above into concrete actions
-//		assertNotNull(CarShopApplication.getUser());
-		//is this correct?
-		assertEquals(curPassword, CarShopApplication.getUser().getPassword());
-		assertEquals(curUsername, CarShopApplication.getUser().getUsername());
-//		assertEquals(CarShopApplication.AccountType.Customer, CarShopApplication.getAccountType(CarShopApplication.getUser()));
-		}
-
-	@Then("the user should not be logged in")
-	public void the_user_should_not_be_logged_in() {
-		// how does this tie in to the previous scenario? is it assumed that this is a new scenario? how do we know?
-
-		assertNull(CarShopApplication.getUser());
-//		assertNotEquals(curUsername, CarShopApplication.getUser().getUsername());
-	}
-	
-
-	@Then("an error message {string} shall be raised")
-	public void an_error_message_shall_be_raised(String string) throws Exception {
-	    // Write code here that turns the phrase above into concrete actions
-		// TODO might not work... unless exclusive to Kalvin -Jerry
-//	    error = string;
-//	    try {
-//	    	CarShopController.login(curUsername, curPassword);
-//	    }catch (Exception e) {
-//	    	error = e.getMessage();
-//	    	errorCntr++;
-//	    }
-	    assertEquals(string, error);
-	}
-
-	@Then("a new account shall be created")
-	public void a_new_account_shall_be_created() {
-	    // Write code here that turns the phrase above into concrete actions
-		CarShopController.newAccount(curUsername, curPassword, cs);
-		assertEquals(curUsername, User.getWithUsername(curUsername).getUsername());
-		assertEquals(curPassword, User.getWithUsername(curUsername).getPassword());
-	}
-
-//	@Then("the account shall have username {string} and password {string}")
-//	public void the_account_shall_have_username_and_password(String string, String string2) {
-//	    // Write code here that turns the phrase above into concrete actions
-//		assertEquals(string, User.getWithUsername(string).getUsername());
-//		assertEquals(string2, User.getWithUsername(string2).getPassword());
-//	}
-
-	@Then("the user shall be successfully logged in")
-	public void the_user_shall_be_successfully_logged_in() {
-		try{
-			CarShopController.login(curUsername, curPassword);
-		}catch(Exception e) {
-			error = e.getMessage();
-		}
-		assertEquals(curUsername, CarShopApplication.getUser().getUsername());
-		assertEquals(curPassword, CarShopApplication.getUser().getPassword());
-	    // Write code here that turns the phrase above into concrete actions
-	}
-
-	@Then("the account shall have username {string}, password {string} and technician type {string}")
-	public void the_account_shall_have_username_password_and_technician_type(String string, String string2, String string3) {
-	    // Write code here that turns the phrase above into concrete actions
-		assertEquals(string3, CarShopController.getTechnicianType(string).toString());
-		assertEquals(string, User.getWithUsername(string).getUsername());
-		assertEquals(string2, User.getWithUsername(string).getPassword());
-	}
-
-	@Then("the corresponding garage for the technician shall be created")
-	public void the_corresponding_garage_for_the_technician_shall_be_created() {
-		// get technician type
-		Technician techGuy = cs.getTechnician(CarShopController.getTechnician(curUsername, cs));
-		CarShopController.setGarage(techGuy, cs);
-		assertTrue(techGuy.hasGarage());
-	}
-
-	@Then("the garage should have the same opening hours as the business")
-	public void the_garage_should_have_the_same_opening_hours_as_the_business() {
-	    // Write code here that turns the phrase above into concrete actions
-		//once we figure out how to return a technician based on their username, we can access their garage and the garage's business hours.
-//		assertEquals()
-		//TODO
-		Technician techGuy = cs.getTechnician(CarShopController.getTechnician(curUsername, cs));
-		Garage techGuyGarage = techGuy.getGarage();
-		Business csBusiness = cs.getBusiness();
-		List<BusinessHour> businessHours;
-		if(csBusiness == null) {
-			businessHours = new ArrayList<BusinessHour>(); 
-		}else{
-			businessHours = csBusiness.getBusinessHours();
-			for(BusinessHour entry: businessHours) {
-				techGuyGarage.addBusinessHour(entry);
-			}
-		}
-
-		//carshop has a business belonging to it, as well as a list of garages.
-		assertEquals(businessHours, techGuyGarage.getBusinessHours());
-	}
-	
-	@Then("the garage belonging to the technician with type {string} should have opening hours on {string} from {string} to {string}")
-	public void the_garage_belonging_to_the_technician_with_type_should_have_opening_hours_on_from_to(String string, String string2, String string3, String string4) {
-	    // Write code here that turns the phrase above into concrete actions
-		try {
-		TechnicianType techGuyType = CarShopController.getTechnicianType(string);
-		Technician technician = null;
-		for(int i=0; i<5;i++) {
-			Technician techGuy = cs.getTechnician(i);
-			if(techGuy.getType().equals(techGuyType)) {
-				technician = techGuy;
-				break;
-			}
-		}
-		boolean test = false;
-		List<BusinessHour> businessHours = technician.getGarage().getBusinessHours();
-		for(BusinessHour hours:businessHours) {
-			if(hours.getDayOfWeek().equals(CarShopController.getWeekDay(string2))) {
-				if(hours.getStartTime().equals(CarShopController.stringToTimeMatthew(string3))) {
-					if(hours.getEndTime().equals(CarShopController.stringToTimeMatthew(string4))) {
-						test = true;
-						break;
-					}
-				}
-			}
-		}
-		assertTrue(test);
-		} catch (InvalidInputException e) {
-			error = e.getMessage();
-			errorCntr++;
-		}
-	}
-	
-
-	@Given("there are opening hours on {string} from {string} to {string} for garage belonging to the technician with type {string}")
-	public void there_are_opening_hours_on_from_to_for_garage_belonging_to_the_technician_with_type(String string, String string2, String string3, String string4) {
-	    // Write code here that turns the phrase above into concrete actions
-		try {
-		Technician technician = null;
-		for(int i=0; i<5;i++) {
-			Technician techGuy = cs.getTechnician(i);
-			if(techGuy.getType().equals(CarShopController.getTechnicianType(string4))) {
-				technician = techGuy;
-				break;
-			}
-		}	
-		
-		Garage garage = technician.getGarage();
-		DayOfWeek dayOfWeek = CarShopController.getWeekDay(string);
-		Time startTime = CarShopController.stringToTimeMatthew(string2);
-		Time endTime = CarShopController.stringToTimeMatthew(string3);
-		BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);
-		garage.addBusinessHour(businessHour);
-		} catch (InvalidInputException e) {
-			error = e.getMessage();
-			errorCntr++;
-		}
-	}
-	
-	@When("the user tries to remove opening hours on {string} from {string} to {string} to garage belonging to the technician with type {string}")
-	public void the_user_tries_to_remove_opening_hours_on_from_to_to_garage_belonging_to_the_technician_with_type(String string, String string2, String string3, String string4) {
-	    // Write code here that turns the phrase above into concrete actions
-		try {
-		Technician technician = null;
-		for(int i=0; i<5;i++) {
-			Technician techGuy = cs.getTechnician(i);
-			if(techGuy.getType().equals(CarShopController.getTechnicianType(string4))) {
-				technician = techGuy;
-				break;
-			}
-		}
-		DayOfWeek dayOfWeek = CarShopController.getWeekDay(string);
-		Time startTime = CarShopController.stringToTimeMatthew(string2);
-		Time endTime = CarShopController.stringToTimeMatthew(string3);
-		BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);
-		
-		BusinessHour hoursToRemove = new BusinessHour(dayOfWeek, startTime, endTime, cs);
-		//change the model so that the removeBusinessHours function in Garage.java
-		//only the technician of the right type can remove it, and not all technicians.
-		//may not be necessary
-		try {
-			CarShopController.removeBusinessHour(hoursToRemove, CarShopApplication.getUser(), technician.getGarage(), cs);
-		}catch(Exception e) {
-			error = e.getMessage();
-			errorCntr++;
-		}
-		} catch (InvalidInputException e) {
-			error = e.getMessage();
-			errorCntr++;
-		}
-	}
-	
-	@Then("the garage belonging to the technician with type {string} should not have opening hours on {string} from {string} to {string}")
-	public void the_garage_belonging_to_the_technician_with_type_should_not_have_opening_hours_on_from_to(String string, String string2, String string3, String string4) {
-	    // Write code here that turns the phrase above into concrete actions
-		try {
-		Technician technician = null;
-		for(int i=0; i<5;i++) {
-			Technician techGuy = cs.getTechnician(i);
-			if(techGuy.getType().equals(CarShopController.getTechnicianType(string))) {
-				technician = techGuy;
-				break;
-			}
-		}
-		DayOfWeek dayOfWeek = CarShopController.getWeekDay(string2);
-		Time startTime = CarShopController.stringToTimeMatthew(string3);
-		Time endTime = CarShopController.stringToTimeMatthew(string4);
-		
-//		BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);
-		
-		BusinessHour hoursToAdd = new BusinessHour(dayOfWeek, startTime, endTime, cs);
-
-		
-		assertTrue(!technician.getGarage().getBusinessHours().contains(hoursToAdd));
-		} catch (InvalidInputException e) {
-			error = e.getMessage();
-			errorCntr++;
-		}
-	}
-
-	
 	@Given("an owner account exists in the system with username {string} and password {string}")
 	public void an_owner_account_exists_in_the_system_with_username_and_password(String string, String string2) {
 	    // Write code here that turns the phrase above into concrete actions
@@ -926,22 +621,6 @@ public class CucumberStepDefinitions {
 		Owner owner = new Owner(string, string2, cs);
 		cs.setOwner(owner);		
 	}
-
-//	@Given("a business exists with the following information:")
-//	public void a_business_exists_with_the_following_information(io.cucumber.datatable.DataTable table) {
-//	    // Write code here that turns the phrase above into concrete actions
-//		List<List<String>> rows = table.asLists(String.class);
-//	    
-//		
-//	    for (List<String> columns : rows) {
-//	    	if(columns.get(0).equals("name")) {
-//	    		continue;
-//	    	}
-//	    	Business business = new Business(columns.get(0), columns.get(1), columns.get(2), columns.get(3), cs);
-//	    }
-//	    
-//
-//	}
 
 	@Given("the user is logged in to an account with username {string}")
 	public void the_user_is_logged_in_to_an_account_with_username(String string) {
@@ -957,69 +636,6 @@ public class CucumberStepDefinitions {
 		}
 	    
 	}
-
-	@When("the user tries to add new business hours on {string} from {string} to {string} to garage belonging to the technician with type {string}")
-	public void the_user_tries_to_add_new_business_hours_on_from_to_to_garage_belonging_to_the_technician_with_type(String string, String string2, String string3, String string4) {
-	    // Write code here that turns the phrase above into concrete actions
-		try {
-		TechnicianType technicianType = CarShopController.getTechnicianType(string4);
-		DayOfWeek dayOfWeek = CarShopController.getWeekDay(string);
-		int toCheck = 0;
-		if(dayOfWeek.equals(BusinessHour.DayOfWeek.Monday)) toCheck = 0;
-		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Tuesday)) toCheck = 1;
-		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Wednesday)) toCheck = 2;
-		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Thursday)) toCheck = 3;
-		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Friday)) toCheck = 4;
-		else throw new InvalidInputException("The opening hours are not within the opening hours");
-		Time ourStartTime = CarShopController.stringToTimeMatthew(string2);
-		Time ourEndTime = CarShopController.stringToTimeMatthew(string3);
-		Technician technician = null;
-		//to find the technician
-		for(int i=0; i<5;i++) {
-			Technician techGuy = cs.getTechnician(i);
-			if(techGuy.getType().equals(technicianType)) {
-				technician = techGuy;
-				break;
-			}
-		}
-		// TODO Matthew - add code here using if statements
-		if(cs.getBusiness().getBusinessHour(toCheck).getStartTime().before(ourStartTime) && 
-				cs.getBusiness().getBusinessHour(toCheck).getEndTime().after(ourEndTime)) throw new InvalidInputException("The opening hours cannot overlap");
-		else if(cs.getBusiness().getBusinessHour(toCheck).getStartTime().after(ourStartTime) ||
-				cs.getBusiness().getBusinessHour(toCheck).getEndTime().before(ourEndTime)) throw new InvalidInputException("The opening hours are not within the opening hours of the business");
-		else if(ourStartTime.after(ourEndTime)) throw new InvalidInputException("Start time must be before end time");
-			
-		technician.getGarage().addBusinessHour(new BusinessHour(dayOfWeek, ourStartTime, ourEndTime, cs));
-		} catch (Exception e) {
-			error = e.getMessage();
-			errorCntr++;
-		}
-	}
-	
-//	@Given("a business exists with the following information:")
-//	public void a_business_exists_with_the_following_information(io.cucumber.datatable.DataTable table) {
-//	    // Write code here that turns the phrase above into concrete actions
-//	    // For automatic transformation, change DataTable to one of
-//	    // E, List<E>, List<List<E>>, List<Map<K,V>>, Map<K,V> or
-//	    // Map<K, List<V>>. E,K,V must be a String, Integer, Float,
-//	    // Double, Byte, Short, Long, BigInteger or BigDecimal.
-//		
-//		List<List<String>> rows = table.asLists(String.class);
-//	    
-//		
-//	    for (List<String> columns : rows) {
-//	    	if(columns.get(0).equals("name")) {
-//	    		continue;
-//	    	}
-//	    	Business business = new Business(columns.get(0), columns.get(1), columns.get(2), columns.get(3), cs);
-//	    }
-//	    
-//	    
-//		for(List<String>entry: businessList) {
-//			Business business = new Business(entry.get(0), entry.get(1), entry.get(2), entry.get(3), cs);
-//		}
-//	     //For other transformations you can register a DataTableType.
-//	}
 
 	@Given("the business has the following opening hours:")
 	public void the_business_has_the_following_opening_hours(io.cucumber.datatable.DataTable table) {
@@ -1404,5 +1020,232 @@ public class CucumberStepDefinitions {
        assertEquals(string2, cs.getBookableService(0).getName());
        assertEquals(Integer.parseInt(string3), cs.getBookableService(0).getDuration());
     }
+    
+
+	@When("the user tries to log in with username {string} and password {string}")
+	public void the_user_tries_to_log_in_with_username_and_password(String string, String string2) {
+		try {
+			//do we need to include which type of user they are in the constructor for a user (or somewhere else)?
+
+			curUsername = string;
+			curPassword = string2;
+			CarShopController.login(string, string2);
+		}catch(Exception e) {
+			error =e.getMessage();
+			errorCntr++;
+		}
+	    // Write code here that turns the phrase above into concrete actions
+	}
+
+	@Then("the user should be successfully logged in")
+	public void the_user_should_be_successfully_logged_in() {
+	    // Write code here that turns the phrase above into concrete actions
+//		assertNotNull(CarShopApplication.getUser());
+		//is this correct?
+		assertEquals(curPassword, CarShopApplication.getUser().getPassword());
+		assertEquals(curUsername, CarShopApplication.getUser().getUsername());
+//		assertEquals(CarShopApplication.AccountType.Customer, CarShopApplication.getAccountType(CarShopApplication.getUser()));
+		}
+
+	@Then("the user should not be logged in")
+	public void the_user_should_not_be_logged_in() {
+		// how does this tie in to the previous scenario? is it assumed that this is a new scenario? how do we know?
+
+		assertNull(CarShopApplication.getUser());
+//		assertNotEquals(curUsername, CarShopApplication.getUser().getUsername());
+	}
+	
+
+	@Then("an error message {string} shall be raised")
+	public void an_error_message_shall_be_raised(String string) throws Exception {
+		
+	    assertEquals(string, error);
+	}
+
+	@Then("a new account shall be created")
+	public void a_new_account_shall_be_created() {
+	    // Write code here that turns the phrase above into concrete actions
+		CarShopController.newAccount(curUsername, curPassword, cs);
+		assertEquals(curUsername, User.getWithUsername(curUsername).getUsername());
+		assertEquals(curPassword, User.getWithUsername(curUsername).getPassword());
+	}
+
+
+	@Then("the user shall be successfully logged in")
+	public void the_user_shall_be_successfully_logged_in() {
+		try{
+			CarShopController.login(curUsername, curPassword);
+		}catch(Exception e) {
+			error = e.getMessage();
+		}
+		assertEquals(curUsername, CarShopApplication.getUser().getUsername());
+		assertEquals(curPassword, CarShopApplication.getUser().getPassword());
+	    // Write code here that turns the phrase above into concrete actions
+	}
+
+	@Then("the account shall have username {string}, password {string} and technician type {string}")
+	public void the_account_shall_have_username_password_and_technician_type(String string, String string2, String string3) {
+	    // Write code here that turns the phrase above into concrete actions
+		assertEquals(string3, CarShopController.getTechnicianType(string).toString());
+		assertEquals(string, User.getWithUsername(string).getUsername());
+		assertEquals(string2, User.getWithUsername(string).getPassword());
+	}
+
+	@Then("the corresponding garage for the technician shall be created")
+	public void the_corresponding_garage_for_the_technician_shall_be_created() {
+		// get technician type
+		Technician techGuy = cs.getTechnician(CarShopController.getTechnician(curUsername, cs));
+		CarShopController.setGarage(techGuy, cs);
+		assertTrue(techGuy.hasGarage());
+	}
+
+	@Then("the garage should have the same opening hours as the business")
+	public void the_garage_should_have_the_same_opening_hours_as_the_business() {
+	    // Write code here that turns the phrase above into concrete actions
+		//once we figure out how to return a technician based on their username, we can access their garage and the garage's business hours.
+//		assertEquals()
+		//TODO
+		Technician techGuy = cs.getTechnician(CarShopController.getTechnician(curUsername, cs));
+		Garage techGuyGarage = techGuy.getGarage();
+		Business csBusiness = cs.getBusiness();
+		List<BusinessHour> businessHours;
+		if(csBusiness == null) {
+			businessHours = new ArrayList<BusinessHour>(); 
+		}else{
+			businessHours = csBusiness.getBusinessHours();
+			for(BusinessHour entry: businessHours) {
+				techGuyGarage.addBusinessHour(entry);
+			}
+		}
+
+		//carshop has a business belonging to it, as well as a list of garages.
+		assertEquals(businessHours, techGuyGarage.getBusinessHours());
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------------------------------------
+	
+	
+	@Then("the garage belonging to the technician with type {string} should have opening hours on {string} from {string} to {string}")
+	public void the_garage_belonging_to_the_technician_with_type_should_have_opening_hours_on_from_to(String string, String string2, String string3, String string4) {
+	    // Write code here that turns the phrase above into concrete actions
+		try {
+		Technician technician = CarShopController.findTechnician(string, cs);
+		boolean test = false;
+		//TODO
+		List<BusinessHour> businessHours = technician.getGarage().getBusinessHours();
+		
+		DayOfWeek dayOfWeek = CarShopController.getWeekDay(string2);
+		Time startTime = CarShopController.stringToTimeMatthew(string3);
+		Time endTime = CarShopController.stringToTimeMatthew(string4);
+		BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);
+		
+		long endLong = endTime.getTime();
+		
+		for(BusinessHour hours:businessHours) {
+			if(hours.getDayOfWeek().equals(CarShopController.getWeekDay(string2))) {
+				if(hours.getStartTime().getTime() == (CarShopController.stringToTimeMatthew(string3)).getTime()) {
+					if(hours.getEndTime().getTime() == (CarShopController.stringToTimeMatthew(string4)).getTime()) {
+						test = true;
+						break;
+					}
+				}
+			}
+			if(hours.equals(businessHour)) {
+				test = true;
+			}
+		}
+
+
+		assertTrue(test);
+		} catch (InvalidInputException e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
+	}
+
+	@Given("there are opening hours on {string} from {string} to {string} for garage belonging to the technician with type {string}")
+	public void there_are_opening_hours_on_from_to_for_garage_belonging_to_the_technician_with_type(String string, String string2, String string3, String string4) {
+	    // Write code here that turns the phrase above into concrete actions
+		try {
+			Technician technician = CarShopController.findTechnician(string4, cs);
+			Garage garage = technician.getGarage();
+			DayOfWeek dayOfWeek = CarShopController.getWeekDay(string);
+			Time startTime = CarShopController.stringToTimeMatthew(string2);
+			Time endTime = CarShopController.stringToTimeMatthew(string3);
+			BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);
+			garage.addBusinessHour(businessHour);
+		} catch (InvalidInputException e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
+	}
+
+	@When("the user tries to remove opening hours on {string} from {string} to {string} to garage belonging to the technician with type {string}")
+	public void the_user_tries_to_remove_opening_hours_on_from_to_to_garage_belonging_to_the_technician_with_type(String string, String string2, String string3, String string4) {
+	    // Write code here that turns the phrase above into concrete actions
+		try {
+		Technician technician = CarShopController.findTechnician(string4, cs);
+		DayOfWeek dayOfWeek = CarShopController.getWeekDay(string);
+		Time startTime = CarShopController.stringToTimeMatthew(string2);
+		Time endTime = CarShopController.stringToTimeMatthew(string3);
+		BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);
+		BusinessHour hoursToRemove = new BusinessHour(dayOfWeek, startTime, endTime, cs);
+
+		try {
+			CarShopController.removeBusinessHour(hoursToRemove, CarShopApplication.getUser(), technician.getGarage(), cs);
+		}catch(Exception e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
+		} catch (InvalidInputException e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
+	}
+
+	@Then("the garage belonging to the technician with type {string} should not have opening hours on {string} from {string} to {string}")
+	public void the_garage_belonging_to_the_technician_with_type_should_not_have_opening_hours_on_from_to(String string, String string2, String string3, String string4) {
+	    // Write code here that turns the phrase above into concrete actions
+		try {
+		Technician technician = CarShopController.findTechnician(string, cs);
+		DayOfWeek dayOfWeek = CarShopController.getWeekDay(string2);
+		Time startTime = CarShopController.stringToTimeMatthew(string3);
+		Time endTime = CarShopController.stringToTimeMatthew(string4);
+				
+		BusinessHour hoursToAdd = new BusinessHour(dayOfWeek, startTime, endTime, cs);
+		
+		assertTrue(!technician.getGarage().getBusinessHours().contains(hoursToAdd));
+		} catch (InvalidInputException e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
+	}
+	@When("the user tries to add new business hours on {string} from {string} to {string} to garage belonging to the technician with type {string}")
+	public void the_user_tries_to_add_new_business_hours_on_from_to_to_garage_belonging_to_the_technician_with_type(String string, String string2, String string3, String string4) {
+	    // Write code here that turns the phrase above into concrete actions
+		try {
+		TechnicianType technicianType = CarShopController.getTechnicianType(string4);
+		DayOfWeek dayOfWeek = CarShopController.getWeekDay(string);
+		int toCheck = 0;
+		if(dayOfWeek.equals(BusinessHour.DayOfWeek.Monday)) toCheck = 0;
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Tuesday)) toCheck = 1;
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Wednesday)) toCheck = 2;
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Thursday)) toCheck = 3;
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Friday)) toCheck = 4;
+		else throw new InvalidInputException("The opening hours are not within the opening hours");
+		Time ourStartTime = CarShopController.stringToTimeMatthew(string2);
+		Time ourEndTime = CarShopController.stringToTimeMatthew(string3);
+		Technician technician = CarShopController.findTechnician(string4, cs);
+	
+		Garage garage = technician.getGarage();
+		BusinessHour businessHour = new BusinessHour(dayOfWeek, ourStartTime, ourEndTime, cs);
+		CarShopController.addBusinessHour(businessHour, CarShopApplication.getUser(), garage, cs);
+		} catch (Exception e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
+	}
+	
 
 }

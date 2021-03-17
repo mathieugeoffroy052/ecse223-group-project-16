@@ -37,7 +37,7 @@ public class CarShopController {
 	public CarShopController() {
 	}
 	
-	// TODO Hong yi
+	// TODO
 	
 	/** ** START HONG YI ** **/ 
 
@@ -200,7 +200,7 @@ public class CarShopController {
 		}
 	}
 
-	// TODO:
+
 	public static void modifyTimeSlot(String type, String oldStart, String oldTime, String startDate, String startTime,
 			String endDate, String endTime) throws InvalidInputException {
 		if (!hasAuthorization()) {
@@ -715,8 +715,98 @@ public class CarShopController {
 		
 	}
 	
-	// TODO Matthew
+	// findTechnician by Matthew
 	
+	public static Technician findTechnician(String technicianType, CarShop cs) {
+		Technician technician = null;
+		for(int i=0; i<5;i++) {
+			Technician techGuy = cs.getTechnician(i);
+			if(techGuy.getType().equals(CarShopController.getTechnicianType(technicianType))) {
+				technician = techGuy;
+				break;
+			}
+		}
+		return technician;
+
+}
+	
+	// by Matthew
+	
+	public static int checkBusinessHour(Garage garage, BusinessHour businessHour,CarShop cs) {
+		Business business = cs.getBusiness();
+		for(BusinessHour hours:garage.getBusinessHours()) {
+			if(hours.getDayOfWeek().equals(businessHour.getDayOfWeek())) {
+				//overlap situation
+				if(hours.getStartTime().before(businessHour.getEndTime()) && businessHour.getStartTime().before(hours.getEndTime())){
+					return 0;
+				}
+			}
+		}
+		boolean correct = false;
+		for(BusinessHour hours:business.getBusinessHours()) {
+			if(hours.getDayOfWeek().equals(businessHour.getDayOfWeek())) {
+				if(hours.getStartTime().before(businessHour.getEndTime()) && businessHour.getStartTime().before(hours.getEndTime())){
+					if(businessHour.getStartTime().equals(hours.getStartTime())||businessHour.getStartTime().after(hours.getStartTime())) {
+						if(businessHour.getEndTime().equals(hours.getEndTime())||businessHour.getEndTime().before(hours.getEndTime())) {
+							correct = true;
+						}
+					}
+				}
+			}
+		}if(!correct) {
+			return 1;
+		}
+		return 2;
+	}
+	
+	public static void removeBusinessHour(BusinessHour removedHours, User user, Garage garage, CarShop cs) throws InvalidInputException {
+
+		String username = user.getUsername();
+		TechnicianType technicianType = getTechnicianType(username);
+		if(technicianType!=null) {
+//			Technician technician = cs.getTechnician(getTechnician(username, cs));
+			if(technicianType.equals(garage.getTechnician().getType())) {
+				if(removedHours.getStartTime().after(removedHours.getEndTime())) {
+					throw new InvalidInputException("Start time must be before end time");
+				}else {
+					garage.removeBusinessHour(removedHours);
+				}
+			}else {
+				throw new InvalidInputException("You are not authorized to perform this operation");
+			}
+		}else {
+			throw new InvalidInputException("You are not authorized to perform this operation");
+		}
+	}	
+	
+	//go through and add business hours!
+	public static void addBusinessHour(BusinessHour addedHours, User user, Garage garage, CarShop cs) throws InvalidInputException{
+		if(addedHours.getStartTime().after(addedHours.getEndTime())) {
+			throw new InvalidInputException("Start time must be before end time");
+		}
+		String username = user.getUsername();
+		int value = checkBusinessHour(garage, addedHours, cs);
+		if(value == 0) {
+			throw new InvalidInputException("The opening hours cannot overlap");
+		}
+		if(value == 1) {
+			throw new InvalidInputException("The opening hours are not within the opening hours of the business");
+		}
+		//no need to check 2
+		TechnicianType technicianType = getTechnicianType(username);
+		if(technicianType!=null) {
+//			Technician technician = cs.getTechnician(getTechnician(username, cs));
+			if(technicianType.equals(garage.getTechnician().getType())) {
+				garage.addBusinessHour(addedHours);	
+		}else {
+			throw new InvalidInputException("You are not authorized to perform this operation");
+		}
+		}else {
+			throw new InvalidInputException("You are not authorized to perform this operation");
+		}
+		
+	}
+
 	public static void customerLogin(String username, String password) throws InvalidInputException{
 //		if(CarShopApplication.getUser()!=null) {
 //			throw new InvalidInputException("Cannot log in while already logged in");
@@ -890,36 +980,6 @@ public class CarShopController {
 		return finalTime;
 	}
 	
-	public static void removeBusinessHour(BusinessHour removedHours, User user, Garage garage, CarShop cs) throws InvalidInputException {
-		String username = user.getUsername();
-		TechnicianType technicianType = getTechnicianType(username);
-		if(technicianType!=null) {
-//			Technician technician = cs.getTechnician(getTechnician(username, cs));
-			if(technicianType.equals(garage.getTechnician().getType())) {
-				garage.removeBusinessHour(removedHours);
-			}else {
-				throw new InvalidInputException("You are not authorized to perform this operation");
-			}
-		}else {
-			throw new InvalidInputException("You are not authorized to perform this operation");
-		}
-	}	
-	
-	//go through and add business hours!
-	public static void addBusinessHour(BusinessHour addedHours, User user, Garage garage, CarShop cs) throws InvalidInputException{
-		String username = user.getUsername();
-		TechnicianType technicianType = getTechnicianType(username);
-		if(technicianType!=null) {
-//			Technician technician = cs.getTechnician(getTechnician(username, cs));
-			if(technicianType.equals(garage.getTechnician().getType())) {
-				garage.addBusinessHour(addedHours);
-		}else {
-			throw new InvalidInputException("You are not authorized to perform this operation");
-		}
-		}else {
-			throw new InvalidInputException("You are not authorized to perform this operation");
-		}
-	}
 	
 	// TODO Mathieu
 	// define service
