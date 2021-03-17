@@ -14,14 +14,19 @@ import java.util.List;
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.model.Appointment;
 import ca.mcgill.ecse.carshop.model.BookableService;
+import ca.mcgill.ecse.carshop.model.BusinessHour;
+import ca.mcgill.ecse.carshop.model.BusinessHour.DayOfWeek;
 import ca.mcgill.ecse.carshop.model.CarShop;
 import ca.mcgill.ecse.carshop.model.ComboItem;
 import ca.mcgill.ecse.carshop.model.Customer;
 import ca.mcgill.ecse.carshop.model.Garage;
+import ca.mcgill.ecse.carshop.model.Owner;
 import ca.mcgill.ecse.carshop.model.Service;
 import ca.mcgill.ecse.carshop.model.ServiceCombo;
 import ca.mcgill.ecse.carshop.model.Technician;
+import ca.mcgill.ecse.carshop.model.Technician.TechnicianType;
 import ca.mcgill.ecse.carshop.model.TimeSlot;
+import ca.mcgill.ecse.carshop.model.User;
 
 
 public class CarShopController {
@@ -29,8 +34,318 @@ public class CarShopController {
 	public CarShopController() {
 	}
 	
+	// TODO Kalvin
 	
-	// Mathieu
+	public static User signUpUser(String username, String password, CarShopApplication.AccountType userType) throws InvalidInputException
+	{
+		
+		User user = null;
+		if (User.hasWithUsername(username))
+		{
+			throw new InvalidInputException("The username already exists");
+		}
+		
+		else if (username.equals(""))
+		{
+			throw new InvalidInputException("The user name cannot be empty");
+		}
+		
+		else if (password.equals(""))
+		{
+			throw new InvalidInputException("The password cannot be empty");
+		}
+		
+		else if (CarShopApplication.getLoggedIn())
+		{
+			if (CarShopApplication.getAccountType().equals(CarShopApplication.AccountType.Owner))
+			{
+				throw new InvalidInputException("You must log out of the owner account before creating a customer account");
+			}
+			else 
+			{
+				throw new InvalidInputException("You must log out of the technician account before creating a customer account");
+			}
+			
+		}
+		
+		CarShop carShop = CarShopApplication.getCarShop();
+		
+		if (userType.equals(CarShopApplication.AccountType.Customer))
+		{
+			user = CarShopApplication.getCarShop().addCustomer(username, password);
+		}
+		
+		else if (userType.equals(CarShopApplication.AccountType.Owner))
+		{
+			// Constraint: the username of the owner account is always owner
+			if (CarShopApplication.getCarShop().getOwner() != null)
+			{
+				throw new InvalidInputException("The password cannot be empty");
+			}
+			Owner owner = new Owner("owner", password, carShop);
+			CarShopApplication.getCarShop().setOwner(owner);
+			user = owner;
+			
+		}
+		
+		else // Technician 
+		{
+			
+			// Constraint: username of the technician
+			TechnicianType technicianType = TechnicianType.Engine;
+			switch (userType) 
+			{
+			case EngineTechnician:
+				technicianType = TechnicianType.Engine;
+				break;
+			case TireTechnician:
+				technicianType = TechnicianType.Tire;
+				break;
+			case TransmissionTechnician:
+				technicianType = TechnicianType.Transmission;
+				break;
+			case ElectronicsTechnician:
+				technicianType = TechnicianType.Electronics;
+				break;
+			case FluidsTechnician:
+				technicianType = TechnicianType.Fluids;
+				break;
+			default:
+				break;
+			}
+			String technicianUsername = technicianType.toString() + "-Technician";
+			user = CarShopApplication.getCarShop().addTechnician(technicianUsername, password, technicianType);
+		}	
+		
+		return user;
+		
+	}
+	
+	
+	public static void updateUser(String username, String password) throws InvalidInputException
+	{
+		
+		if (! CarShopApplication.getLoggedIn())
+		{
+			throw new InvalidInputException("Must be logged in to update");
+		}
+		
+		User loggedInUser = User.getWithUsername(CarShopApplication.getUser().getUsername()); 
+		if (loggedInUser == null)
+		{
+			// Not the actual error
+			throw new InvalidInputException("User not found");
+		}
+		
+		if (loggedInUser instanceof Owner && !(username.equals("owner")))
+		{
+			throw new InvalidInputException("Changing username of owner is not allowed");
+		}
+		if (loggedInUser instanceof Technician && !(username.equals(loggedInUser.getUsername())))
+		{
+			throw new InvalidInputException("Changing username of technician is not allowed");
+		}
+		if (!loggedInUser.getUsername().equals(username) && User.hasWithUsername(username))
+		{
+			throw new InvalidInputException("Username not available");
+		}
+		
+		else if (username.equals(""))
+		{
+			throw new InvalidInputException("The user name cannot be empty");
+
+		}
+		else if (password.equals(""))
+		{
+			throw new InvalidInputException("The password cannot be empty");
+		}
+		
+		loggedInUser.setUsername(username);
+		loggedInUser.setPassword(password);
+		
+		
+		
+	}
+	
+	// TODO Matthew
+	
+	public static void customerLogin(String username, String password) throws InvalidInputException{
+//		if(CarShopApplication.getUser()!=null) {
+//			throw new InvalidInputException("Cannot log in while already logged in");
+//		}
+		User user = User.getWithUsername(username);
+		if(user != null && user.getPassword().equals(password)) {
+			CarShopApplication.setUser(user);
+			CarShopApplication.setAccountType(CarShopApplication.AccountType.Customer);
+			CarShopApplication.setLoggedIn(true);
+		}else {
+			throw new InvalidInputException("Username/password not found");
+		}
+	}
+	
+	public static void technicianLogin(String username, String password) throws InvalidInputException {
+//		if(CarShopApplication.getUser()!=null) {
+//			throw new InvalidInputException("Cannot log in while already logged in");
+//		}
+//		System.out.println("");
+		User user = User.getWithUsername(username);
+//		System.out.println("THIS IS THE USERNAME==================== "+ user.getUsername());
+		if(user != null && user.getPassword().equals(password)) {
+			CarShopApplication.setUser(user);
+			CarShopApplication.setAccountType(CarShopApplication.AccountType.Customer);
+			CarShopApplication.setLoggedIn(true);
+		}else {
+			throw new InvalidInputException("Username/password not found");
+		}
+	}
+	
+	public static void ownerLogin(String username, String password) throws InvalidInputException {
+//		if(CarShopApplication.getUser()!=null) {
+//			throw new InvalidInputException("Cannot log in while already logged in");
+//		}
+		User user = User.getWithUsername(username);
+		if(user != null && user.getPassword().equals(password)) {
+			CarShopApplication.setUser(user);
+			CarShopApplication.setAccountType(CarShopApplication.AccountType.Customer);
+			CarShopApplication.setLoggedIn(true);
+		}else {
+			throw new InvalidInputException("Username/password not found");
+		}
+	}
+	
+	public static void login(String username, String password) throws InvalidInputException {
+		if(username.equals("owner")) {
+			ownerLogin(username, password);
+		}else if(username.contains("Technician")) {
+			technicianLogin(username, password);
+		}else {
+			customerLogin(username, password);
+		}
+	}
+	
+	
+	public static TechnicianType getTechnicianType(String str) {
+		str = str.toLowerCase();
+		if(str.contains("tire")) {
+			return Technician.TechnicianType.Tire;
+		}
+		else if(str.contains("engine")) {
+			return Technician.TechnicianType.Engine;
+		}
+		else if(str.contains("transmission")) {
+			return Technician.TechnicianType.Transmission;
+		}
+		else if(str.contains("electronics")) {
+			return Technician.TechnicianType.Electronics;
+		}
+		else if(str.contains("fluids")) {
+			return Technician.TechnicianType.Fluids;
+		}
+		else return null;
+	}
+	
+	public static int getTechnician(String str, CarShop cs) {
+		int iend = str.indexOf("-");
+		String subString = null;
+		if (iend != -1) 
+		{
+		    subString = str.substring(0, iend); //this will give abc
+		}
+		subString = subString.toLowerCase();
+		for(int i = 0; i < cs.numberOfTechnicians(); i++) {
+			String userName = cs.getTechnician(i).getUsername();
+			userName = userName.toLowerCase();
+			if(userName.contains(subString)) return i;
+		}
+		return -1;
+	}
+	
+	public static void newAccount(String username, String password, CarShop cs) {
+		Owner owner = null;
+		Technician technician = null;
+		if(username.equals("owner") && password.equals("owner")) {
+			owner = new Owner(username, password, cs);
+		}
+		if(username.equals("Tire-Technician") && password.equals("Tire-Technician")) {
+			technician = new Technician(username, password, TechnicianType.Tire, cs);
+		}
+		if(username.equals("Engine-Technician") && password.equals("Engine-Technician")) {
+			technician = new Technician(username, password, TechnicianType.Engine, cs);
+		}
+		if(username.equals("Transmission-Technician") && password.equals("Transmission-Technician")) {
+			technician = new Technician(username, password, TechnicianType.Transmission, cs);
+		}
+		if(username.equals("Electronics-Technician") && password.equals("Electronics-Technician")) {
+			technician = new Technician(username, password, TechnicianType.Electronics, cs);
+		}
+		if(username.equals("Fluids-Technician") && password.equals("Fluids-Technician")) {
+			technician = new Technician(username, password, TechnicianType.Fluids, cs);
+		}
+	}
+	
+	public static void setGarage(Technician t, CarShop cs) {
+		t.setGarage(new Garage(cs, t));
+	}
+	
+	
+	public static DayOfWeek getWeekDay(String day) {
+		DayOfWeek dayOfWeek = null;
+		if(day.equals("Monday")) {
+			dayOfWeek = DayOfWeek.Monday;
+		}
+		if(day.equals("Tuesday")) {
+			dayOfWeek = DayOfWeek.Tuesday;
+		}
+		if(day.equals("Wednesday")) {
+			dayOfWeek = DayOfWeek.Wednesday;
+		}
+		if(day.equals("Thursday")) {
+			dayOfWeek = DayOfWeek.Thursday;
+		}
+		if(day.equals("Friday")) {
+			dayOfWeek = DayOfWeek.Friday;
+		}
+		return dayOfWeek;
+	}
+	
+	public static Time stringToTimeMatthew(String time) {
+		String[] timeArr1 = time.split(":");
+		Time finalTime = new Time (Integer.parseInt(timeArr1[0]), Integer.parseInt(timeArr1[1]), 0);
+		return finalTime;
+	}
+	
+	public static void removeBusinessHour(BusinessHour removedHours, User user, Garage garage, CarShop cs) throws InvalidInputException {
+		String username = user.getUsername();
+		TechnicianType technicianType = getTechnicianType(username);
+		if(technicianType!=null) {
+//			Technician technician = cs.getTechnician(getTechnician(username, cs));
+			if(technicianType.equals(garage.getTechnician().getType())) {
+				garage.removeBusinessHour(removedHours);
+			}else {
+				throw new InvalidInputException("You are not authorized to perform this operation");
+			}
+		}else {
+			throw new InvalidInputException("You are not authorized to perform this operation");
+		}
+	}	
+	
+	//go through and add business hours!
+	public static void addBusinessHour(BusinessHour addedHours, User user, Garage garage, CarShop cs) throws InvalidInputException{
+		String username = user.getUsername();
+		TechnicianType technicianType = getTechnicianType(username);
+		if(technicianType!=null) {
+//			Technician technician = cs.getTechnician(getTechnician(username, cs));
+			if(technicianType.equals(garage.getTechnician().getType())) {
+				garage.addBusinessHour(addedHours);
+		}else {
+			throw new InvalidInputException("You are not authorized to perform this operation");
+		}
+		}else {
+			throw new InvalidInputException("You are not authorized to perform this operation");
+		}
+	}
+	
+	// TODO Mathieu
 	// define service
 	public static void ownerDefinesService(String user, String name, String duration, String garage, CarShop cs) throws InvalidInputException {
 
@@ -122,49 +437,6 @@ public class CarShopController {
 		}
 	}
 	
-//	public static void CreateAppointment(String customer, String service, String startTime, String endTime, String startDate) throws 
-//	InvalidInputException {
-//			
-//		
-//		BookableService serv = null;
-//		List<BookableService> bookableService = cs.getBookableServices(); //assuming getServices exist
-//		if (enTime == null) {
-//			//enTime = 
-//		}
-//		if (services.length == 1) {
-//			 //assuming getServices exist
-//			for (BookableService bs: bookableService) {
-//				if (bs.getName().equals(services)) {
-//					serv = bs; 
-//				}
-//			}
-//		}
-//		else if (services.length > 1) {
-//			int i;
-//			for (i=0;i<4;i++) {
-//				for (BookableService bs: bookableService) {
-//					if (bs.getName().equals(services[i])) {
-//						serv = bs; 
-//					}
-//				}
-//		}
-//		
-//		Customer ct3 = null;
-//		List<Customer> ct1 = cs.getCustomers();
-//		for (Customer ct2: ct1) {
-//			if (ct2.getUsername().equals(customer)) {
-//				ct3 = ct2;
-//			}
-//		}
-//		
-//		try {
-//			cs.addAppointment(new Appointment(ct3, serv, cs));
-//			cs.addTimeSlot(new TimeSlot(date,stTime,date,enTime,cs));
-//		} catch (RuntimeException e) {
-//			throw new InvalidInputException(e.getMessage());
-//		}
-//		}
-//	}
 
 	private static Time stringToTime(String string) throws InvalidInputException {
         String pattern = "hh:mm";

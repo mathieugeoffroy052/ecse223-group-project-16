@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
+import java.sql.Date;
 import java.sql.Time;
 import java.util.*;
 import java.text.*;
@@ -55,36 +56,63 @@ public class RobertStepDefinitions {
 				garage.addBusinessHour(new BusinessHour(day, start, end, cs));
 			}	
 		}
-	    // Write code here that turns the phrase above into concrete actions
-	    // For automatic transformation, change DataTable to one of
-	    // E, List<E>, List<List<E>>, List<Map<K,V>>, Map<K,V> or
-	    // Map<K, List<V>>. E,K,V must be a String, Integer, Float,
-	    // Double, Byte, Short, Long, BigInteger or BigDecimal.
-	    ////
-	    // For other transformations you can register a DataTableType.
+
 	}
 
 	// TODO
 	@Given("the business has the following holidays")
-	public void the_business_has_the_following_holidays(io.cucumber.datatable.DataTable dataTable) throws ParseException {
-//		cs = CarShopApplication.getCarShop();
-//		DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
-//		DateFormat timeFormat = new SimpleDateFormat("h:mm");
-//		Business businesses = cs.getBusiness();
-//		List<Map<String,String>> rows = dataTable.asMaps(String.class,String.class);
-//		for (Map<String,String> columns : rows) {
+	public void the_business_has_the_following_holidays(io.cucumber.datatable.DataTable dataTable) throws ParseException, InvalidInputException {
+		cs = CarShopApplication.getCarShop();
+		List<Map<String,String>> rows = dataTable.asMaps(String.class,String.class);
+		for (Map<String,String> columns : rows) {
 //			BusinessHour.DayOfWeek day = BusinessHour.DayOfWeek.valueOf(columns.get("day")); //columns.get("day");
-//			Date startDate = dateFormat.parse(columns.get("startDate"));
-//			Date endDate = dateFormat.parse(columns.get("endDate"));
-//			Time startTime = (Time) timeFormat.parse(columns.get("startTime"));
-//			Time endTime = (Time) timeFormat.parse(columns.get("endtime"));
-//			TimeSlot timeSlot = new TimeSlot(startDate,startTime,endDate,endTime, cs);
-//		}
+			Date startDate = stringtoDate(columns.get("startDate"));
+			Date endDate = stringtoDate(columns.get("endDate"));
+			Time startTime = stringToTime(columns.get("startTime"));
+			Time endTime = stringToTime(columns.get("endtime"));
+			//TimeSlot timeSlot = new TimeSlot(startDate,startTime,endDate,endTime, cs);
+			cs.getBusiness().addHoliday(new TimeSlot(startDate,startTime,endDate,endTime, cs));
+		}
 				
 	}
+	
+	private Time stringToTime(String string) throws InvalidInputException {
+        String pattern = "hh:mm";
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+        try {
+            return new java.sql.Time(formatter.parse(string).getTime());
+        } catch (Exception e) {
+            throw new InvalidInputException("parsing error");
+        }
+    }
 
-	// TODO
-	@When("{string} schedules an appointment on {string} for {string} at {string}")
+    // done, but might not work, converts a string to a sql.Date
+    private Date stringtoDate(String string) throws InvalidInputException {
+        String pattern = "yyyy-MM-dd";
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+        try {
+            return new java.sql.Date(formatter.parse(string).getTime());
+        } catch (Exception e) {
+            throw new InvalidInputException("parsing error");
+        }
+    }
+
+    // done converts a sql.Date to a string
+    private String dateToString(Date date) {
+        String pattern = "yyyy-MM-dd";
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+        return formatter.format(date);
+    }
+
+    // done converts a sql.Time to a string
+    private String timeToString(Time time) {
+        String pattern = "hh:mm";
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+        return formatter.format(time);
+    }
+
+    // TODO
+    @When("{string} schedules an appointment on {string} for {string} at {string}")
 	public void schedules_an_appointment_on_for_at(String string, String date, String serviceName, String startTime) throws InvalidInputException, ParseException{
 //		String endTime = null;
 //	    CarShopController.CreateAppointment(string,serviceName,startTime,endTime,date);
@@ -94,19 +122,7 @@ public class RobertStepDefinitions {
 	// TODO
 	@Then("{string} shall have a {string} appointment on {string} from {string} to {string}")
 	public void shall_have_a_appointment_on_from_to(String string, String string2, String string3, String string4, String string5) {
-//		cs = CarShopApplication.getCarShop();
-//		Customer cs1;
-//		cs1 = null;
-//		List<Customer> customers = cs.getCustomers();
-//		for(Customer cs2: customers) {
-//			if (cs2.getUsername().equals(string)) {
-//				cs1 = cs2;
-//			}
-//		}
-//		assertTrue(cs1.getAppointments().size()>0);
-//		assertEquals(cs1.getAppointment(0));
-//		asserEquals(cs1.getTimeSlot(0));
-		// Write code here that turns the phrase above into concrete actions
+
 	}
 
 	
@@ -120,19 +136,19 @@ public class RobertStepDefinitions {
 	//Cancel appointment
 	
 	// TODO
-	@Given("the system's time and date is {string}")
-	public void the_system_s_time_and_date_is(String string) throws ParseException { //hmm hong yi did a better one?
-		DateTimeFormatter fmt = new DateTimeFormatterBuilder()
-			    // date and offset
-			    .append(DateTimeFormatter.ISO_OFFSET_DATE)
-			    // default values for hour and minute
-			    .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
-			    .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-			    .toFormatter();
-			ZonedDateTime parsed = ZonedDateTime.parse(string, fmt); // 2018-04-19T00:00+02:00
-			Date toPut = Date.from(parsed.toInstant());
-		CarShopApplication.setDate(toPut);
-	}
+//	@Given("the system's time and date is {string}")
+//	public void the_system_s_time_and_date_is(String string) throws ParseException { //hmm hong yi did a better one?
+//		DateTimeFormatter fmt = new DateTimeFormatterBuilder()
+//			    // date and offset
+//			    .append(DateTimeFormatter.ISO_OFFSET_DATE)
+//			    // default values for hour and minute
+//			    .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+//			    .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+//			    .toFormatter();
+//			ZonedDateTime parsed = ZonedDateTime.parse(string, fmt); // 2018-04-19T00:00+02:00
+//			Date toPut = Date.from(parsed.toInstant());
+//		CarShopApplication.setDate(toPut);
+//	}
 
 
 	@Given("the business has the following opening hours")
