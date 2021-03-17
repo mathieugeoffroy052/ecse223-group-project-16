@@ -81,6 +81,7 @@ public class CucumberStepDefinitions {
 		// use controller and do some operations
 		try {
 			user = CarShopController.signUpUser(string, string2, CarShopApplication.AccountType.Customer);
+			CarShopApplication.setUser(user);
 			numberOfChanges++;
 		} catch (Exception e) {
 			error += e.getMessage();
@@ -94,13 +95,15 @@ public class CucumberStepDefinitions {
 		assertTrue(user != null);
 	}
 
-//	@Then("the account shall have username {string} and password {string}")
-//	public void the_account_shall_have_username_and_password(String string, String string2) 
-//	{
-//		
-//		assertTrue(user != null && user.getUsername().equals(string) && user.getPassword().equals(string2)); 
-//
-//	}
+	@Then("the account shall have username {string} and password {string}")
+	public void the_account_shall_have_username_and_password(String string, String string2) 
+	{
+		
+		assertTrue(CarShopApplication.getUser() != null && 
+				CarShopApplication.getUser().getUsername().equals(string) && 
+				CarShopApplication.getUser().getPassword().equals(string2)); 
+
+	}
 
 	@Then("no new account shall be created")
 	public void no_new_account_shall_be_created() {
@@ -205,13 +208,14 @@ public class CucumberStepDefinitions {
 	@Then("an error message {string} shall be raised")
 	public void an_error_message_shall_be_raised(String string) throws Exception {
 	    // Write code here that turns the phrase above into concrete actions
-	    error = string;
-	    try {
-	    	CarShopController.login(curUsername, curPassword);
-	    }catch (Exception e) {
-	    	error = e.getMessage();
-	    	errorCntr++;
-	    }
+		// TODO might not work... unless exclusive to Kalvin -Jerry
+//	    error = string;
+//	    try {
+//	    	CarShopController.login(curUsername, curPassword);
+//	    }catch (Exception e) {
+//	    	error = e.getMessage();
+//	    	errorCntr++;
+//	    }
 	    assertEquals(string, error);
 	}
 
@@ -223,12 +227,12 @@ public class CucumberStepDefinitions {
 		assertEquals(curPassword, User.getWithUsername(curUsername).getPassword());
 	}
 
-	@Then("the account shall have username {string} and password {string}")
-	public void the_account_shall_have_username_and_password(String string, String string2) {
-	    // Write code here that turns the phrase above into concrete actions
-		assertEquals(string, User.getWithUsername(string).getUsername());
-		assertEquals(string2, User.getWithUsername(string2).getPassword());
-	}
+//	@Then("the account shall have username {string} and password {string}")
+//	public void the_account_shall_have_username_and_password(String string, String string2) {
+//	    // Write code here that turns the phrase above into concrete actions
+//		assertEquals(string, User.getWithUsername(string).getUsername());
+//		assertEquals(string2, User.getWithUsername(string2).getPassword());
+//	}
 
 	@Then("the user shall be successfully logged in")
 	public void the_user_shall_be_successfully_logged_in() {
@@ -489,6 +493,7 @@ public class CucumberStepDefinitions {
     public void teardown() {
     	if(cs!=null) {
         	cs.delete();
+        	numberOfChanges = 0;
     	}
     	CarShopApplication.restart();
     }

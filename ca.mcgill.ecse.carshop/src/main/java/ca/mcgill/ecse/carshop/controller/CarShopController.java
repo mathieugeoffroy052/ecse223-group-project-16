@@ -203,10 +203,15 @@ public class CarShopController {
 //		if(CarShopApplication.getUser()!=null) {
 //			throw new InvalidInputException("Cannot log in while already logged in");
 //		}
-		User user = User.getWithUsername(username);
-		if(user != null && user.getPassword().equals(password)) {
-			CarShopApplication.setUser(user);
-			CarShopApplication.setAccountType(CarShopApplication.AccountType.Customer);
+		if(CarShopApplication.getCarShop().getOwner() == null) {
+			Owner newOwner = new Owner(username, password, CarShopApplication.getCarShop());
+			CarShopApplication.getCarShop().setOwner(newOwner);
+			CarShopApplication.setUser(newOwner);
+		}
+		else if(User.getWithUsername(username) != null && 
+				User.getWithUsername(username).getPassword().equals(password)) {
+			CarShopApplication.setUser(User.getWithUsername(username));
+			CarShopApplication.setAccountType(CarShopApplication.AccountType.Owner);
 			CarShopApplication.setLoggedIn(true);
 		}else {
 			throw new InvalidInputException("Username/password not found");
@@ -264,21 +269,21 @@ public class CarShopController {
 		Owner owner = null;
 		Technician technician = null;
 		if(username.equals("owner") && password.equals("owner")) {
-			owner = new Owner(username, password, cs);
+			if(CarShopApplication.getCarShop().getOwner() == null) owner = new Owner(username, password, cs);
 		}
-		if(username.equals("Tire-Technician") && password.equals("Tire-Technician")) {
+		else if(username.equals("Tire-Technician") && password.equals("Tire-Technician")) {
 			technician = new Technician(username, password, TechnicianType.Tire, cs);
 		}
-		if(username.equals("Engine-Technician") && password.equals("Engine-Technician")) {
+		else if(username.equals("Engine-Technician") && password.equals("Engine-Technician")) {
 			technician = new Technician(username, password, TechnicianType.Engine, cs);
 		}
-		if(username.equals("Transmission-Technician") && password.equals("Transmission-Technician")) {
+		else if(username.equals("Transmission-Technician") && password.equals("Transmission-Technician")) {
 			technician = new Technician(username, password, TechnicianType.Transmission, cs);
 		}
-		if(username.equals("Electronics-Technician") && password.equals("Electronics-Technician")) {
+		else if(username.equals("Electronics-Technician") && password.equals("Electronics-Technician")) {
 			technician = new Technician(username, password, TechnicianType.Electronics, cs);
 		}
-		if(username.equals("Fluids-Technician") && password.equals("Fluids-Technician")) {
+		else if(username.equals("Fluids-Technician") && password.equals("Fluids-Technician")) {
 			technician = new Technician(username, password, TechnicianType.Fluids, cs);
 		}
 	}

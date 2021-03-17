@@ -38,10 +38,11 @@ public class CarShopApplication {
 	}
     
     public static void logIn(String username, String password) {
-    	if(username.equals(carShop.getOwner().getUsername()) && password.equals(carShop.getOwner().getPassword())) {
+    	if(carShop.getOwner() != null && username.equals(carShop.getOwner().getUsername()) && password.equals(carShop.getOwner().getPassword())) {
     		accountType = CarShopApplication.AccountType.Owner;
-    		isLoggedIn = true;
     		user = carShop.getOwner();
+			isLoggedIn = true;
+			setUser(carShop.getOwner());
     	}
     	else if(username.contains("Technician")) {
     		int i = carShop.getTechnicianWithString(username);
@@ -50,29 +51,26 @@ public class CarShopApplication {
     			Technician.TechnicianType a = carShop.getTechnician(0).getTechnicianType(username);
     			if(a.equals(Technician.TechnicianType.Engine)) {
     				accountType = CarShopApplication.AccountType.EngineTechnician;
-        			isLoggedIn = true;
         			user = carShop.getTechnician(i);
     			}
     			else if(a.equals(Technician.TechnicianType.Tire)) {
     				accountType = CarShopApplication.AccountType.TireTechnician;
-        			isLoggedIn = true;
         			user = carShop.getTechnician(i);
     			}
     			else if(a.equals(Technician.TechnicianType.Transmission)) {
     				accountType = CarShopApplication.AccountType.TransmissionTechnician;
-        			isLoggedIn = true;
         			user = carShop.getTechnician(i);
     			}
     			else if(a.equals(Technician.TechnicianType.Electronics)) {
     				accountType = CarShopApplication.AccountType.ElectronicsTechnician;
-        			isLoggedIn = true;
         			user = carShop.getTechnician(i);
     			}
     			else {
     				accountType = CarShopApplication.AccountType.FluidsTechnician;
-        			isLoggedIn = true;
         			user = carShop.getTechnician(i);
     			}
+    			setUser(carShop.getTechnician(i));
+    			isLoggedIn = true;
     		}
     	}
     	else {
@@ -82,6 +80,7 @@ public class CarShopApplication {
     		    		accountType = CarShopApplication.AccountType.Customer;
             			isLoggedIn = true;
             			user = carShop.getCustomer(i);
+            			setUser(carShop.getCustomer(i));
     				}
     			}
     		}
@@ -105,6 +104,7 @@ public class CarShopApplication {
     public static void logOut() {
     	accountType = null;
     	isLoggedIn = false;
+    	user = null;
     }
     
     public static void setLoggedIn(Boolean bool) {
