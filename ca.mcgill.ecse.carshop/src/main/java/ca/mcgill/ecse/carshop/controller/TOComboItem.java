@@ -3,7 +3,7 @@
 
 package ca.mcgill.ecse.carshop.controller;
 
-// line 66 "../../../../../CarShopTransferObjects.ump"
+// line 72 "../../../../../CarShopTransferObjects.ump"
 public class TOComboItem
 {
 
@@ -13,14 +13,16 @@ public class TOComboItem
 
   //TOComboItem Attributes
   private boolean mandatory;
+  private String name;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public TOComboItem(boolean aMandatory)
+  public TOComboItem(boolean aMandatory, String aName)
   {
     mandatory = aMandatory;
+    name = aName;
   }
 
   //------------------------
@@ -35,9 +37,22 @@ public class TOComboItem
     return wasSet;
   }
 
+  public boolean setName(String aName)
+  {
+    boolean wasSet = false;
+    name = aName;
+    wasSet = true;
+    return wasSet;
+  }
+
   public boolean getMandatory()
   {
     return mandatory;
+  }
+
+  public String getName()
+  {
+    return name;
   }
 
   public void delete()
@@ -47,6 +62,7 @@ public class TOComboItem
   public String toString()
   {
     return super.toString() + "["+
-            "mandatory" + ":" + getMandatory()+ "]";
+            "mandatory" + ":" + getMandatory()+ "," +
+            "name" + ":" + getName()+ "]";
   }
 }

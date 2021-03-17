@@ -3,7 +3,7 @@
 
 package ca.mcgill.ecse.carshop.controller;
 
-// line 58 "../../../../../CarShopTransferObjects.ump"
+// line 62 "../../../../../CarShopTransferObjects.ump"
 public class TOService
 {
 
@@ -13,14 +13,16 @@ public class TOService
 
   //TOService Attributes
   private int duration;
+  private String name;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public TOService(int aDuration)
+  public TOService(int aDuration, String aName)
   {
     duration = aDuration;
+    name = aName;
   }
 
   //------------------------
@@ -35,9 +37,22 @@ public class TOService
     return wasSet;
   }
 
+  public boolean setName(String aName)
+  {
+    boolean wasSet = false;
+    name = aName;
+    wasSet = true;
+    return wasSet;
+  }
+
   public int getDuration()
   {
     return duration;
+  }
+
+  public String getName()
+  {
+    return name;
   }
 
   public void delete()
@@ -47,6 +62,7 @@ public class TOService
   public String toString()
   {
     return super.toString() + "["+
-            "duration" + ":" + getDuration()+ "]";
+            "duration" + ":" + getDuration()+ "," +
+            "name" + ":" + getName()+ "]";
   }
 }

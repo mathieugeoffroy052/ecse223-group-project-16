@@ -1,12 +1,15 @@
 package ca.mcgill.ecse.carshop.features;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
+import java.sql.Date;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +25,7 @@ import ca.mcgill.ecse.carshop.model.BusinessHour;
 import ca.mcgill.ecse.carshop.model.BusinessHour.DayOfWeek;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
+import ca.mcgill.ecse.carshop.controller.TOBusiness;
 import ca.mcgill.ecse.carshop.model.BookableService;
 import ca.mcgill.ecse.carshop.model.CarShop;
 import ca.mcgill.ecse.carshop.model.ComboItem;
@@ -33,6 +37,7 @@ import ca.mcgill.ecse.carshop.model.ServiceCombo;
 import ca.mcgill.ecse.carshop.model.Technician;
 import ca.mcgill.ecse.carshop.model.User;
 import ca.mcgill.ecse.carshop.model.Technician.TechnicianType;
+import ca.mcgill.ecse.carshop.model.TimeSlot;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
@@ -47,7 +52,21 @@ public class CucumberStepDefinitions {
 	private int errorCntr;
 	
 
-// Sign Up Customer Account
+	// Hongyi
+//	private String error;
+	private int errorCounter;
+
+	private static TOBusiness toBusiness;
+	private static int numberOfBusinessHours;
+	private static int numberOfVacations;
+	private static int numberOfHolidays;
+	private static BusinessHour oldBusinessHour;
+	private static String[] oldBusinessHourInfo;
+	
+	
+	
+	
+// Sign Up Customer Account Kalvin
     
 
     
@@ -63,6 +82,501 @@ public class CucumberStepDefinitions {
 		User user = null;
 		private int numberOfChanges;
 
+		
+		@Before
+		public static void setUp() {
+			//CarShopApplication.getCarShop().delete();
+			numberOfBusinessHours = 0;
+			numberOfHolidays = 0;
+			numberOfVacations = 0;
+			toBusiness = null;
+			oldBusinessHour = null;
+			oldBusinessHourInfo = null;
+			oldBusinessHourInfo = new String[3];
+		}
+
+//		@Given("a Carshop system exists")
+//		public void a_carshop_system_exists() {
+//			cs = CarShopApplication.getCarShop();
+//			error = "";
+//			errorCounter = 0;
+//		}
+
+		
+//		@Given("an owner account exists in the system with username {string} and password {string}")
+//		public void an_owner_account_exists_in_the_system_with_username_and_password(String username, String password) {
+//			if (cs.getOwner() == null || !cs.getOwner().getUsername().equals(username)
+//					|| cs.getOwner().getPassword().equals(password)) {
+//				cs.setOwner(new Owner(username, password, cs));
+//			}
+//		}
+
+//		@Given("the following customers exist in the system:")
+//		public void the_following_customers_exist_in_the_system(io.cucumber.datatable.DataTable dataTable) {
+//			cs = CarShopApplication.getCarShop();
+//			List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
+	//
+//			for (Map<String, String> columns : rows) {
+//				String username = columns.get("username");
+//				String password = columns.get("password");
+//				Customer newCustomer = new Customer(username, password, cs);
+//				cs.addCustomer(newCustomer);
+//			}
+//		}
+
+//		@Given("the following technicians exist in the system:")
+//		public void the_following_technicians_exist_in_the_system(io.cucumber.datatable.DataTable dataTable) {
+//			cs = CarShopApplication.getCarShop();
+//			List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
+	//
+//			for (Map<String, String> columns : rows) {
+//				String username = columns.get("username");
+//				String password = columns.get("password");
+//				String type = columns.get("type");
+	//
+//				Technician newTechnician = new Technician(username, password, TechnicianType.valueOf(type), cs);
+//				cs.addTechnician(newTechnician);
+//			}
+//		}
+
+//		@Given("each technician has their own garage")
+//		public void each_technician_has_their_own_garage() {
+//			cs = CarShopApplication.getCarShop();
+//			List<Technician> technicians = cs.getTechnicians();
+//			for (Technician technician : technicians) {
+//				Garage newGarage = new Garage(cs, technician);
+//				technician.setGarage(newGarage);
+//			}
+//		}
+
+		@Given("no business exists")
+		public void no_business_exists() {
+			cs = CarShopApplication.getCarShop();
+			if (cs.getBusiness() != null) {
+				cs.setBusiness(null);
+			}
+		}
+
+		@Given("the system's time and date is {string}")
+		public void the_system_s_time_and_date_is(String date) {
+			String datePattern = "yyyy-MM-dd";
+			String timePattern = "HH:mm";
+			String[] splitString = date.split("\\+");
+			SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
+			SimpleDateFormat timeFormatter = new SimpleDateFormat(timePattern);
+			Date newDate = null;
+			Time newTime = null;
+			try {
+				newDate = new java.sql.Date(dateFormatter.parse(splitString[0]).getTime());
+				newTime = new java.sql.Time(timeFormatter.parse(splitString[1]).getTime());
+			} catch (Exception e) {
+				error += e.getMessage();
+				errorCounter++;
+			}
+			CarShopApplication.setSystemDate(newDate);
+		}
+
+//		@Given("the user is logged in to an account with username {string}")
+//		public void the_user_is_logged_in_to_an_account_with_username(String username) {
+//			CarShopApplication.setUsername(username);
+//		}
+
+		@When("the user tries to set up the business information with new {string} and {string} and {string} and {string}")
+		public void the_user_tries_to_set_up_the_business_information_with_new_and_and_and(String name, String address,
+				String phoneNumber, String email) {
+			try {
+				CarShopController.setUpBusinessInfo(name, address, phoneNumber, email);
+			} catch (InvalidInputException e) {
+				error += e.getMessage();
+				errorCounter++;
+			}
+		}
+
+		@Then("a new business with new {string} and {string} and {string} and {string} shall {string} created")
+		public void a_new_business_with_new_and_and_and_shall_created(String name, String address, String phoneNumber,
+				String email, String result) {
+			if (result.equals("be")) {
+				assertNotEquals(null, cs.getBusiness());
+				assertEquals(name, cs.getBusiness().getName());
+				assertEquals(address, cs.getBusiness().getAddress());
+				assertEquals(phoneNumber, cs.getBusiness().getPhoneNumber());
+				assertEquals(email, cs.getBusiness().getEmail());
+			} else {
+				assertEquals(null, cs.getBusiness());
+			}
+		}
+
+		@Then("an error message {string} shall {string} raised")
+		public void an_error_message_shall_raised(String errorString, String resultError) {
+			if (resultError.equalsIgnoreCase("be")) {
+				assertTrue(error.contains(errorString));
+			} else {
+				assertTrue(error.equals(""));
+			}
+		}
+
+		@Given("a business exists with the following information:")
+		public void a_business_exists_with_the_following_information(io.cucumber.datatable.DataTable dataTable) {
+			cs = CarShopApplication.getCarShop();
+			List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
+
+			for (Map<String, String> columns : rows) {
+				String name = columns.get("name");
+				String address = columns.get("address");
+				String phoneNumber = columns.get("phone number");
+				String email = columns.get("email");
+
+				Business newBusiness = new Business(name, address, phoneNumber, email, cs);
+				cs.setBusiness(newBusiness);
+			}
+		}
+
+		@Given("the business has a business hour on {string} with start time {string} and end time {string}")
+		public void the_business_has_a_business_hour_on_with_start_time_and_end_time(String day, String start, String end) {
+			String pattern = "HH:mm";
+			SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+
+			Time startTime = null;
+			Time endTime = null;
+			try {
+				startTime = new java.sql.Time(formatter.parse(start).getTime());
+				endTime = new java.sql.Time(formatter.parse(end).getTime());
+			} catch (Exception e) {
+				error += e.getMessage();
+				errorCounter++;
+			}
+
+			BusinessHour businessHour = new BusinessHour(BusinessHour.DayOfWeek.valueOf(day), startTime, endTime, cs);
+			oldBusinessHour = businessHour;
+			oldBusinessHourInfo[0] = businessHour.getDayOfWeek().name();
+			oldBusinessHourInfo[1] = formatter.format(businessHour.getStartTime());
+			oldBusinessHourInfo[2] = formatter.format(businessHour.getEndTime());
+
+			cs.getBusiness().addBusinessHour(businessHour);
+			numberOfBusinessHours++;
+		}
+
+		@When("the user tries to add a new business hour on {string} with start time {string} and end time {string}")
+		public void the_user_tries_to_add_a_new_business_hour_on_with_start_time_and_end_time(String day,
+				String newStartTime, String newEndTime) {
+			try {
+				CarShopController.createBusinessHour(day, newStartTime, newEndTime);
+			} catch (InvalidInputException e) {
+				error += e.getMessage();
+				errorCounter++;
+			}
+		}
+
+		@Then("a new business hour shall {string} created")
+		public void a_new_business_hour_shall_created(String string) {
+			if (string.equals("be")) {
+				assertEquals(numberOfBusinessHours + 1, cs.getBusiness().getBusinessHours().size());
+			} else {
+				assertEquals(numberOfBusinessHours, cs.getBusiness().getBusinessHours().size());
+			}
+		}
+
+		@When("the user tries to access the business information")
+		public void the_user_tries_to_access_the_business_information() {
+			toBusiness = CarShopController.getBusinessInfo();
+		}
+
+		@Then("the {string} and {string} and {string} and {string} shall be provided to the user")
+		public void the_and_and_and_shall_be_provided_to_the_user(String name, String address, String phoneNumber,
+				String email) {
+			assertNotEquals(null, toBusiness);
+			assertEquals(name, toBusiness.getName());
+			assertEquals(address, toBusiness.getAddress());
+			assertEquals(phoneNumber, toBusiness.getPhoneNumber());
+			assertEquals(email, toBusiness.getEmail());
+		}
+
+		@Given("a {string} time slot exists with start time {string} at {string} and end time {string} at {string}")
+		public void a_time_slot_exists_with_start_time_at_and_end_time_at(String timeSlot, String startDate,
+				String startTime, String endDate, String endTime) {
+			Date sDate = null;
+			Time sTime = null;
+			Date eDate = null;
+			Time eTime = null;
+
+			String timePattern = "HH:mm";
+			String datePattern = "yyyy-MM-dd";
+			SimpleDateFormat timeFormatter = new SimpleDateFormat(timePattern);
+			SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
+
+			try {
+				sDate = new java.sql.Date(dateFormatter.parse(startDate).getTime());
+				eDate = new java.sql.Date(dateFormatter.parse(endDate).getTime());
+				sTime = new java.sql.Time(timeFormatter.parse(startTime).getTime());
+				eTime = new java.sql.Time(timeFormatter.parse(endTime).getTime());
+				if (timeSlot.equalsIgnoreCase("vacation")) {
+					cs.getBusiness().addVacation(new TimeSlot(sDate, sTime, eDate, eTime, cs));
+					numberOfVacations++;
+				} else {
+					cs.getBusiness().addHoliday(new TimeSlot(sDate, sTime, eDate, eTime, cs));
+					numberOfHolidays++;
+				}
+			} catch (Exception e) {
+				error += e.getMessage();
+				errorCounter++;
+			}
+		}
+
+		@When("the user tries to add a new {string} with start date {string} at {string} and end date {string} at {string}")
+		public void the_user_tries_to_add_a_new_with_start_date_at_and_end_date_at(String type, String startDate,
+				String startTime, String endDate, String endTime) {
+
+			try {
+				CarShopController.createTimeSlot(type, startDate, startTime, endDate, endTime);
+			} catch (InvalidInputException e) {
+				error += e.getMessage();
+				errorCounter++;
+			}
+		}
+
+		@Then("a new {string} shall {string} be added with start date {string} at {string} and end date {string} at {string}")
+		public void a_new_shall_be_added_with_start_date_at_and_end_date_at(String type, String result, String startDate,
+				String startTime, String endDate, String endTime) {
+			String timePattern = "HH:mm";
+			String datePattern = "yyyy-MM-dd";
+			SimpleDateFormat timeFormatter = new SimpleDateFormat(timePattern);
+			SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
+
+			if (result.equals("be")) {
+				if (type.equals("holiday")) {
+					assertEquals(numberOfHolidays + 1, cs.getBusiness().getHolidays().size());
+					TimeSlot holiday = cs.getBusiness().getHoliday(numberOfHolidays);
+					String sDate = dateFormatter.format(holiday.getStartDate());
+					String sTime = timeFormatter.format(holiday.getStartTime());
+					String eDate = dateFormatter.format(holiday.getEndDate());
+					String eTime = timeFormatter.format(holiday.getEndTime());
+					assertEquals(startDate, sDate);
+					assertEquals(startTime, sTime);
+					assertEquals(endDate, eDate);
+					assertEquals(endTime, eTime);
+				} else {
+					assertEquals(numberOfVacations + 1, cs.getBusiness().getVacations().size());
+					TimeSlot vacation = cs.getBusiness().getVacation(numberOfVacations);
+					String sDate = dateFormatter.format(vacation.getStartDate());
+					String sTime = timeFormatter.format(vacation.getStartTime());
+					String eDate = dateFormatter.format(vacation.getEndDate());
+					String eTime = timeFormatter.format(vacation.getEndTime());
+					assertEquals(startDate, sDate);
+					assertEquals(startTime, sTime);
+					assertEquals(endDate, eDate);
+					assertEquals(endTime, eTime);
+				}
+			} else {
+				if (type.equals("holiday")) {
+					assertEquals(numberOfHolidays, cs.getBusiness().getHolidays().size());
+				} else {
+					assertEquals(numberOfVacations, cs.getBusiness().getVacations().size());
+				}
+			}
+		}
+
+		@After
+		public void tearDown() {
+			cs.delete();
+		}
+
+		/** update business info **/
+
+		@When("the user tries to update the business information with new {string} and {string} and {string} and {string}")
+		public void the_user_tries_to_update_the_business_information_with_new_and_and_and(String name, String address,
+				String phoneNumber, String email) {
+			try {
+				CarShopController.updateBusinessInfo(name, address, phoneNumber, email);
+			} catch (InvalidInputException e) {
+				error += e.getMessage();
+				errorCounter++;
+			}
+		}
+
+		@Then("the business information shall {string} updated with new {string} and {string} and {string} and {string}")
+		public void the_business_information_shall_updated_with_new_and_and_and(String result, String name, String address,
+				String phoneNumber, String email) {
+			if (result.equalsIgnoreCase("be")) {
+				assertEquals(name, cs.getBusiness().getName());
+				assertEquals(address, cs.getBusiness().getAddress());
+				assertEquals(phoneNumber, cs.getBusiness().getPhoneNumber());
+				assertEquals(email, cs.getBusiness().getEmail());
+			} else {
+				assertNotEquals(name, cs.getBusiness().getName());
+				assertNotEquals(address, cs.getBusiness().getAddress());
+				assertNotEquals(phoneNumber, cs.getBusiness().getPhoneNumber());
+				assertNotEquals(email, cs.getBusiness().getEmail());
+			}
+		}
+
+		@When("the user tries to change the business hour {string} at {string} to be on {string} starting at {string} and ending at {string}")
+		public void the_user_tries_to_change_the_business_hour_at_to_be_on_starting_at_and_ending_at(String weekDay,
+				String time, String day, String newStartTime, String newEndTime) {
+			try {
+				CarShopController.modifyBusinessHour(weekDay, time, day, newStartTime, newEndTime);
+			} catch (InvalidInputException e) {
+				error += e.getMessage();
+				errorCounter++;
+			}
+
+		}
+
+		// TODO: not sure if this is the correct way to do it
+		@Then("the business hour shall {string} be updated")
+		public void the_business_hour_shall_be_updated(String string) {
+			String pattern = "HH:mm";
+			SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+
+			if (string.equalsIgnoreCase("be")) {
+				assertEquals(numberOfBusinessHours, cs.getBusiness().getBusinessHours().size());
+				String expectedString = oldBusinessHourInfo[0] + oldBusinessHourInfo[1] + oldBusinessHourInfo[2];
+				String actualString = oldBusinessHour.getDayOfWeek().name() + formatter.format(oldBusinessHour.getStartTime()) 
+					+ formatter.format(oldBusinessHour.getEndTime());
+				assertNotEquals(expectedString, actualString);
+			} else {
+				assertEquals(numberOfBusinessHours, cs.getBusiness().getBusinessHours().size());
+				String expectedString = oldBusinessHourInfo[0] + oldBusinessHourInfo[1] + oldBusinessHourInfo[2];
+				String actualString = oldBusinessHour.getDayOfWeek().name() + formatter.format(oldBusinessHour.getStartTime()) 
+					+ formatter.format(oldBusinessHour.getEndTime());
+				assertEquals(expectedString, actualString);
+			}
+		}
+
+		@When("the user tries to remove the business hour starting {string} at {string}")
+		public void the_user_tries_to_remove_the_business_hour_starting_at(String day, String startTime) {
+			try {
+				CarShopController.deleteBusinessHour(day, startTime);
+			} catch (InvalidInputException e) {
+				error += e.getMessage();
+				errorCounter++;
+			}
+		}
+
+		@Then("the business hour starting {string} at {string} shall {string} exist")
+		public void the_business_hour_starting_at_shall_exist(String day, String time, String result) {
+			Business business = cs.getBusiness();
+			String pattern = "HH:mm";
+			SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+			BusinessHour businessHour = null;
+			for (BusinessHour hour : business.getBusinessHours()) {
+				if (hour.getDayOfWeek().name().equals(day) && formatter.format(hour.getStartTime()).equals(time)) {
+					businessHour = hour;
+				}
+			}
+			if (result.equalsIgnoreCase("not")) {
+				assertEquals(null, businessHour);
+			} else {
+				assertNotEquals(null, businessHour);
+			}
+		}
+
+		@Then("an error message {string} shall {string} be raised")
+		public void an_error_message_shall_be_raised(String errorMessage, String result) {
+			if (result.equalsIgnoreCase("not")) {
+				assertTrue(error.equals(""));
+			} else {
+				assertTrue(error.contains(errorMessage));
+			}
+		}
+
+		@When("the user tries to change the {string} on {string} at {string} to be with start date {string} at {string} and end date {string} at {string}")
+		public void the_user_tries_to_change_the_on_at_to_be_with_start_date_at_and_end_date_at(String timeslot,
+				String oldDate, String oldStart, String startDate, String startTime, String endDate, String endTime) {
+			try {
+				CarShopController.modifyTimeSlot(timeslot, oldDate, oldStart, startDate, startTime, endDate, endTime);
+			} catch (InvalidInputException e) {
+				error += e.getMessage();
+				errorCounter++;
+			}
+		}
+
+		@Then("the {string} shall {string} updated with start date {string} at {string} and end date {string} at {string}")
+		public void the_shall_updated_with_start_date_at_and_end_date_at(String timeslot, String result, String startDate,
+				String startTime, String endDate, String endTime) {
+			TimeSlot foundSlot = null;
+			Business business = cs.getBusiness();
+
+			String timePattern = "HH:mm";
+			String datePattern = "yyyy-MM-dd";
+			SimpleDateFormat timeFormatter = new SimpleDateFormat(timePattern);
+			SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
+
+			if (timeslot.equalsIgnoreCase("vacation")) {
+				for (TimeSlot slot : business.getVacations()) {
+					if (dateFormatter.format(slot.getStartDate()).equals(startDate)
+							&& timeFormatter.format(slot.getStartTime()).equals(startTime)
+							&& dateFormatter.format(slot.getEndDate()).equals(endDate)
+							&& timeFormatter.format(slot.getEndTime()).equals(endTime)) {
+						foundSlot = slot;
+					}
+				}
+			} else {
+				for (TimeSlot slot : business.getHolidays()) {
+					if (dateFormatter.format(slot.getStartDate()).equals(startDate)
+							&& timeFormatter.format(slot.getStartTime()).equals(startTime)
+							&& dateFormatter.format(slot.getEndDate()).equals(endDate)
+							&& timeFormatter.format(slot.getEndTime()).equals(endTime)) {
+						foundSlot = slot;
+					}
+				}
+			}
+			assertEquals(numberOfVacations, business.getVacations().size());
+			assertEquals(numberOfHolidays, business.getHolidays().size());
+			if (result.equalsIgnoreCase("not be")) {
+				assertEquals(null, foundSlot);
+			} else {
+				assertNotEquals(null, foundSlot);
+			}
+		}
+
+		@When("the user tries to remove an existing {string} with start date {string} at {string} and end date {string} at {string}")
+		public void the_user_tries_to_remove_an_existing_with_start_date_at_and_end_date_at(String type, String startDate,
+				String startTime, String endDate, String endTime) {
+			try {
+				CarShopController.deleteTimeSlot(type, startDate, startTime, endDate, endTime);
+			} catch (InvalidInputException e) {
+				error += e.getMessage();
+				errorCounter++;
+			}
+		}
+
+		@Then("the {string} with start date {string} at {string} shall {string} exist")
+		public void the_with_start_date_at_shall_exist(String type, String startDate, String startTime, String result) {
+			TimeSlot timeSlot = null;
+			Business business = cs.getBusiness();
+
+			String timePattern = "HH:mm";
+			String datePattern = "yyyy-MM-dd";
+			SimpleDateFormat timeFormatter = new SimpleDateFormat(timePattern);
+			SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
+
+			if (type.equalsIgnoreCase("vacation")) {
+				for (TimeSlot slot : business.getVacations()) {
+					if (dateFormatter.format(slot.getStartDate()).equals(startDate)
+							&& timeFormatter.format(slot.getStartTime()).equals(startTime)) {
+						timeSlot = slot;
+					}
+				}
+			} else {
+				for (TimeSlot slot : business.getHolidays()) {
+					if (dateFormatter.format(slot.getStartDate()).equals(startDate)
+							&& timeFormatter.format(slot.getStartTime()).equals(startTime)) {
+						timeSlot = slot;
+					}
+				}
+			}
+
+			if (result.equalsIgnoreCase("not")) {
+				assertEquals(null, timeSlot);
+			} else {
+				assertNotEquals(null, timeSlot);
+			}
+
+		}
+		
+		
+		// TODO
+		// TODO
 	
 
 
@@ -413,21 +927,21 @@ public class CucumberStepDefinitions {
 		cs.setOwner(owner);		
 	}
 
-	@Given("a business exists with the following information:")
-	public void a_business_exists_with_the_following_information(io.cucumber.datatable.DataTable table) {
-	    // Write code here that turns the phrase above into concrete actions
-		List<List<String>> rows = table.asLists(String.class);
-	    
-		
-	    for (List<String> columns : rows) {
-	    	if(columns.get(0).equals("name")) {
-	    		continue;
-	    	}
-	    	Business business = new Business(columns.get(0), columns.get(1), columns.get(2), columns.get(3), cs);
-	    }
-	    
-
-	}
+//	@Given("a business exists with the following information:")
+//	public void a_business_exists_with_the_following_information(io.cucumber.datatable.DataTable table) {
+//	    // Write code here that turns the phrase above into concrete actions
+//		List<List<String>> rows = table.asLists(String.class);
+//	    
+//		
+//	    for (List<String> columns : rows) {
+//	    	if(columns.get(0).equals("name")) {
+//	    		continue;
+//	    	}
+//	    	Business business = new Business(columns.get(0), columns.get(1), columns.get(2), columns.get(3), cs);
+//	    }
+//	    
+//
+//	}
 
 	@Given("the user is logged in to an account with username {string}")
 	public void the_user_is_logged_in_to_an_account_with_username(String string) {
@@ -435,11 +949,13 @@ public class CucumberStepDefinitions {
 	    curUsername = User.getWithUsername(string).getUsername();
 	    curPassword = User.getWithUsername(string).getPassword();
 	    try {
+	    	CarShopApplication.setUsername(string);
 			CarShopController.login(string, curPassword);
 		} catch (InvalidInputException e) {
 			error = e.getMessage();
 			errorCntr++;
 		}
+	    
 	}
 
 	@When("the user tries to add new business hours on {string} from {string} to {string} to garage belonging to the technician with type {string}")

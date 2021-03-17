@@ -3,6 +3,7 @@
  */
 package ca.mcgill.ecse.carshop.application;
 
+import java.sql.Time;
 import java.util.Date;
 
 import ca.mcgill.ecse.carshop.model.CarShop;
@@ -17,6 +18,9 @@ public class CarShopApplication {
 	public static AccountType accountType = null;
 	private static boolean isLoggedIn = false;
 	static Date currentDate = null;
+	private static String username = null;
+	private static Date systemDate = null;
+	private static Time systemTime = null;
 	
     public enum AccountType{EngineTechnician, TireTechnician, TransmissionTechnician, ElectronicsTechnician, FluidsTechnician, 
     	Customer, Owner};
@@ -88,6 +92,30 @@ public class CarShopApplication {
     		}
     	}
     	
+    }
+    
+    public static void setUsername(String name) {
+    	username = name;
+	}
+    
+    public static String getCurrentUser() {
+    	return username;
+    }
+    
+    public static void setSystemDate(Date date) {
+    	systemDate = date;
+    }
+    
+    public static Date getSystemDate() {
+		return systemDate;
+	}
+    
+    public static Time getSystemTime() {
+		return systemTime;
+	}
+    
+    public static void setSystemTime(Time time) {
+    	systemTime = time;
     }
     
     public static User getUser() {

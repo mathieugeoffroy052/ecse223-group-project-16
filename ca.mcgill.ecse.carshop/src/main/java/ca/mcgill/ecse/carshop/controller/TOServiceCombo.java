@@ -3,7 +3,7 @@
 
 package ca.mcgill.ecse.carshop.controller;
 
-// line 62 "../../../../../CarShopTransferObjects.ump"
+// line 67 "../../../../../CarShopTransferObjects.ump"
 public class TOServiceCombo
 {
 
@@ -11,18 +11,42 @@ public class TOServiceCombo
   // MEMBER VARIABLES
   //------------------------
 
+  //TOServiceCombo Attributes
+  private String name;
+
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public TOServiceCombo()
-  {}
+  public TOServiceCombo(String aName)
+  {
+    name = aName;
+  }
 
   //------------------------
   // INTERFACE
   //------------------------
 
+  public boolean setName(String aName)
+  {
+    boolean wasSet = false;
+    name = aName;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public String getName()
+  {
+    return name;
+  }
+
   public void delete()
   {}
 
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "name" + ":" + getName()+ "]";
+  }
 }

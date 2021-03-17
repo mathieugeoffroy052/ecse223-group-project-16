@@ -8,6 +8,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.application.CarShopApplication.AccountType;
 import ca.mcgill.ecse.carshop.model.Appointment;
 import ca.mcgill.ecse.carshop.model.BookableService;
+import ca.mcgill.ecse.carshop.model.Business;
 import ca.mcgill.ecse.carshop.model.BusinessHour;
 import ca.mcgill.ecse.carshop.model.BusinessHour.DayOfWeek;
 import ca.mcgill.ecse.carshop.model.CarShop;
@@ -34,6 +36,551 @@ public class CarShopController {
 	
 	public CarShopController() {
 	}
+	
+	// TODO Hong yi
+	
+	/** ** START HONG YI ** **/ 
+
+	public static void setUpBusinessInfo(String nameString, String address, String phoneNumber, String emailAddress) 
+			throws InvalidInputException {
+		if (!hasAuthorization()) {
+			throw new InvalidInputException("No permission to set up business information");
+		}
+		CarShop carShop = CarShopApplication.getCarShop();
+		if (nameString == null || nameString.length() == 0 || address == null || address.length() == 0
+				|| phoneNumber == null || phoneNumber.length() == 0 || emailAddress == null
+				|| emailAddress.length() == 0) {
+			throw new InvalidInputException("Empty/null fields");
+		}
+		try {
+			if (carShop.getBusiness() == null) {
+				isProperEmailAddress(emailAddress);
+				Business business = new Business(nameString, address, phoneNumber, emailAddress, carShop);
+				carShop.setBusiness(business);
+			} else {
+				throw new InvalidInputException("Can't set up business info, the business already exists");
+			}
+
+		} catch (RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
+	}
+
+	public static void createBusinessHour(String day, String startTime, String endTime) throws InvalidInputException {
+		if (!hasAuthorization()) {
+			throw new InvalidInputException("No permission to update business information");
+		}
+		CarShop carShop = CarShopApplication.getCarShop();
+		try {
+			BusinessHour businessHour = new BusinessHour(convertDayOfWeek(day), stringToTime(startTime),
+					stringToTime(endTime), carShop);
+
+			if (isBusinessHourConflict(businessHour, businessHour)) {
+				throw new InvalidInputException("The business hours cannot overlap");
+			}
+			if (!startTimeBeforeEndTime(businessHour.getStartTime(), businessHour.getEndTime())) {
+				throw new InvalidInputException("Start time must be before end time");
+			}
+			carShop.getBusiness().addBusinessHour(businessHour);
+
+		} catch (RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
+	}
+
+	public static void createHoliday(String startDate, String startTime, String endDate, String endTime)
+			throws InvalidInputException {
+		if (!hasAuthorization()) {
+			throw new InvalidInputException("No permission to set up business information");
+		}
+		CarShop carShop = CarShopApplication.getCarShop();
+		try {
+			carShop.getBusiness().addHoliday(new TimeSlot(stringtoDate(startDate), stringToTime(startTime),
+					stringtoDate(endDate), stringToTime(endTime), carShop));
+		} catch (RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
+	}
+
+	public static void createVacation(String startDate, String startTime, String endDate, String endTime)
+			throws InvalidInputException {
+		if (!hasAuthorization()) {
+			throw new InvalidInputException("No permission to set up business information");
+		}
+		CarShop carShop = CarShopApplication.getCarShop();
+		try {
+			carShop.getBusiness().addVacation(new TimeSlot(stringtoDate(startDate), stringToTime(startTime),
+					stringtoDate(endDate), stringToTime(endTime), carShop));
+		} catch (RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
+	}
+
+	public static void createTimeSlot(String type, String startDate, String startTime, String endDate, String endTime)
+			throws InvalidInputException {
+
+		CarShop carShop = CarShopApplication.getCarShop();
+		if (!hasAuthorization()) {
+			throw new InvalidInputException("No permission to update business information");
+		}
+		Date sDate = stringtoDate(startDate);
+		Time sTime = stringToTime(startTime);
+		Date eDate = stringtoDate(endDate);
+		Time eTime = stringToTime(endTime);
+
+		if (!startDateBeforeEndDate(sDate, eDate)) {
+			throw new InvalidInputException("Start time must be before end time ");
+		}
+		if (startDate.equalsIgnoreCase(endDate) && !startTimeBeforeEndTime(sTime, eTime)) {
+			throw new InvalidInputException("Start time must be before end time ");
+		}
+		if (sDate.before(CarShopApplication.getSystemDate()) || (!sDate.after(CarShopApplication.getSystemDate())
+				&& sTime.before(CarShopApplication.getSystemTime()))) {
+			if (type.equalsIgnoreCase("vacation")) {
+				throw new InvalidInputException("Vacation cannot start in the past");
+			} else {
+				throw new InvalidInputException("Holiday cannot start in the past");
+			}
+		}
+
+		TimeSlot toAddSlot = new TimeSlot(sDate, sTime, eDate, eTime, carShop);
+		isVacationAndHolidayConflict(type, toAddSlot, null);
+		if (type.equalsIgnoreCase("vacation")) {
+			carShop.getBusiness().addVacation(toAddSlot);
+		} else if (type.equalsIgnoreCase("holiday")) {
+			carShop.getBusiness().addHoliday(toAddSlot);
+		} else {
+			throw new InvalidInputException("no such time slot");
+		}
+
+	}
+
+	public static void updateBusinessInfo(String nameString, String address, String phoneNumber, String emailAddress)
+			throws InvalidInputException {
+		if (!hasAuthorization()) {
+			throw new InvalidInputException("No permission to update business information");
+		}
+		CarShop carShop = CarShopApplication.getCarShop();
+		Business business = carShop.getBusiness();
+		if (business == null) {
+			throw new InvalidInputException("Set up a business first");
+		}
+		if (nameString == null || nameString.length() == 0 || address == null || address.length() == 0
+				|| phoneNumber == null || phoneNumber.length() == 0 || emailAddress == null
+				|| emailAddress.length() == 0) {
+			throw new InvalidInputException("Empty fields");
+		}
+		isProperEmailAddress(emailAddress);
+		try {
+			business.setName(nameString);
+			business.setAddress(address);
+			business.setPhoneNumber(phoneNumber);
+			business.setEmail(emailAddress);
+		} catch (Exception e) {
+			throw new InvalidInputException(e.getMessage());
+		}
+	}
+
+	public static void deleteBusinessHour(String dayOfweek, String startTime) throws InvalidInputException {
+		if (!hasAuthorization()) {
+			throw new InvalidInputException("No permission to update business information");
+		}
+		Business business = CarShopApplication.getCarShop().getBusiness();
+		List<BusinessHour> businessHours = business.getBusinessHours();
+		BusinessHour toDelete = null;
+		for (BusinessHour businessHour : businessHours) {
+			if (businessHour.getDayOfWeek().name().equalsIgnoreCase(dayOfweek)
+					&& timeToString(businessHour.getStartTime()).equalsIgnoreCase(startTime)) {
+				toDelete = businessHour;
+				break;
+			}
+		}
+		if (toDelete != null) {
+			business.removeBusinessHour(toDelete);
+		}
+	}
+
+	// TODO:
+	public static void modifyTimeSlot(String type, String oldStart, String oldTime, String startDate, String startTime,
+			String endDate, String endTime) throws InvalidInputException {
+		if (!hasAuthorization()) {
+			throw new InvalidInputException("No permission to update business information");
+		}
+
+		Business business = CarShopApplication.getCarShop().getBusiness();
+
+		Date sDate = stringtoDate(startDate);
+		Time sTime = stringToTime(startTime);
+		Date eDate = stringtoDate(endDate);
+		Time eTime = stringToTime(endTime);
+
+		if (!startDateBeforeEndDate(sDate, eDate)) {
+			throw new InvalidInputException("Start time must be before end time ");
+		}
+		if (startDate.equalsIgnoreCase(endDate) && !startTimeBeforeEndTime(sTime, eTime)) {
+			throw new InvalidInputException("Start time must be before end time ");
+		}
+		if (sDate.before(CarShopApplication.getSystemDate()) || (!sDate.after(CarShopApplication.getSystemDate())
+				&& sTime.before(CarShopApplication.getSystemTime()))) {
+			if (type.equalsIgnoreCase("vacation")) {
+				throw new InvalidInputException("Vacation cannot start in the past");
+			} else {
+				throw new InvalidInputException("Holiday cannot start in the past");
+			}
+		}
+
+		TimeSlot timeSlot = null;
+		if (type.equalsIgnoreCase("vacation")) {
+			for (TimeSlot slot : business.getVacations()) {
+
+				if (oldStart.equalsIgnoreCase(dateToString(slot.getStartDate()))
+						&& oldTime.equalsIgnoreCase(timeToString(slot.getStartTime()))) {
+					timeSlot = slot;
+				}
+			}
+
+		} else {
+			for (TimeSlot slot : business.getHolidays()) {
+				if (oldStart.equalsIgnoreCase(dateToString(slot.getStartDate()))
+						&& oldTime.equalsIgnoreCase(timeToString(slot.getStartTime()))) {
+					timeSlot = slot;
+
+				}
+			}
+		}
+		if (timeSlot == null) {
+			throw new InvalidInputException("Can't find this " + type);
+		}
+
+		TimeSlot test = new TimeSlot(sDate, sTime, eDate, eTime, CarShopApplication.getCarShop());
+
+		isVacationAndHolidayConflict(type, test, timeSlot);
+
+		timeSlot.setStartDate(sDate);
+		timeSlot.setStartTime(sTime);
+		timeSlot.setEndDate(eDate);
+		timeSlot.setEndTime(eTime);
+
+	}
+
+	// TODO:
+	public static void deleteTimeSlot(String type, String startDate, String startTime, String endDate, String endTime)
+			throws InvalidInputException {
+		if (!hasAuthorization()) {
+			throw new InvalidInputException("No permission to update business information");
+		}
+		Business business = CarShopApplication.getCarShop().getBusiness();
+		TimeSlot timeSlot = null;
+		if (type.equalsIgnoreCase("vacation")) {
+			timeSlot = findVacation(startDate, startTime, endDate, endTime);
+			if (timeSlot != null) {
+				business.removeVacation(timeSlot);
+			}
+
+		} else {
+			timeSlot = findHoliday(startDate, startTime, endDate, endTime);
+			if (timeSlot != null) {
+				business.removeHoliday(timeSlot);
+			}
+		}
+
+	}
+
+	public static void deleteHoliday(String startDate, String startTime, String endDate, String endTime)
+			throws InvalidInputException {
+		if (!hasAuthorization()) {
+			throw new InvalidInputException("No permission to set up business information");
+		}
+		Business business = CarShopApplication.getCarShop().getBusiness();
+		TimeSlot toDelete = null;
+		toDelete = findHoliday(startDate, startTime, endDate, endTime);
+		if (toDelete != null) {
+			business.removeHoliday(toDelete);
+		}
+	}
+
+	public static void deleteVacation(String startDate, String startTime, String endDate, String endTime)
+			throws InvalidInputException {
+		if (!hasAuthorization()) {
+			throw new InvalidInputException("No permission to set up business information");
+		}
+		Business business = CarShopApplication.getCarShop().getBusiness();
+		TimeSlot toDelete = null;
+		toDelete = findVacation(startDate, startTime, endDate, endTime);
+		if (toDelete != null) {
+			business.removeVacation(toDelete);
+		}
+
+	}
+
+	public static List<TOBusinessHour> getBusinessHours() {
+		Business business = CarShopApplication.getCarShop().getBusiness();
+		List<BusinessHour> businessHours = business.getBusinessHours();
+		List<TOBusinessHour> toBusinessHours = new ArrayList<>();
+		for (BusinessHour businessHour : businessHours) {
+			TOBusinessHour toBusinessHour = new TOBusinessHour(businessHour.getDayOfWeek().name(),
+					businessHour.getStartTime(), businessHour.getEndTime());
+			toBusinessHours.add(toBusinessHour);
+		}
+		return toBusinessHours;
+	}
+
+	public static List<TOTimeSlot> getHolidays() {
+		Business business = CarShopApplication.getCarShop().getBusiness();
+		List<TimeSlot> holidaySlots = business.getHolidays();
+		List<TOTimeSlot> toHolidays = new ArrayList<>();
+		for (TimeSlot holiday : holidaySlots) {
+			TOTimeSlot toTimeSlot = new TOTimeSlot(holiday.getStartDate(), holiday.getStartTime(), holiday.getEndDate(),
+					holiday.getEndTime());
+			toHolidays.add(toTimeSlot);
+		}
+		return toHolidays;
+	}
+
+	public static List<TOTimeSlot> getVacations() {
+		Business business = CarShopApplication.getCarShop().getBusiness();
+		List<TimeSlot> vacationSlots = business.getVacations();
+		List<TOTimeSlot> toVacations = new ArrayList<>();
+		for (TimeSlot vacation : vacationSlots) {
+			TOTimeSlot toTimeSlot = new TOTimeSlot(vacation.getStartDate(), vacation.getStartTime(),
+					vacation.getEndDate(), vacation.getEndTime());
+			toVacations.add(toTimeSlot);
+		}
+		return toVacations;
+	}
+
+//	public static void getAllInfo() {
+//
+//	}
+
+	public static TOBusiness getBusinessInfo() {
+		Business business = CarShopApplication.getCarShop().getBusiness();
+		TOBusiness toBusiness = new TOBusiness(business.getName(), business.getAddress(), business.getPhoneNumber(),
+				business.getEmail());
+		return toBusiness;
+	}
+
+	public static void modifyBusinessHour(String weekDay, String startTime, String newDay, String newStart,
+			String newEnd) throws InvalidInputException {
+		CarShop carShop = CarShopApplication.getCarShop();
+		if (!hasAuthorization()) {
+			throw new InvalidInputException("No permission to update business information");
+		}
+
+		Business business = CarShopApplication.getCarShop().getBusiness();
+		List<BusinessHour> businessHours = business.getBusinessHours();
+		BusinessHour foundHour = null;
+		for (BusinessHour bHour : businessHours) {
+			Time start = bHour.getStartTime();
+			String timeAsString = timeToString(start);
+			if (bHour.getDayOfWeek().name().equalsIgnoreCase(weekDay) && timeAsString.equalsIgnoreCase(startTime)) {
+				foundHour = bHour;
+			}
+		}
+		if (!startTimeBeforeEndTime(stringToTime(newStart), stringToTime(newEnd))) {
+			throw new InvalidInputException("Start time must be before end time");
+		}
+
+		if (isBusinessHourConflict(
+				new BusinessHour(convertDayOfWeek(newDay), stringToTime(newStart), stringToTime(newEnd), carShop),
+				foundHour)) {
+			business.addBusinessHour(foundHour);
+			throw new InvalidInputException("The business hours cannot overlap");
+		} else {
+			foundHour.setDayOfWeek(convertDayOfWeek(newDay));
+			foundHour.setStartTime(stringToTime(newStart));
+			foundHour.setEndTime(stringToTime(newEnd));
+
+		}
+	}
+
+	private static boolean startTimeBeforeEndTime(Time startTime, Time endTime) {
+		return startTime.before(endTime);
+	}
+
+	private static boolean startDateBeforeEndDate(Date startDate, Date endDate) {
+		return startDate.before(endDate);
+	}
+
+	// done, check if business hour conflicts
+	private static boolean isBusinessHourConflict(BusinessHour businessHour, BusinessHour exception) {
+		Business business = CarShopApplication.getCarShop().getBusiness();
+		for (BusinessHour bHour : business.getBusinessHours()) {
+			boolean sameDay = isSameDay(businessHour.getDayOfWeek().name(), bHour.getDayOfWeek().name());
+			boolean overlap = isTimeOverlap(businessHour.getStartTime(), businessHour.getEndTime(),
+					bHour.getStartTime(), bHour.getEndTime());
+			if (bHour != exception && businessHour != bHour
+					&& sameDay && overlap) {
+				return true;
+
+			}
+		}
+		return false;
+	}
+
+	// done, verifies if two string representing dayofweeks are the same
+	private static boolean isSameDay(String day1, String day2) {
+		return day1.equalsIgnoreCase(day2);
+	}
+
+	// done, check if vacation and holiday conflict
+	private static boolean isVacationAndHolidayConflict(String type, TimeSlot timeSlot, TimeSlot exception)
+			throws InvalidInputException {
+		Business business = CarShopApplication.getCarShop().getBusiness();
+		// check if conflicts with vacations
+		for (TimeSlot t : business.getVacations()) {
+			if (timeSlot != t && exception != t
+					&& strictlyOverlap(timeSlot.getStartDate(), timeSlot.getEndDate(), t.getStartDate(), t.getEndDate())
+					|| isDateAndTimeOverLap(timeSlot.getStartDate(), timeSlot.getEndDate(), t.getStartDate(),
+							t.getEndDate(), timeSlot.getStartTime(), timeSlot.getEndTime(), t.getStartTime(),
+							t.getEndTime())) {
+				if (type.equalsIgnoreCase("vacation")) {
+					throw new InvalidInputException("Vacation times cannot overlap");
+				} else if (type.equalsIgnoreCase("holiday")) {
+					throw new InvalidInputException("Holiday and vacation times cannot overlap");
+				} else {
+					throw new InvalidInputException("Unexpected input");
+				}
+
+			}
+		}
+		// check if conflicts with holidays
+		for (TimeSlot t : business.getHolidays()) {
+			if (timeSlot != t && exception != t
+					&& strictlyOverlap(timeSlot.getStartDate(), timeSlot.getEndDate(), t.getStartDate(), t.getEndDate())
+					|| isDateAndTimeOverLap(timeSlot.getStartDate(), timeSlot.getEndDate(), t.getStartDate(),
+							t.getEndDate(), timeSlot.getStartTime(), timeSlot.getEndTime(), t.getStartTime(),
+							t.getEndTime())) {
+				if (type.equalsIgnoreCase("Holiday")) {
+					throw new InvalidInputException("Holiday times cannot overlap");
+				} else if (type.equalsIgnoreCase("Vacation")) {
+					throw new InvalidInputException("Holiday and vacation times cannot overlap");
+				} else {
+					throw new InvalidInputException("Unexpected input");
+				}
+
+			}
+		}
+		return false;
+	}
+
+	// find a holiday given the start/end date/time in string form
+	private static TimeSlot findHoliday(String startDate, String startTime, String endDate, String endTime) {
+		Business business = CarShopApplication.getCarShop().getBusiness();
+
+		TimeSlot foundSlot = null;
+
+		for (TimeSlot slot : business.getHolidays()) {
+			if (dateToString(slot.getStartDate()).equals(startDate)
+					&& timeToString(slot.getStartTime()).equals(startTime)
+					&& dateToString(slot.getEndDate()).equals(endDate)
+					&& timeToString(slot.getEndTime()).equals(endTime)) {
+				foundSlot = slot;
+				break;
+
+			}
+		}
+		return foundSlot;
+	}
+	
+	
+	// find a vacation given the start/end date/time in string form
+	private static TimeSlot findVacation(String startDate, String startTime, String endDate, String endTime) {
+		Business business = CarShopApplication.getCarShop().getBusiness();
+
+		TimeSlot foundSlot = null;
+
+		for (TimeSlot slot : business.getVacations()) {
+			if (dateToString(slot.getStartDate()).equals(startDate)
+					&& timeToString(slot.getStartTime()).equals(startTime)
+					&& dateToString(slot.getEndDate()).equals(endDate)
+					&& timeToString(slot.getEndTime()).equals(endTime)) {
+				foundSlot = slot;
+				break;
+
+			}
+		}
+		return foundSlot;
+	}
+
+	private static boolean isDateAndTimeOverLap(Date startDate1, Date endDate1, Date startDate2, Date endDate2,
+			Time start1, Time end1, Time start2, Time end2) {
+		return startDate1.compareTo(startDate2) == 0 && (isTimeOverlap(start1, end1, start2, end2))
+				|| endDate1.compareTo(endDate2) == 0 && (isTimeOverlap(start1, end1, start2, end2))
+				|| (startDate1.compareTo(endDate2) == 0 && start1.before(end2))
+				|| (startDate2.compareTo(endDate1) == 0 && start2.before(end1));
+	}
+
+	// overlap by more than a day
+	private static boolean strictlyOverlap(Date startDate1, Date endDate1, Date startDate2, Date endDate2) {
+		return (startDate1.before(endDate2) && startDate2.before(endDate1));
+	}
+
+	private static boolean barelyOverlap(Date startDate1, Date endDate1, Date startDate2, Date endDate2) {
+		return (startDate1.compareTo(startDate2) == 0 || endDate1.compareTo(endDate2) == 0
+				|| startDate1.compareTo(endDate2) == 0 || startDate2.compareTo(endDate1) == 0);
+	}
+
+	private static boolean isDateOverlap(Date startDate1, Date endDate1, Date startDate2, Date endDate2) {
+		return (startDate1.before(endDate2) && startDate2.before(endDate1))
+				|| (startDate1.compareTo(startDate2) == 0 || (endDate1.compareTo(endDate2) == 0
+						|| startDate1.compareTo(endDate2) == 0 || startDate2.compareTo(endDate1) == 0));
+	}
+
+	private static boolean isTimeOverlap(Time start1, Time end1, Time start2, Time end2) {
+		return (start1.before(end2) && start2.before(end1));
+	}
+
+//	private static boolean isProperBusinessName(String name) {
+//		return false;
+//	}
+//
+//	private static boolean isProperAddress(String address) {
+//		return false;
+//	}
+//
+//	private static boolean isProperPhoneNumer(String phoneNumer) {
+//		return false;
+//	}
+
+	// TODO: need other cases
+	private static boolean isProperEmailAddress(String emailAddress) throws InvalidInputException {
+		if (!emailAddress.contains("@") || !emailAddress.contains(".")
+				|| emailAddress.indexOf("@") > emailAddress.indexOf("@")) {
+			throw new InvalidInputException("Invalid email");
+		}
+		return true;
+	}
+
+//	private static boolean isValidBusinessHour(BusinessHour businessHour) {
+//		return false;
+//	}
+//
+//	private static boolean isValidTimeSlot(TimeSlot timeSlot) {
+//		return false;
+//	}
+
+	// done, converts a String to a dayofweek
+	private static DayOfWeek convertDayOfWeek(String day) throws InvalidInputException {
+		try {
+			return DayOfWeek.valueOf(day);
+		} catch (RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
+	}
+
+	// done, verifies that the current user is the owner;
+	private static boolean hasAuthorization() {
+		return CarShopApplication.getCurrentUser().equals("owner");
+	}
+
+//	private static BusinessHour findBusinessHour(DayOfWeek day, Time starTime, Time endTime) {
+//		CarShop carShop = CarShopApplication.getCarShop();
+//		BusinessHour foundBusinessHour = null;
+//		for(BusinessHour businessHour : carShop.)
+//	}
+
+	/** ** END HONG YI ** **/ 
 	
 	// TODO Kalvin
 	
@@ -468,7 +1015,7 @@ public class CarShopController {
 	
 
 	private static Time stringToTime(String string) throws InvalidInputException {
-        String pattern = "hh:mm";
+        String pattern = "HH:mm";
         SimpleDateFormat formatter = new SimpleDateFormat(pattern);
         try {
             return new java.sql.Time(formatter.parse(string).getTime());
@@ -497,7 +1044,7 @@ public class CarShopController {
 
     // done converts a sql.Time to a string
     private static String timeToString(Time time) {
-        String pattern = "hh:mm";
+        String pattern = "HH:mm";
         SimpleDateFormat formatter = new SimpleDateFormat(pattern);
         return formatter.format(time);
     }

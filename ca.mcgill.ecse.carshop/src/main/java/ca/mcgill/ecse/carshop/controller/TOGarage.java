@@ -3,7 +3,7 @@
 
 package ca.mcgill.ecse.carshop.controller;
 
-// line 49 "../../../../../CarShopTransferObjects.ump"
+// line 52 "../../../../../CarShopTransferObjects.ump"
 public class TOGarage
 {
 
@@ -11,18 +11,42 @@ public class TOGarage
   // MEMBER VARIABLES
   //------------------------
 
+  //TOGarage Attributes
+  private String name;
+
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public TOGarage()
-  {}
+  public TOGarage(String aName)
+  {
+    name = aName;
+  }
 
   //------------------------
   // INTERFACE
   //------------------------
 
+  public boolean setName(String aName)
+  {
+    boolean wasSet = false;
+    name = aName;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public String getName()
+  {
+    return name;
+  }
+
   public void delete()
   {}
 
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "name" + ":" + getName()+ "]";
+  }
 }
