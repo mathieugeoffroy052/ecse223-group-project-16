@@ -2,6 +2,7 @@ package ca.mcgill.ecse.carshop.features;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -18,6 +19,7 @@ import java.util.Map;
 import javax.swing.text.html.CSS;
 
 import org.checkerframework.checker.units.qual.C;
+import org.junit.jupiter.api.BeforeEach;
 
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.model.Business;
@@ -26,6 +28,7 @@ import ca.mcgill.ecse.carshop.model.BusinessHour.DayOfWeek;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 import ca.mcgill.ecse.carshop.controller.TOBusiness;
+import ca.mcgill.ecse.carshop.model.Appointment;
 import ca.mcgill.ecse.carshop.model.BookableService;
 import ca.mcgill.ecse.carshop.model.CarShop;
 import ca.mcgill.ecse.carshop.model.ComboItem;
@@ -33,6 +36,7 @@ import ca.mcgill.ecse.carshop.model.Customer;
 import ca.mcgill.ecse.carshop.model.Garage;
 import ca.mcgill.ecse.carshop.model.Owner;
 import ca.mcgill.ecse.carshop.model.Service;
+import ca.mcgill.ecse.carshop.model.ServiceBooking;
 import ca.mcgill.ecse.carshop.model.ServiceCombo;
 import ca.mcgill.ecse.carshop.model.Technician;
 import ca.mcgill.ecse.carshop.model.User;
@@ -86,13 +90,14 @@ public class CucumberStepDefinitions {
 		@Before
 		public static void setUp() {
 			//CarShopApplication.getCarShop().delete();
+			// sets up the fields in the application
 			numberOfBusinessHours = 0;
 			numberOfHolidays = 0;
 			numberOfVacations = 0;
 			toBusiness = null;
 			oldBusinessHour = null;
 			oldBusinessHourInfo = null;
-			oldBusinessHourInfo = new String[3];
+			oldBusinessHourInfo = new String[3];	// create a new businesshour
 		}
 
 
@@ -108,14 +113,15 @@ public class CucumberStepDefinitions {
 		public void the_system_s_time_and_date_is(String date) {
 			String datePattern = "yyyy-MM-dd";
 			String timePattern = "HH:mm";
-			String[] splitString = date.split("\\+");
-			SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
-			SimpleDateFormat timeFormatter = new SimpleDateFormat(timePattern);
+			String[] splitString = date.split("\\+");// uses a formatter from java.sql.Date/Time
+			SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);// create a new object
+			SimpleDateFormat timeFormatter = new SimpleDateFormat(timePattern);// create a new object
 			Date newDate = null;
 			Time newTime = null;
 			try {
-				newDate = new java.sql.Date(dateFormatter.parse(splitString[0]).getTime());
-				newTime = new java.sql.Time(timeFormatter.parse(splitString[1]).getTime());
+				// uses a formatter from java.sql.Date/Time
+				newDate = new java.sql.Date(dateFormatter.parse(splitString[0]).getTime());// create a new object
+				newTime = new java.sql.Time(timeFormatter.parse(splitString[1]).getTime());// create a new object
 			} catch (Exception e) {
 				error += e.getMessage();
 				errorCounter++;
@@ -143,12 +149,14 @@ public class CucumberStepDefinitions {
 		public void a_new_business_with_new_and_and_and_shall_created(String name, String address, String phoneNumber,
 				String email, String result) {
 			if (result.equals("be")) {
+				// asserts equals
 				assertNotEquals(null, cs.getBusiness());
 				assertEquals(name, cs.getBusiness().getName());
 				assertEquals(address, cs.getBusiness().getAddress());
 				assertEquals(phoneNumber, cs.getBusiness().getPhoneNumber());
 				assertEquals(email, cs.getBusiness().getEmail());
 			} else {
+				// asserts equals
 				assertEquals(null, cs.getBusiness());
 			}
 		}
@@ -156,15 +164,17 @@ public class CucumberStepDefinitions {
 		@Then("an error message {string} shall {string} raised")
 		public void an_error_message_shall_raised(String errorString, String resultError) {
 			if (resultError.equalsIgnoreCase("be")) {
+				// asserts true
 				assertTrue(error.contains(errorString));
 			} else {
+				// asserts true
 				assertTrue(error.equals(""));
 			}
 		}
 
 		@Given("a business exists with the following information:")
 		public void a_business_exists_with_the_following_information(io.cucumber.datatable.DataTable dataTable) {
-			cs = CarShopApplication.getCarShop();
+			cs = CarShopApplication.getCarShop();// CarShopApplication used
 			List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
 
 			for (Map<String, String> columns : rows) {
@@ -173,7 +183,7 @@ public class CucumberStepDefinitions {
 				String phoneNumber = columns.get("phone number");
 				String email = columns.get("email");
 
-				Business newBusiness = new Business(name, address, phoneNumber, email, cs);
+				Business newBusiness = new Business(name, address, phoneNumber, email, cs);// create a new object
 				cs.setBusiness(newBusiness);
 			}
 		}
@@ -181,11 +191,13 @@ public class CucumberStepDefinitions {
 		@Given("the business has a business hour on {string} with start time {string} and end time {string}")
 		public void the_business_has_a_business_hour_on_with_start_time_and_end_time(String day, String start, String end) {
 			String pattern = "HH:mm";
-			SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+			// uses a formatter from java.sql.Date/Time
+			SimpleDateFormat formatter = new SimpleDateFormat(pattern);// create a new object
 
-			Time startTime = null;
-			Time endTime = null;
+			Time startTime = null;// set to null
+			Time endTime = null;// set to null
 			try {
+				// uses a formatter from java.sql.Date/Time
 				startTime = new java.sql.Time(formatter.parse(start).getTime());
 				endTime = new java.sql.Time(formatter.parse(end).getTime());
 			} catch (Exception e) {
@@ -193,9 +205,10 @@ public class CucumberStepDefinitions {
 				errorCounter++;
 			}
 
-			BusinessHour businessHour = new BusinessHour(BusinessHour.DayOfWeek.valueOf(day), startTime, endTime, cs);
+			BusinessHour businessHour = new BusinessHour(BusinessHour.DayOfWeek.valueOf(day), startTime, endTime, cs);// create a new object
 			oldBusinessHour = businessHour;
 			oldBusinessHourInfo[0] = businessHour.getDayOfWeek().name();
+			// uses a formatter from java.sql.Date/Time
 			oldBusinessHourInfo[1] = formatter.format(businessHour.getStartTime());
 			oldBusinessHourInfo[2] = formatter.format(businessHour.getEndTime());
 
@@ -231,7 +244,7 @@ public class CucumberStepDefinitions {
 		@Then("the {string} and {string} and {string} and {string} shall be provided to the user")
 		public void the_and_and_and_shall_be_provided_to_the_user(String name, String address, String phoneNumber,
 				String email) {
-			assertNotEquals(null, toBusiness);
+			assertNotEquals(null, toBusiness);// set to null
 			assertEquals(name, toBusiness.getName());
 			assertEquals(address, toBusiness.getAddress());
 			assertEquals(phoneNumber, toBusiness.getPhoneNumber());
@@ -241,21 +254,23 @@ public class CucumberStepDefinitions {
 		@Given("a {string} time slot exists with start time {string} at {string} and end time {string} at {string}")
 		public void a_time_slot_exists_with_start_time_at_and_end_time_at(String timeSlot, String startDate,
 				String startTime, String endDate, String endTime) {
-			Date sDate = null;
-			Time sTime = null;
-			Date eDate = null;
-			Time eTime = null;
+			Date sDate = null;// set to null
+			Time sTime = null;// set to null
+			Date eDate = null;// set to null
+			Time eTime = null;// set to null
 
 			String timePattern = "HH:mm";
 			String datePattern = "yyyy-MM-dd";
+			// uses a formatter from java.sql.Date/Time
 			SimpleDateFormat timeFormatter = new SimpleDateFormat(timePattern);
 			SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
 
 			try {
-				sDate = new java.sql.Date(dateFormatter.parse(startDate).getTime());
-				eDate = new java.sql.Date(dateFormatter.parse(endDate).getTime());
-				sTime = new java.sql.Time(timeFormatter.parse(startTime).getTime());
-				eTime = new java.sql.Time(timeFormatter.parse(endTime).getTime());
+				// uses a formatter from java.sql.Date/Time
+				sDate = new java.sql.Date(dateFormatter.parse(startDate).getTime());// create a new object
+				eDate = new java.sql.Date(dateFormatter.parse(endDate).getTime());// create a new object
+				sTime = new java.sql.Time(timeFormatter.parse(startTime).getTime());// create a new object
+				eTime = new java.sql.Time(timeFormatter.parse(endTime).getTime());// create a new object
 				if (timeSlot.equalsIgnoreCase("vacation")) {
 					cs.getBusiness().addVacation(new TimeSlot(sDate, sTime, eDate, eTime, cs));
 					numberOfVacations++;
@@ -286,13 +301,15 @@ public class CucumberStepDefinitions {
 				String startTime, String endDate, String endTime) {
 			String timePattern = "HH:mm";
 			String datePattern = "yyyy-MM-dd";
-			SimpleDateFormat timeFormatter = new SimpleDateFormat(timePattern);
-			SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
+			// uses a formatter from java.sql.Date/Time
+			SimpleDateFormat timeFormatter = new SimpleDateFormat(timePattern);// create a new object
+			SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);// create a new object
 
 			if (result.equals("be")) {
 				if (type.equals("holiday")) {
 					assertEquals(numberOfHolidays + 1, cs.getBusiness().getHolidays().size());
 					TimeSlot holiday = cs.getBusiness().getHoliday(numberOfHolidays);
+					// uses a formatter from java.sql.Date/Time
 					String sDate = dateFormatter.format(holiday.getStartDate());
 					String sTime = timeFormatter.format(holiday.getStartTime());
 					String eDate = dateFormatter.format(holiday.getEndDate());
@@ -304,6 +321,7 @@ public class CucumberStepDefinitions {
 				} else {
 					assertEquals(numberOfVacations + 1, cs.getBusiness().getVacations().size());
 					TimeSlot vacation = cs.getBusiness().getVacation(numberOfVacations);
+					// uses a formatter from java.sql.Date/Time
 					String sDate = dateFormatter.format(vacation.getStartDate());
 					String sTime = timeFormatter.format(vacation.getStartTime());
 					String eDate = dateFormatter.format(vacation.getEndDate());
@@ -372,17 +390,20 @@ public class CucumberStepDefinitions {
 		@Then("the business hour shall {string} be updated")
 		public void the_business_hour_shall_be_updated(String string) {
 			String pattern = "HH:mm";
-			SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+			// uses a formatter from java.sql.Date/Time
+			SimpleDateFormat formatter = new SimpleDateFormat(pattern);// create a new object
 
 			if (string.equalsIgnoreCase("be")) {
 				assertEquals(numberOfBusinessHours, cs.getBusiness().getBusinessHours().size());
 				String expectedString = oldBusinessHourInfo[0] + oldBusinessHourInfo[1] + oldBusinessHourInfo[2];
+				// uses a formatter from java.sql.Date/Time
 				String actualString = oldBusinessHour.getDayOfWeek().name() + formatter.format(oldBusinessHour.getStartTime()) 
 					+ formatter.format(oldBusinessHour.getEndTime());
 				assertNotEquals(expectedString, actualString);
 			} else {
 				assertEquals(numberOfBusinessHours, cs.getBusiness().getBusinessHours().size());
 				String expectedString = oldBusinessHourInfo[0] + oldBusinessHourInfo[1] + oldBusinessHourInfo[2];
+				// uses a formatter from java.sql.Date/Time
 				String actualString = oldBusinessHour.getDayOfWeek().name() + formatter.format(oldBusinessHour.getStartTime()) 
 					+ formatter.format(oldBusinessHour.getEndTime());
 				assertEquals(expectedString, actualString);
@@ -403,9 +424,11 @@ public class CucumberStepDefinitions {
 		public void the_business_hour_starting_at_shall_exist(String day, String time, String result) {
 			Business business = cs.getBusiness();
 			String pattern = "HH:mm";
-			SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+			// uses a formatter from java.sql.Date/Time
+			SimpleDateFormat formatter = new SimpleDateFormat(pattern);// create a new object
 			BusinessHour businessHour = null;
 			for (BusinessHour hour : business.getBusinessHours()) {
+				// uses a formatter from java.sql.Date/Time
 				if (hour.getDayOfWeek().name().equals(day) && formatter.format(hour.getStartTime()).equals(time)) {
 					businessHour = hour;
 				}
@@ -420,8 +443,10 @@ public class CucumberStepDefinitions {
 		@Then("an error message {string} shall {string} be raised")
 		public void an_error_message_shall_be_raised(String errorMessage, String result) {
 			if (result.equalsIgnoreCase("not")) {
+				// asserts true
 				assertTrue(error.equals(""));
 			} else {
+				// asserts true
 				assertTrue(error.contains(errorMessage));
 			}
 		}
@@ -440,16 +465,18 @@ public class CucumberStepDefinitions {
 		@Then("the {string} shall {string} updated with start date {string} at {string} and end date {string} at {string}")
 		public void the_shall_updated_with_start_date_at_and_end_date_at(String timeslot, String result, String startDate,
 				String startTime, String endDate, String endTime) {
-			TimeSlot foundSlot = null;
+			TimeSlot foundSlot = null;// set to null
 			Business business = cs.getBusiness();
 
 			String timePattern = "HH:mm";
 			String datePattern = "yyyy-MM-dd";
-			SimpleDateFormat timeFormatter = new SimpleDateFormat(timePattern);
-			SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
+			// uses a formatter from java.sql.Date/Time
+			SimpleDateFormat timeFormatter = new SimpleDateFormat(timePattern);// create a new object
+			SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);// create a new object
 
 			if (timeslot.equalsIgnoreCase("vacation")) {
 				for (TimeSlot slot : business.getVacations()) {
+					// uses a formatter from java.sql.Date/Time
 					if (dateFormatter.format(slot.getStartDate()).equals(startDate)
 							&& timeFormatter.format(slot.getStartTime()).equals(startTime)
 							&& dateFormatter.format(slot.getEndDate()).equals(endDate)
@@ -459,6 +486,7 @@ public class CucumberStepDefinitions {
 				}
 			} else {
 				for (TimeSlot slot : business.getHolidays()) {
+					// uses a formatter from java.sql.Date/Time
 					if (dateFormatter.format(slot.getStartDate()).equals(startDate)
 							&& timeFormatter.format(slot.getStartTime()).equals(startTime)
 							&& dateFormatter.format(slot.getEndDate()).equals(endDate)
@@ -472,7 +500,7 @@ public class CucumberStepDefinitions {
 			if (result.equalsIgnoreCase("not be")) {
 				assertEquals(null, foundSlot);
 			} else {
-				assertNotEquals(null, foundSlot);
+				assertNotEquals(null, foundSlot);// set to null
 			}
 		}
 
@@ -489,16 +517,17 @@ public class CucumberStepDefinitions {
 
 		@Then("the {string} with start date {string} at {string} shall {string} exist")
 		public void the_with_start_date_at_shall_exist(String type, String startDate, String startTime, String result) {
-			TimeSlot timeSlot = null;
+			TimeSlot timeSlot = null;// set to null
 			Business business = cs.getBusiness();
 
 			String timePattern = "HH:mm";
 			String datePattern = "yyyy-MM-dd";
-			SimpleDateFormat timeFormatter = new SimpleDateFormat(timePattern);
-			SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
+			SimpleDateFormat timeFormatter = new SimpleDateFormat(timePattern);// create a new object
+			SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);// create a new object
 
 			if (type.equalsIgnoreCase("vacation")) {
 				for (TimeSlot slot : business.getVacations()) {
+					// uses a formatter from java.sql.Date/Time
 					if (dateFormatter.format(slot.getStartDate()).equals(startDate)
 							&& timeFormatter.format(slot.getStartTime()).equals(startTime)) {
 						timeSlot = slot;
@@ -506,6 +535,7 @@ public class CucumberStepDefinitions {
 				}
 			} else {
 				for (TimeSlot slot : business.getHolidays()) {
+					// uses a formatter from java.sql.Date/Time
 					if (dateFormatter.format(slot.getStartDate()).equals(startDate)
 							&& timeFormatter.format(slot.getStartTime()).equals(startTime)) {
 						timeSlot = slot;
@@ -514,9 +544,9 @@ public class CucumberStepDefinitions {
 			}
 
 			if (result.equalsIgnoreCase("not")) {
-				assertEquals(null, timeSlot);
+				assertEquals(null, timeSlot);// set to null
 			} else {
-				assertNotEquals(null, timeSlot);
+				assertNotEquals(null, timeSlot);// set to null
 			}
 
 		}
@@ -537,7 +567,7 @@ public class CucumberStepDefinitions {
 		// use controller and do some operations
 		try {
 			user = CarShopController.signUpUser(string, string2, CarShopApplication.AccountType.Customer);
-			CarShopApplication.setUser(user);
+			CarShopApplication.setUser(user);// uses CarShopApplication
 			numberOfChanges++;
 		} catch (Exception e) {
 			error += e.getMessage();
@@ -548,22 +578,23 @@ public class CucumberStepDefinitions {
 
 	@Then("a new customer account shall be created")
 	public void a_new_customer_account_shall_be_created() {
-		assertTrue(user != null);
+		// asserts true
+		assertTrue(user != null);// set to null
 	}
 
 	@Then("the account shall have username {string} and password {string}")
 	public void the_account_shall_have_username_and_password(String string, String string2) 
 	{
-		
+		// set to null				// asserts true
 		assertTrue(CarShopApplication.getUser() != null && 
 				CarShopApplication.getUser().getUsername().equals(string) && 
-				CarShopApplication.getUser().getPassword().equals(string2)); 
-
+				CarShopApplication.getUser().getPassword().equals(string2)); // CarShopApplication used
+		// CarShopApplication used
 	}
 
 	@Then("no new account shall be created")
 	public void no_new_account_shall_be_created() {
-		assertTrue(user == null);
+		assertTrue(user == null);// set to null
 
 	}
 
@@ -574,7 +605,7 @@ public class CucumberStepDefinitions {
 		
 		if (string.equals("owner") )
 		{
-			Owner owner = new Owner("owner", "owner", cs);
+			Owner owner = new Owner("owner", "owner", cs);// create a new object
 			cs.setOwner(owner); // unnecessary step
 		}
 		else if (string.contains("Technician"))
@@ -594,7 +625,7 @@ public class CucumberStepDefinitions {
 	@When("the user tries to update account with a new username {string} and password {string}")
 	public void the_user_tries_to_update_account_with_a_new_username_and_password(String string, String string2)  {
 
-		user = CarShopApplication.getUser();
+		user = CarShopApplication.getUser();// CarShopApplication used
 		try {
 			CarShopController.updateUser(string, string2);
 		} catch (Exception e) {
@@ -605,20 +636,21 @@ public class CucumberStepDefinitions {
 	}
 
 	@Then("the account shall not be updated")
-	public void the_account_shall_not_be_updated(){
-		assertTrue(errorCntr>0);		
+	public void the_account_shall_not_be_updated() {
+		assertTrue(errorCntr>0);	// asserts true
 	}
 	
 	// TODO Matthew
 	private String curUsername;
 	private String curPassword;
+	private int numApp;
 	
 	
 	@Given("an owner account exists in the system with username {string} and password {string}")
 	public void an_owner_account_exists_in_the_system_with_username_and_password(String string, String string2) {
 	    // Write code here that turns the phrase above into concrete actions
 		//is this correct? do i need to first check that the owner is not already in the system and then just log them in? hmm
-		Owner owner = new Owner(string, string2, cs);
+		Owner owner = new Owner(string, string2, cs);// create a new object
 		cs.setOwner(owner);		
 	}
 
@@ -628,7 +660,7 @@ public class CucumberStepDefinitions {
 	    curUsername = User.getWithUsername(string).getUsername();
 	    curPassword = User.getWithUsername(string).getPassword();
 	    try {
-	    	CarShopApplication.setUsername(string);
+	    	CarShopApplication.setUsername(string);// CarShopApplication used
 			CarShopController.login(string, curPassword);
 		} catch (InvalidInputException e) {
 			error = e.getMessage();
@@ -645,17 +677,20 @@ public class CucumberStepDefinitions {
 	    // Map<K, List<V>>. E,K,V must be a String, Integer, Float,
 	    // Double, Byte, Short, Long, BigInteger or BigDecimal.
 		try {
-		DayOfWeek dayOfWeek = null;
+		DayOfWeek dayOfWeek = null;// set to null
 		Business business = cs.getBusiness();
+		// create a list
 		List<List<String>> rows = table.asLists(String.class);
+		// create a list
 		for (List<String> column : rows) {
 			if(column.get(0).equals("day")) {
 	    		continue;
 	    	}
 			dayOfWeek = CarShopController.getWeekDay(column.get(0));
+			// converts from string to time with method in the controller
 			Time startTime = CarShopController.stringToTimeMatthew(column.get(1));
 			Time endTime = CarShopController.stringToTimeMatthew(column.get(2));
-			BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);
+			BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);// create a new object
 			business.addBusinessHour(businessHour);
 
 		}
@@ -668,16 +703,16 @@ public class CucumberStepDefinitions {
 
     @After
     public void teardown() {
-    	if(cs!=null) {
+    	if(cs!=null) {// check if null
         	cs.delete();
         	numberOfChanges = 0;
-        	user = null;
-        	username = null;
-        	password = null;
-        	curPassword = null;
-        	curUsername = null;
+        	user = null;// set to null
+        	username = null;// set to null
+        	password = null;// set to null
+        	curPassword = null;// set to null
+        	curUsername = null;// set to null
     	}
-    	CarShopApplication.restart();
+    	CarShopApplication.restart();// CarShopApplication used
     }
 	
 	// DEFINE SERVICE COMBO	
@@ -685,7 +720,7 @@ public class CucumberStepDefinitions {
 	@Given("a Carshop system exists")
 	public void a_carshop_system_exists() {
         // Write code here that turns the phrase above into concrete actions
-    	cs = CarShopApplication.getCarShop();
+    	cs = CarShopApplication.getCarShop();// CarShopApplication used
 		error = "";
 		errorCntr = 0;
 	}
@@ -700,18 +735,22 @@ public class CucumberStepDefinitions {
 	@Given("a business exists in the system")
 	public void a_business_exists_in_the_system() {
         // Write code here that turns the phrase above into concrete actions
-		Business bs = new Business("car-shop", "montreal", "5141234567", "xyz@mcgill.ca", cs);
+		Business bs = new Business("car-shop", "montreal", "5141234567", "xyz@mcgill.ca", cs);// create a new object
 		cs.setBusiness(bs); // unnecessary step
 	}
 
 	@Given("the following technicians exist in the system:")
 	public void the_following_technicians_exist_in_the_system(io.cucumber.datatable.DataTable dataTable) {
 	    // Write code here that turns the phrase above into concrete actions
+		// create a list
+
 		List<List<String>> rows = dataTable.asLists(String.class);
+		// create a list
+
 	    for (List<String> columns : rows) {
 	    	if(columns.get(0).contains("name")) continue;
 	    	String str = columns.get(0);
-	    	Technician.TechnicianType aType = null;
+	    	Technician.TechnicianType aType = null;// set to null
 	    	str = str.toLowerCase();
 			if(str.contains("tire")) {
 				aType = Technician.TechnicianType.Tire;
@@ -728,7 +767,7 @@ public class CucumberStepDefinitions {
 			else if(str.contains("fluids")) {
 				aType = Technician.TechnicianType.Fluids;
 			}
-	        cs.addTechnician(new Technician(columns.get(0), columns.get(1), aType, cs));
+	        cs.addTechnician(new Technician(columns.get(0), columns.get(1), aType, cs));// create a new object
 	    }
 	}
 
@@ -737,19 +776,21 @@ public class CucumberStepDefinitions {
 	public void each_technician_has_their_own_garage() {
 	    // Write code here that turns the phrase above into concrete actions
 		for(Technician t : cs.getTechnicians()) {
-			t.setGarage(new Garage(cs, t));
+			t.setGarage(new Garage(cs, t));// create a new object
 		}
 	}
 
 	@Given("the following services exist in the system:")
 	public void the_following_services_exist_in_the_system(io.cucumber.datatable.DataTable dataTable) {
 	    // Write code here that turns the phrase above into concrete actions
+		// create a list
 		List<List<String>> rows = dataTable.asLists();
+		// create a list
 	    for (List<String> columns : rows) {
 	    if(columns.get(0).contains("name")) continue;
 	    else {
 	    	int toPut = cs.getTechnicianWithString(columns.get(0));
-	    	cs.addBookableService(new Service(columns.get(0), cs, Integer.parseInt(columns.get(1)), 
+	    	cs.addBookableService(new Service(columns.get(0), cs, Integer.parseInt(columns.get(1)), // create a new object
 	    			cs.getTechnician(toPut).getGarage()));
 	    	}
 	    }
@@ -758,8 +799,8 @@ public class CucumberStepDefinitions {
 	@Given("the Owner with username {string} is logged in")
 	public void the_owner_with_username_is_logged_in(String string) {
 	    // Write code here that turns the phrase above into concrete actions
-		String password = CarShopApplication.getCarShop().getOwner().getPassword();
-		CarShopApplication.logIn(string, password);
+		String password = CarShopApplication.getCarShop().getOwner().getPassword();// CarShopApplication used
+		CarShopApplication.logIn(string, password);// CarShopApplication used
 	}
 
 	@When("{string} initiates the definition of a service combo {string} with main service {string}, services {string} and mandatory setting {string}")
@@ -785,7 +826,7 @@ public class CucumberStepDefinitions {
 	    // Write code here that turns the phrase above into concrete actions
 		boolean[] mandatoryList = CarShopController.parseStringByMandatory(string3);
 		int index = cs.getBookableServices().size()-1;
-	
+		// go through the loop
 		for(int i = 0; i < mandatoryList.length; i++) {
 			@SuppressWarnings("static-access")
 			BookableService check = cs.getBookableService(index).getWithName(string);
@@ -816,7 +857,7 @@ public class CucumberStepDefinitions {
 		int j = 0;
 		while(i < cs.getBookableServices().size()) {
 			BookableService toCheck = cs.getBookableService(i);
-			if(toCheck.getMainService()==null) j++;
+			if(toCheck.getMainService()==null) j++; // if null
 			i++;
 		}
 		int compare = Integer.parseInt(string);
@@ -827,7 +868,7 @@ public class CucumberStepDefinitions {
 	public void the_following_service_combos_exist_in_the_system(io.cucumber.datatable.DataTable dataTable) {
 	    // Write code here that turns the phrase above into concrete actions
 		List<List<String>> rows = dataTable.asLists();
-	    for (List<String> columns : rows) {
+	    for (List<String> columns : rows) { 		// go through the loop
 	    if(columns.get(0).contains("name")) continue;
 	    else {
 	    	ServiceCombo sc = new ServiceCombo(columns.get(0), cs);
@@ -835,11 +876,11 @@ public class CucumberStepDefinitions {
 	    	// gets the main service
 	    	@SuppressWarnings("static-access")
 			Service ms = (Service) cs.getBookableService(0).getWithName(columns.get(1));
-	    	sc.setMainService(new ComboItem(true, ms, sc));
+	    	sc.setMainService(new ComboItem(true, ms, sc));// create a new object
 	    	List<String> services = Arrays.asList(columns.get(2).split(","));
 	    	List<String> bools = Arrays.asList(columns.get(3).split(","));
 	    	int i = 0;
-			for(String s : services) {
+			for(String s : services) { 		// go through the loop
 				@SuppressWarnings("static-access")
 				Service toAdd = (Service) cs.getBookableService(0).getWithName(s);
 				boolean toAdd1 = Boolean.parseBoolean(bools.get(i));
@@ -877,7 +918,7 @@ public class CucumberStepDefinitions {
 	    // Write code here that turns the phrase above into concrete actions
     	List<List<String>> rows = dataTable.asLists();
 		int i = 0;
-	    for (List<String> columns : rows) {
+	    for (List<String> columns : rows) { 		// go through the loop
 	    if(i == 0) {
 	    	i++;
 	    }
@@ -897,28 +938,28 @@ public class CucumberStepDefinitions {
 		else if(string.contains("technician")) {
 			Technician.TechnicianType a = cs.getTechnician(0).getTechnicianType(string);
 			if(a.equals(Technician.TechnicianType.Engine)) {
-				CarShopApplication.setAccountType(CarShopApplication.AccountType.EngineTechnician);
+				CarShopApplication.setAccountType(CarShopApplication.AccountType.EngineTechnician);// CarShopApplication used
 				CarShopApplication.setLoggedIn(true);
 			}
 			else if(a.equals(Technician.TechnicianType.Tire)) {
-				CarShopApplication.setAccountType(CarShopApplication.AccountType.TireTechnician);
+				CarShopApplication.setAccountType(CarShopApplication.AccountType.TireTechnician);// CarShopApplication used
 				CarShopApplication.setLoggedIn(true);
 			}
 			else if(a.equals(Technician.TechnicianType.Transmission)) {
-				CarShopApplication.setAccountType(CarShopApplication.AccountType.TransmissionTechnician);
+				CarShopApplication.setAccountType(CarShopApplication.AccountType.TransmissionTechnician);// CarShopApplication used
 				CarShopApplication.setLoggedIn(true);
 			}
 			else if(a.equals(Technician.TechnicianType.Electronics)) {
-				CarShopApplication.setAccountType(CarShopApplication.AccountType.ElectronicsTechnician);
+				CarShopApplication.setAccountType(CarShopApplication.AccountType.ElectronicsTechnician);// CarShopApplication used
 				CarShopApplication.setLoggedIn(true);
 			}
 			else {
-				CarShopApplication.setAccountType(CarShopApplication.AccountType.FluidsTechnician);
+				CarShopApplication.setAccountType(CarShopApplication.AccountType.FluidsTechnician);// CarShopApplication used
 				CarShopApplication.setLoggedIn(true);
 			}
 		}
 		else {
-			CarShopApplication.setAccountType(CarShopApplication.AccountType.Customer);
+			CarShopApplication.setAccountType(CarShopApplication.AccountType.Customer);// CarShopApplication used
 			CarShopApplication.setLoggedIn(true);
 		}
 	}
@@ -961,7 +1002,7 @@ public class CucumberStepDefinitions {
     public void the_number_of_services_in_the_system_shall_be(String string) {
     	int compare = Integer.parseInt(string);
     	int counter = 0;
-    	for (BookableService bookSer : cs.getBookableServices()) {
+    	for (BookableService bookSer : cs.getBookableServices()) { 		// go through the loop
     		if (bookSer instanceof Service) {
     			counter++;
     		}
@@ -976,7 +1017,7 @@ public class CucumberStepDefinitions {
     	List<BookableService> serviceList = cs.getBookableServices();
     	int i;
     	boolean serviceExists = false;
-    	for (i = 0; i < serviceList.size(); i++) {
+    	for (i = 0; i < serviceList.size(); i++) { 		// go through the loop
     		if (cs.getBookableService(i).hasWithName(string))
     		serviceExists = true;
     	}
@@ -1042,8 +1083,8 @@ public class CucumberStepDefinitions {
 	    // Write code here that turns the phrase above into concrete actions
 //		assertNotNull(CarShopApplication.getUser());
 		//is this correct?
-		assertEquals(curPassword, CarShopApplication.getUser().getPassword());
-		assertEquals(curUsername, CarShopApplication.getUser().getUsername());
+		assertEquals(curPassword, CarShopApplication.getUser().getPassword());// CarShopApplication used
+		assertEquals(curUsername, CarShopApplication.getUser().getUsername());// CarShopApplication used
 //		assertEquals(CarShopApplication.AccountType.Customer, CarShopApplication.getAccountType(CarShopApplication.getUser()));
 		}
 
@@ -1051,7 +1092,7 @@ public class CucumberStepDefinitions {
 	public void the_user_should_not_be_logged_in() {
 		// how does this tie in to the previous scenario? is it assumed that this is a new scenario? how do we know?
 
-		assertNull(CarShopApplication.getUser());
+		assertNull(CarShopApplication.getUser());// CarShopApplication used
 //		assertNotEquals(curUsername, CarShopApplication.getUser().getUsername());
 	}
 	
@@ -1078,8 +1119,8 @@ public class CucumberStepDefinitions {
 		}catch(Exception e) {
 			error = e.getMessage();
 		}
-		assertEquals(curUsername, CarShopApplication.getUser().getUsername());
-		assertEquals(curPassword, CarShopApplication.getUser().getPassword());
+		assertEquals(curUsername, CarShopApplication.getUser().getUsername());// CarShopApplication used
+		assertEquals(curPassword, CarShopApplication.getUser().getPassword());// CarShopApplication used
 	    // Write code here that turns the phrase above into concrete actions
 	}
 
@@ -1096,7 +1137,7 @@ public class CucumberStepDefinitions {
 		// get technician type
 		Technician techGuy = cs.getTechnician(CarShopController.getTechnician(curUsername, cs));
 		CarShopController.setGarage(techGuy, cs);
-		assertTrue(techGuy.hasGarage());
+		assertTrue(techGuy.hasGarage()); // asserts true
 	}
 
 	@Then("the garage should have the same opening hours as the business")
@@ -1109,8 +1150,8 @@ public class CucumberStepDefinitions {
 		Garage techGuyGarage = techGuy.getGarage();
 		Business csBusiness = cs.getBusiness();
 		List<BusinessHour> businessHours;
-		if(csBusiness == null) {
-			businessHours = new ArrayList<BusinessHour>(); 
+		if(csBusiness == null) {// if null
+			businessHours = new ArrayList<BusinessHour>(); // create a new object
 		}else{
 			businessHours = csBusiness.getBusinessHours();
 			for(BusinessHour entry: businessHours) {
@@ -1142,8 +1183,9 @@ public class CucumberStepDefinitions {
 		
 		long endLong = endTime.getTime();
 		
-		for(BusinessHour hours:businessHours) {
+		for(BusinessHour hours:businessHours) { 		// go through the loop
 			if(hours.getDayOfWeek().equals(CarShopController.getWeekDay(string2))) {
+				// converts from string to time with method in the controller
 				if(hours.getStartTime().getTime() == (CarShopController.stringToTimeMatthew(string3)).getTime()) {
 					if(hours.getEndTime().getTime() == (CarShopController.stringToTimeMatthew(string4)).getTime()) {
 						test = true;
@@ -1156,7 +1198,7 @@ public class CucumberStepDefinitions {
 			}
 		}
 
-
+		// asserts true
 		assertTrue(test);
 		} catch (InvalidInputException e) {
 			error = e.getMessage();
@@ -1171,6 +1213,7 @@ public class CucumberStepDefinitions {
 			Technician technician = CarShopController.findTechnician(string4, cs);
 			Garage garage = technician.getGarage();
 			DayOfWeek dayOfWeek = CarShopController.getWeekDay(string);
+			// converts from string to time with method in the controller
 			Time startTime = CarShopController.stringToTimeMatthew(string2);
 			Time endTime = CarShopController.stringToTimeMatthew(string3);
 			BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);
@@ -1187,10 +1230,11 @@ public class CucumberStepDefinitions {
 		try {
 		Technician technician = CarShopController.findTechnician(string4, cs);
 		DayOfWeek dayOfWeek = CarShopController.getWeekDay(string);
+		// converts from string to time with method in the controller
 		Time startTime = CarShopController.stringToTimeMatthew(string2);
 		Time endTime = CarShopController.stringToTimeMatthew(string3);
-		BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);
-		BusinessHour hoursToRemove = new BusinessHour(dayOfWeek, startTime, endTime, cs);
+		BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);// create a new object
+		BusinessHour hoursToRemove = new BusinessHour(dayOfWeek, startTime, endTime, cs);// create a new object
 
 		try {
 			CarShopController.removeBusinessHour(hoursToRemove, CarShopApplication.getUser(), technician.getGarage(), cs);
@@ -1208,13 +1252,15 @@ public class CucumberStepDefinitions {
 	public void the_garage_belonging_to_the_technician_with_type_should_not_have_opening_hours_on_from_to(String string, String string2, String string3, String string4) {
 	    // Write code here that turns the phrase above into concrete actions
 		try {
+		// converts from string to time with method in the controller
 		Technician technician = CarShopController.findTechnician(string, cs);
 		DayOfWeek dayOfWeek = CarShopController.getWeekDay(string2);
+		// converts from string to time with method in the controller
 		Time startTime = CarShopController.stringToTimeMatthew(string3);
 		Time endTime = CarShopController.stringToTimeMatthew(string4);
 				
-		BusinessHour hoursToAdd = new BusinessHour(dayOfWeek, startTime, endTime, cs);
-		
+		BusinessHour hoursToAdd = new BusinessHour(dayOfWeek, startTime, endTime, cs);// create a new object
+		// asserts true
 		assertTrue(!technician.getGarage().getBusinessHours().contains(hoursToAdd));
 		} catch (InvalidInputException e) {
 			error = e.getMessage();
@@ -1234,18 +1280,266 @@ public class CucumberStepDefinitions {
 		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Thursday)) toCheck = 3;
 		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Friday)) toCheck = 4;
 		else throw new InvalidInputException("The opening hours are not within the opening hours");
+		// converts from string to time with method in the controller
 		Time ourStartTime = CarShopController.stringToTimeMatthew(string2);
 		Time ourEndTime = CarShopController.stringToTimeMatthew(string3);
 		Technician technician = CarShopController.findTechnician(string4, cs);
 	
 		Garage garage = technician.getGarage();
 		BusinessHour businessHour = new BusinessHour(dayOfWeek, ourStartTime, ourEndTime, cs);
-		CarShopController.addBusinessHour(businessHour, CarShopApplication.getUser(), garage, cs);
+		CarShopController.addBusinessHour(businessHour, CarShopApplication.getUser(), garage, cs);// CarShopApplication used
+		} catch (Exception e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
+	}
+
+
+
+ //------------------------------------------------------- ROBERT
+
+
+	// ROBERT
+	// AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+
+	@Given("all garages has the following opening hours")
+	public void all_garages_has_the_following_opening_hours(io.cucumber.datatable.DataTable dataTable) throws InvalidInputException  {
+		//Date Start = dateFormat.parse(startTime);
+		//Date End = dateFormat.parse(endTime);
+		List<Garage> garages = cs.getGarages();
+		List<Map<String,String>> rows = dataTable.asMaps(String.class,String.class);
+		
+		for (Garage garage : garages) { 		// go through the loop
+			for (Map<String,String> columns : rows) {		// go through the loop
+				BusinessHour.DayOfWeek day = BusinessHour.DayOfWeek.valueOf(columns.get("day")); //columns.get("day");
+				// converts from string to time with method in the controller
+				Time start = CarShopController.stringToTime(columns.get("startTime")); //(Time) timeFormat.parse(columns.get("startTime"));
+				Time end = CarShopController.stringToTime(columns.get("endTime")); //(Time) timeFormat.parse(columns.get("endtime"));
+				garage.addBusinessHour(new BusinessHour(day, start, end, cs));// create a new object
+			}	
+		}
+	}
+
+	@Given("the business has the following holidays")
+	public void the_business_has_the_following_holidays(io.cucumber.datatable.DataTable dataTable)
+			throws InvalidInputException {
+		cs = CarShopApplication.getCarShop();// CarShopApplication used
+		Business businesses = cs.getBusiness();
+		List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
+		for (Map<String, String> columns : rows) {		// go through the loop
+			// TODO
+//			BusinessHour.DayOfWeek day = BusinessHour.DayOfWeek.valueOf(columns.get("day")); // columns.get("day");
+			// uses method in the controller
+			Date startDate = CarShopController.stringToDate(columns.get("startDate")); // dateFormat.parse(columns.get("startDate"));
+			// uses method in the controller
+			Date endDate = CarShopController.stringToDate(columns.get("endDate")); // dateFormat.parse(columns.get("endDate"));
+			// converts from string to time with method in the controller
+			Time startTime = CarShopController.stringToTime(columns.get("startTime")); // (Time)
+			// timeFormat.parse(columns.get("startTime"));
+			Time endTime = CarShopController.stringToTime(columns.get("endTime")); // (Time)
+			// timeFormat.parse(columns.get("endtime"));
+			TimeSlot timeSlot = new TimeSlot(startDate, startTime, endDate, endTime, cs);// create a new object
+		}
+
+	}
+
+	@Given("the following appointments exist in the system:")
+	public void the_following_appointments_exist_in_the_system(io.cucumber.datatable.DataTable dataTable)
+			throws InvalidInputException {
+		List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
+		String customer = "";// empty string
+		String serviceName = "";// empty string
+		String date = "";// empty string
+		String firstTime1 = "";// empty string
+		String secondTime1 = "";// empty string
+		for (Map<String, String> columns : rows) {
+			customer = columns.get("customer");
+			serviceName = columns.get("serviceName");
+			String optServices = columns.get("optServices");
+			date = (columns.get("date"));
+			String timeSlots = columns.get("timeSlots");
+			Date dates = CarShopController.stringToDate(columns.get("date"));
+			String[] ts1 = timeSlots.split(",");
+			String firstTimeSlot = ts1[0];
+			String secondTimeSlot = ts1[1];
+			String[] firstTime = firstTimeSlot.split("-");
+			String[] secondTime = secondTimeSlot.split("-");
+			firstTime1 = firstTime[0];
+			secondTime1 = secondTime[0];
+			CarShopController.CreateAppointment(customer, serviceName, firstTime1+","+secondTime1 , date, cs);
+			numApp++;
+		}
+	}
+
+
+	@Given("{string} is logged in to their account")
+	public void is_logged_in_to_their_account(String string) {
+		cs = CarShopApplication.getCarShop();
+		User user = User.getWithUsername(string);
+		CarShopApplication.logIn(string, user.getPassword());
+	}
+	@When("{string} attempts to cancel their {string} appointment on {string} at {string}")
+	public void attempts_to_cancel_their_appointment_on_at(String string, String string2, String string3, String string4) throws InvalidInputException {
+		CarShopController.CancelAppointment(string, string2, string3, string4, cs);// uses method in the controller
+		numApp--;// uses method in the controller
+		// Write code here that turns the phrase above into concrete actions
+	}
+	@Then("{string}'s {string} appointment on {string} at {string} shall be removed from the system")
+	public void s_appointment_on_at_shall_be_removed_from_the_system(String string, String string2, String string3, String string4) throws InvalidInputException {
+		//assertEquals(getTimeSlots().getStartTime());
+		List<TimeSlot> timeSlot = cs.getTimeSlots();
+		// converts from string to time with method in the controller
+		Time startTime = CarShopController.stringToTime(string4);// uses method in the controller
+		Date date = CarShopController.stringToDate(string3);// uses method in the controller
+		TimeSlot a = null;// if null
+		for (TimeSlot ts: cs.getTimeSlots()) {		// go through the loop
+			if (ts.getStartTime().equals(startTime) && ts.getStartDate().equals(date)) {
+				a = ts;
+			}
+		}
+
+		Boolean appDNE = false;
+		Customer customer = ((Customer) CarShopApplication.getUser());
+		List<Appointment> appointment = customer.getAppointments();
+		for (Appointment app : appointment) {		// go through the loop
+			List<ServiceBooking> serviceBooking = app.getServiceBookings();
+			for (ServiceBooking sb: serviceBooking) {		// go through the loop
+				if (sb.getTimeSlot().equals(a)) {
+					appDNE = true;
+				}
+			}
+		}
+		// asserts true
+		assertTrue(appDNE);
+
+		// Write code here that turns the phrase above into concrete actions
+	}
+	@Then("there shall be {int} less appointment in the system")
+	public void there_shall_be_less_appointment_in_the_system(Integer int1) {
+		assertEquals(numApp,cs.numberOfAppointments());
+	}
+	
+	@Then("the system shall report {string}")
+	public void the_system_shall_report(String string) {
+	    // Write code here that turns the phrase above into concrete actions
+		// asserts true
+		assertTrue(error.contains(string));
+	}
+	@When("{string} schedules an appointment on {string} for {string} at {string}")
+	public void schedules_an_appointment_on_for_at(String string, String date, String serviceName, String startTime) throws InvalidInputException {
+	    CarShopController.CreateAppointment(string,serviceName,startTime,date,cs);// uses method in the controller
+		numApp++;
+	    // Write code here that turns the phrase above into concrete actions
+	}
+	
+	@Then("{string} shall have a {string} appointment on {string} at {string} with the following properties")
+	public void shall_have_a_appointment_on_at_with_the_following_properties(String string, String string2, String string3, String string4, io.cucumber.datatable.DataTable dataTable) throws InvalidInputException {
+		List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
+		String serviceName = null;// set to null
+		String optServices = null;// set to null
+		String date = null;// set to null
+		String startTime = null;// set to null
+		String endTime = null;// set to null
+		Customer cust = (Customer) User.getWithUsername("customer1");
+		for (Map<String, String> columns : rows) {
+		serviceName = columns.get("serviceName");
+		//optServices = columns.get("optServices");
+		date = columns.get("date");
+		startTime = columns.get("startTime");
+		endTime = columns.get("endTime");
+//		String timeSlots = columns.get("timeSlots");
+//		String[] time = timeSlots.split(",");
+//		String firstTimeSlot = time[0];
+//		String secondTimeSlot = time[1];
+//		String[] firstTime = firstTimeSlot.split("-");
+//		firstTime1 = firstTime[0];
+		}
+		// to compare
+		// converts from string to time with method in the controller
+		Date dateServiceToCompare = CarShopController.stringToDate(date);// uses method in the controller
+		Time startTimeToCompare = CarShopController.stringToTime(startTime);// uses method in the controller
+		Time endTimeToCompare = CarShopController.stringToTime(endTime);// uses method in the controller
+		
+		// create a temp variable
+		boolean sN = false;
+		List<Appointment> appointment = cs.getAppointments();
+		for (Appointment app: appointment) {		// go through the loop
+			if (app.getBookableService().getName().equals(string2)) {
+				sN = true;
+			}
+		}
+		List<Appointment> checkedAppList = cust.getAppointments();
+		Appointment checkedApp = null;// set to null
+		for (Appointment app : checkedAppList ) {		// go through the loop
+			if (app.getBookableService().getName().equals(string2)) {
+				checkedApp = app;
+			}
+		}
+		assertNotNull(checkedApp);
+		List<ServiceBooking> serviceBooking = checkedApp.getServiceBookings();
+		for (ServiceBooking sb: serviceBooking) {		// go through the loop
+			String nameService = sb.getService().getName();
+			Date dateService = sb.getTimeSlot().getStartDate();
+			Time startTime1 = sb.getTimeSlot().getStartTime();
+			Time endTime1= sb.getTimeSlot().getEndTime();
+			assertEquals(serviceName, nameService);
+			assertEquals(dateServiceToCompare, dateService);
+			assertEquals(startTimeToCompare, startTime1);
+			assertEquals(endTimeToCompare, endTime1);	
+		}
+		
+		
+		//assertTrue(string2.equals(serviceName) && string3.equals(optServices) && string4.equals(date) && string5.equals(firstTime1));
+	}
+	
+	@Then("{string} shall have a {string} appointment on {string} from {string} to {string}")
+	public void shall_have_a_appointment_on_from_to(String string, String string2, String string3, String string4, String string5) {
+		try {
+			// create a temp variable
+			Appointment toCheckApp = null;// set to null
+			for(Appointment app : cs.getAppointments()) {		// go through the loop
+				// get the bookable service, compare the name
+				if(app.getBookableService().getName().equals(string2)) {
+					toCheckApp = app;
+					break;
+				}
+			}
+			CarShopController.parseStringByServices(string4);	// uses method in the controller
+			// uses method in the controller
+			// get the customer, check the username and get the time with the time slot and assure that the time is correct
+			Customer toCheck = (Customer) User.getWithUsername(string);
+			int size = toCheck.getAppointment(toCheck.numberOfAppointments()-1).getServiceBookings().size()-1;
+			TimeSlot ts = toCheck.getAppointment(toCheck.numberOfAppointments()-1).getServiceBooking(size).getTimeSlot();
+			// asserts true
+			// converts from string to time with method in the controller
+			assertEquals(CarShopController.stringToDate(string3), ts.getStartDate());
+			assertEquals(CarShopController.stringToTime(string4), ts.getStartTime());
+			assertEquals(CarShopController.stringToTime(string5), ts.getEndTime());
+			assertEquals(toCheckApp, toCheck.getAppointment(toCheck.numberOfAppointments()-1));
+		} catch (Exception e) {}
+		
+	}
+	
+	@Then("there shall be {int} more appointment in the system")
+	public void there_shall_be_more_appointment_in_the_system(Integer int1) {
+	    // Write code here that turns the phrase above into concrete actions
+	    assertEquals(numApp, cs.numberOfAppointments());
+	}
+	
+	// schedule the appointment with five variables including the optServices
+	@When("{string} schedules an appointment on {string} for {string} with {string} at {string}")
+	public void schedules_an_appointment_on_for_with_at(String string, String string2, String string3, String string4, String string5) {
+		try {
+			CarShopController.CreateAppointment(string, string3, string5, string2, string4, cs);
 		} catch (Exception e) {
 			error = e.getMessage();
 			errorCntr++;
 		}
 	}
 	
-
+	@BeforeEach
+	public void init() {
+		numApp = 0;
+	}
+	
 }
