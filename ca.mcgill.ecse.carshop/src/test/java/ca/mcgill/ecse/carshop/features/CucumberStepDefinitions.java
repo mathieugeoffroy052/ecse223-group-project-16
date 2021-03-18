@@ -127,12 +127,9 @@ public class CucumberStepDefinitions {
 				errorCounter++;
 			}
 			CarShopApplication.setSystemDate(newDate);
+			CarShopApplication.setSystemTime(newTime);
 		}
 
-//		@Given("the user is logged in to an account with username {string}")
-//		public void the_user_is_logged_in_to_an_account_with_username(String username) {
-//			CarShopApplication.setUsername(username);
-//		}
 
 		@When("the user tries to set up the business information with new {string} and {string} and {string} and {string}")
 		public void the_user_tries_to_set_up_the_business_information_with_new_and_and_and(String name, String address,
@@ -1338,7 +1335,7 @@ public class CucumberStepDefinitions {
 			// timeFormat.parse(columns.get("startTime"));
 			Time endTime = CarShopController.stringToTime(columns.get("endTime")); // (Time)
 			// timeFormat.parse(columns.get("endtime"));
-			TimeSlot timeSlot = new TimeSlot(startDate, startTime, endDate, endTime, cs);// create a new object
+			businesses.addHoliday(new TimeSlot(startDate, startTime, endDate, endTime, cs));
 		}
 
 	}
@@ -1367,6 +1364,7 @@ public class CucumberStepDefinitions {
 			firstTime1 = firstTime[0];
 			secondTime1 = secondTime[0];
 			CarShopController.CreateAppointment(customer, serviceName, firstTime1+","+secondTime1 , date, cs);
+			//cs.getAppointment(cs.getAppointments().size()-1).addServiceBooking(null, null);
 			numApp++;
 		}
 	}
@@ -1427,8 +1425,12 @@ public class CucumberStepDefinitions {
 	}
 	@When("{string} schedules an appointment on {string} for {string} at {string}")
 	public void schedules_an_appointment_on_for_at(String string, String date, String serviceName, String startTime) throws InvalidInputException {
-	    CarShopController.CreateAppointment(string,serviceName,startTime,date,cs);// uses method in the controller
-		numApp++;
+		try {
+			CarShopController.CreateAppointment(string,serviceName,startTime,date,cs);// uses method in the controller
+		} catch (Exception e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
 	    // Write code here that turns the phrase above into concrete actions
 	}
 	
@@ -1523,7 +1525,7 @@ public class CucumberStepDefinitions {
 	@Then("there shall be {int} more appointment in the system")
 	public void there_shall_be_more_appointment_in_the_system(Integer int1) {
 	    // Write code here that turns the phrase above into concrete actions
-	    assertEquals(numApp, cs.numberOfAppointments());
+	    assertEquals(int1, cs.numberOfAppointments()-numApp);
 	}
 	
 	// schedule the appointment with five variables including the optServices

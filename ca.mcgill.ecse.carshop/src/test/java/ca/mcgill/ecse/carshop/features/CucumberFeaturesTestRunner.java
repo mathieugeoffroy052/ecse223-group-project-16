@@ -9,6 +9,6 @@ import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.model.CarShop;
 
 @RunWith(Cucumber.class)
-@CucumberOptions(plugin = "pretty", features = "src/test/resources")
+@CucumberOptions(plugin = "pretty", features = "src/test/resources/MakeAppointment.feature")
 public class CucumberFeaturesTestRunner {
 }
