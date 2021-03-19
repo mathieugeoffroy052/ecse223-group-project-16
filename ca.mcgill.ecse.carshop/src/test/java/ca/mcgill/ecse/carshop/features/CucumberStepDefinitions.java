@@ -1296,6 +1296,7 @@ public class CucumberStepDefinitions {
 			errorCntr++;
 		}
 	}
+	
 	@When("the user tries to add new business hours on {string} from {string} to {string} to garage belonging to the technician with type {string}")
 	public void the_user_tries_to_add_new_business_hours_on_from_to_to_garage_belonging_to_the_technician_with_type(String string, String string2, String string3, String string4) {
 	    // Write code here that turns the phrase above into concrete actions
