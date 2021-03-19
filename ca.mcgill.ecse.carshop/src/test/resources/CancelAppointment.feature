@@ -3,7 +3,7 @@ Feature: Cancel appointment
 
   Background: 
     Given a Carshop system exists
-    Given the system's time and date is "2021-02-01+09:00"#done
+    Given the system's time and date is "2021-02-01+09:00"
     Given an owner account exists in the system
     Given a business exists in the system
     Given the following customers exist in the system:
@@ -28,7 +28,14 @@ Feature: Cancel appointment
       | name                     | mainService        | services                                    | mandatory       |
       | engine-check-basic       | engine-check       | engine-check,transmission-check             | true,false      |
       | electronics-repair-basic | electronics-repair | electronics-repair,engine-check,tire-change | true,true,false |
-    Given the business has the following opening hours
+    Given the business has the following opening hours:
+      | day       | startTime | endTime |
+      | Monday    | 9:00      | 17:00   |
+      | Tuesday   | 9:00      | 17:00   |
+      | Wednesday | 9:00      | 17:00   |
+      | Thursday  | 9:00      | 17:00   |
+      | Friday    | 9:00      | 15:00   |
+    Given all garages has the following opening hours
       | day       | startTime | endTime |
       | Monday    | 9:00      | 17:00   |
       | Tuesday   | 9:00      | 17:00   |

@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -45,7 +46,7 @@ public class CarShopController {
 	
 	@SuppressWarnings("static-access")
 	// creating appointment method with extra optional service
-	public static void CreateAppointment(String customer, String service, String startTime, String startDate, String optServices, CarShop cs) throws InvalidInputException {
+	public static void CreateAppointment(String customer, String service, String startTime, String startDate, String optServices, CarShop cs) throws Exception {
 		
 		List<String> opts = CarShopController.parseStringByServices(optServices);
 		String toPutIn = null;
@@ -60,51 +61,76 @@ public class CarShopController {
 			ComboItem sb1 = cs.getBookableService(0).getWithName(service).getMainService();
 			sb1.getServiceCombo().addService(true, toPut);
 		}
-		
-		CreateAppointment(customer, service, startTime, startDate, cs);
+		// TODO Implement this
+		CreateAppointmentWithOptServices(customer, service, startTime, startDate, cs, service);
 	}
 	
 	// creating appointment method
-	public static void CreateAppointment(String customer, String service, String startTime, String startDate, CarShop cs) throws InvalidInputException {
-		String[] sTime = startTime.split(",");
-		Date date = stringToDate(startDate);
-		User user = User.getWithUsername(customer);
-		int duration = 0;
-		int minutes = 0;
-		int hours = 0;
-		//if it isn't a customer making the appointment
-		if (!(user instanceof Customer)) {
-			throw new InvalidInputException("Only customers can make an appointment");
+	@SuppressWarnings("static-access")
+	public static void CreateAppointmentWithOptServices(String customer, String serviceComboName, String startTime, String startDate, CarShop cs, String optServices) throws Exception {
+		if(customer.contains("owner") || customer.contains("Technician")) throw new InvalidInputException("Only customers can make an appointment");
+		String[] startTimes = startTime.split(","); // gets the start time of the first service
+		Date date = stringToDate(startDate);	// turns the string "date" to an actual date
+		try {
+			// checking if the date is before the current date,
+			for(int i = 0; i < startTimes.length; i++) {
+				checkIfDateWorksWithCurrentTime(date, startTimes[i]);
+			}
+		} catch(Exception e) {
+			throw new InvalidInputException("There are no available slots for " + serviceComboName + " on " + startDate + " at " + startTime);
 		}
-		Customer cust = (Customer) user;
+			//if it isn't a customer making the appointment
+		User user = User.getWithUsername(customer);
+		if(user == null) throw new InvalidInputException("Only customers can make an appointment");
+
+		Customer cust = (Customer) user;	// explicit downcasting
+		int duration, minutes, hours = 0;
+
 		//String[] services = service.split(" ");
 		//BookableService serv = null;
-		
-		BookableService bookServ = null;
-		List<BookableService> bookableService = cs.getBookableServices(); //assuming getServices exist
-		for (BookableService bs: bookableService) {
-			if (bs.getName().equals(service)) {
-				bookServ = bs;
-				break;
-			}
+		String[] optServicesToPutIn;
+		if(!optServices.equals("")) {
+			optServicesToPutIn = optServices.split(",");
+			// puts the optional services in. Requires the service combo name to do so.
+			putOptServicesIn(optServicesToPutIn, serviceComboName);
 		}
-		//create new object of type appointment
+		
+
+		BookableService bookServ = getBookableService(serviceComboName);
+		
+		if(!checkHolidays(date)) throw new InvalidInputException("There are no available slots for " + serviceComboName + " on " + startDate + " at " + startTime);
+		
+		//create new object of type appointment - can be deleted later as well
 		Appointment appointment = cs.addAppointment(cust, bookServ);
 		if (bookServ instanceof Service) {
 			//if service is service
-			String stTime1 = sTime[0];
-			Time stTime2 = stringToTime(stTime1);
+			Time startTime1 = stringToTime(startTimes[0]);
 			Service serv = (Service) bookServ;
 			duration = serv.getDuration();
 			minutes = duration%60;
 			hours = duration/60;
 				
-			String time = hours + ":" + minutes;
-			LocalTime localtime = stTime2.toLocalTime();
+			LocalTime localtime = startTime1.toLocalTime();
 			localtime = localtime.plusMinutes(minutes);
 			localtime = localtime.plusHours(hours);
 			Time endTime = Time.valueOf(localtime);
-			TimeSlot timeSlot1 = cs.addTimeSlot(date, stTime2, date, endTime);
+			if(!checkInGarageBusinessHours(cs, startTime1, endTime, date, serv.getGarage())) {
+
+				appointment.delete();
+				throw new InvalidInputException("There are no available slots for " +  serviceComboName + " on " + startDate + " at " + startTime);
+			}
+			if(!checkByGarageServiceBookings(cs, serv, startTime1, endTime, date)) {
+				
+				appointment.delete();
+				throw new InvalidInputException("There are no available slots for " +  serviceComboName + " on " + startDate + " at " + startTime);
+			}
+//			if(!checkTimeAvailable(cs, startTime1, endTime, date)) {
+////				cs.removeAppointment(appointment);
+//				
+//				appointment.delete();
+//				throw new InvalidInputException("There are no available slots for " +  serviceComboName + " on " + startDate + " at " + startTime);
+//			}
+			TimeSlot timeSlot1 = cs.addTimeSlot(date, startTime1, date, endTime);
 			serv.addServiceBooking(timeSlot1, appointment);
 			 
 		} else {
@@ -112,34 +138,184 @@ public class CarShopController {
 			List<ComboItem> comboItems = ((ServiceCombo) bookServ).getServices();
 			//for(ComboItem ci: comboItems)
 			for (int i = 0; i < comboItems.size() ; i++) {
-				String stTime1 = sTime[i];
-				Time stTime2 = stringToTime(stTime1);
+				Time startTime1 = stringToTime(startTimes[i]);
+				
 				duration = comboItems.get(i).getService().getDuration();
 				
 				minutes = duration%60;
-				String minutes2 = String.format("%02d", minutes);
+//				String minutes2 = String.format("%02d", minutes);
 				hours = duration/60;
-				String hours2 = String.format("%02d", hours);
-				String time = "";
-				time = hours2 + ":" + minutes2;
+//				String hours2 = String.format("%02d", hours);
+//				String time = hours2 + ":" + minutes2;
 				
-				LocalTime localtime = stTime2.toLocalTime();
+				
+				LocalTime localtime = startTime1.toLocalTime();
 				localtime = localtime.plusMinutes(minutes);
 				localtime = localtime.plusHours(hours);
 				Time endTime = Time.valueOf(localtime);
-				TimeSlot timeSlot1 = cs.addTimeSlot(date, stTime2, date, endTime);
+				if(!checkInGarageBusinessHours(cs, startTime1, endTime, date, comboItems.get(i).getService().getGarage())) {
+
+					appointment.delete();
+					throw new InvalidInputException("There are no available slots for " +  serviceComboName + " on " + startDate + " at " + startTime);
+				}
+//				if(!checkTimeAvailable(cs, startTime1, endTime, date)) {
+////					cs.removeAppointment(appointment);
+//					
+//					appointment.delete();
+//					throw new InvalidInputException("There are no available slots for " +  serviceComboName + " on " + startDate + " at " + startTime);
+//				}
+				if(!checkByGarageServiceBookings(cs, comboItems.get(i).getService(), startTime1, endTime, date)) {
+					
+					appointment.delete();
+					throw new InvalidInputException("There are no available slots for " +  serviceComboName + " on " + startDate + " at " + startTime);
+				}
+				if(startTimes.length > (i+1) && endTime.after(stringToTime(startTimes[i+1]))) {
+					appointment.delete();
+					throw new InvalidInputException("Time slots for two services are overlapping");
+				}
+				TimeSlot timeSlot1 = cs.addTimeSlot(date, startTime1, date, endTime);
 				comboItems.get(i).getService().addServiceBooking(timeSlot1, appointment);
 			}
 		}
 	}
+	
+	private static boolean checkByGarageServiceBookings(CarShop cs, Service serv, Time startTime1, Time endTime, Date date) {
+		// TODO Auto-generated method stub
+		for(ServiceBooking sb : serv.getServiceBookings()) {
+			if(sb.getTimeSlot().getStartDate().equals(date)) {	// if the date is the same
+				if((sb.getTimeSlot().getStartTime().before(startTime1) || 
+						sb.getTimeSlot().getStartTime().equals(startTime1)) &&
+						(sb.getTimeSlot().getEndTime().before(endTime) ||
+						sb.getTimeSlot().getEndTime().equals(endTime)) &&
+						!sb.getTimeSlot().getEndTime().before(startTime1)) {
+					return false;
+				}
+					
+			}
+			// otherwise keep going
+		}
+		return true;
+	}
+
+	private static boolean checkHolidays(Date date) {
+		List<TimeSlot> holiday = CarShopApplication.getCarShop().getBusiness().getHolidays();
+		for (TimeSlot h: holiday) {
+			if (h.getStartDate().compareTo(date)*date.compareTo(h.getEndDate()) >= 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static BookableService getBookableService(String serviceComboName) {
+		BookableService bookServ = null;
+		for (BookableService bs: CarShopApplication.getCarShop().getBookableServices()) {
+			if (bs.getName().equals(serviceComboName)) {
+				bookServ = bs;
+				break;
+			}
+		}
+		return bookServ;
+	}
+
+	@SuppressWarnings("static-access")
+	private static boolean putOptServicesIn(String[] optServicesToPutIn, String serviceComboName) {
+		// TODO Auto-generated method stub
+		Boolean toReturn = false;
+		CarShop cs = CarShopApplication.getCarShop();
+		for(String opt : optServicesToPutIn) {
+			Service toPut = null;
+			for(BookableService sb : cs.getBookableServices()) {
+				if(sb.getName().equals(opt)) {
+					toPut = (Service) sb;
+					break;
+				}
+			}
+			// get the main service
+			Boolean found = false;
+			ComboItem mainServiceInServiceCombo = cs.getBookableService(0).getWithName(serviceComboName).getMainService();
+			for(ComboItem checkIfSame : mainServiceInServiceCombo.getServiceCombo().getServices()) {
+				// if the service is already in the service combo...
+				if(checkIfSame.getService().equals((Service) toPut)) {
+					found = true;
+					break; // don't add the optional service (it's already there)
+				}
+			}
+			if(!found) {mainServiceInServiceCombo.getServiceCombo().addService(true, toPut);
+				toReturn = true;
+			}
+			// is automatically assigned a value of true
+		}
+		return toReturn;
+	}
+
+	private static void checkIfDateWorksWithCurrentTime(Date date, String time) throws Exception {
+		// TODO Auto-generated method stub
+		Time enteredTime = stringToTime(time);
+		Date currentDate = (Date) CarShopApplication.getSystemDate();
+		Time currentTime = (Time) CarShopApplication.getSystemTime();
+		// if the date is before the current date in the system
+		if(date.before(currentDate)) throw new Exception();
+		// else, if on the same date but at a time before regarding the current date
+		else if(enteredTime.before(currentTime) 
+				&& date.equals(currentDate)) {
+			throw new Exception();
+		}
+	}
+
+	// since garage business hours are within carshop business hours, if this test fails it means that the appointment
+	// is also not during the carhop's business hours
+	public static boolean checkInGarageBusinessHours(CarShop cs, Time startTime, Time endTime, Date day, Garage garage) {
+		List<BusinessHour> bhours = garage.getBusinessHours();
+		LocalDate localDate = day.toLocalDate();
+		String DayOfWeek = localDate.getDayOfWeek().toString();
+		for (BusinessHour bhour: bhours) {
+			if (bhour.getDayOfWeek().toString().toLowerCase().equals(DayOfWeek.toLowerCase())) {
+				if ((endTime.before(bhour.getEndTime()) || endTime.equals(bhour.getEndTime())) && 
+						(startTime.after(bhour.getStartTime())  || startTime.equals(bhour.getStartTime()))) {
+					
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public static boolean checkTimeAvailable(CarShop cs, Time startTime, Time endTime, Date day) {
+		// get the list of appointments in the carshop system
+		List<Appointment> appointment = cs.getAppointments();
+		// also goes through the newly created appointment... which doesn't have any service bookings
+		for (Appointment app: appointment) {	// iterate through this list
+			// get all the services bookings in this appointment specifically
+			List<ServiceBooking> serviceBooking = app.getServiceBookings();
+			for (ServiceBooking sb: serviceBooking) {	// for each of these serviceBookings
+				TimeSlot timeSlot = sb.getTimeSlot();	// get the time slot
+				if (timeSlot.getStartDate().equals(day)) {	// if so, a problem might arise
+					if (timeSlot.getStartTime().before(endTime) && startTime.before(timeSlot.getEndTime())) {
+						return false; //&& sb.getService().getGarage().equals(garageName)
+					}
+				}
+			}
+		}
+		return true;
+	}
 	//cancel appointment method
 	public static void CancelAppointment(String custName, String name, String startDate2, String time, CarShop cs) throws InvalidInputException {
+		if(custName.contains("owner")) throw new InvalidInputException("An owner cannot cancel an appointment");
+		else if(custName.contains("Technician")) throw new InvalidInputException("A technician cannot cancel an appointment");
+		
 		Date date = stringToDate(startDate2);
 		Boolean gotAppointment = false;
 		Time stTime = stringToTime(time);
+		try {
+			// checking if the date is before the current date,
+			checkIfDateWorksWithCurrentTime(date, time);
+
+		} catch(Exception e) {
+			throw new InvalidInputException("Cannot cancel an appointment on the appointment date");
+		}
 //		BookableService serve = null;
 		Customer customer = (Customer) User.getWithUsername(custName);
-		List<Appointment> appointment = customer.getAppointments();
 //		List<BookableService> bookableService = cs.getBookableServices();
 //		for (BookableService bs: bookableService) {
 //			if (bs.getName().equals(name)) {
@@ -147,9 +323,10 @@ public class CarShopController {
 //			}
 //		}
 		Appointment appName = null;
-		for (Appointment app: appointment) {
+		for (Appointment app: customer.getAppointments()) {
 			if (app.getBookableService().getName().equals(name)) {
 				appName = app; 
+				break;
 			}
 		}
 		//checks whether its either owner, thechnician or a different customer that is cancelling the appointment
@@ -162,23 +339,14 @@ public class CarShopController {
 		if (CarShopApplication.getSystemDate().equals(date)) {
 			throw new InvalidInputException("Cannot cancel an appointment on the appointment date");
 		}
-		List<ServiceBooking> serviceBooking = appName.getServiceBookings();
-		for (ServiceBooking sb: serviceBooking) {
-			if (sb.getTimeSlot().getStartTime().equals(stTime)) {
-				gotAppointment = true;
-			}
-		}
-		if (! appName.getCustomer().getUsername().equals(custName)) {
+		if (appName==null || !appName.getCustomer().getUsername().equals(custName)) {
 			throw new InvalidInputException("A customer can only cancel their own appointments");
 		}
-		if (appName != null && gotAppointment == true) {
-		//List<ServiceBooking> servbook = appName.getServiceBookings();
-		//for (ServiceBooking sb: serviceBooking) {
-			//sb.getTimeSlot().delete();
-			//sb.delete(); }
-		//removes Appointment
-		cs.removeAppointment(appName);
+		for (int i = appName.getServiceBookings().size()-1; i >= 0 ; i--) {
+			appName.getServiceBooking(i).delete();
 		}
+		appName.delete();
+
 	}
 	
 	// stringToDate
