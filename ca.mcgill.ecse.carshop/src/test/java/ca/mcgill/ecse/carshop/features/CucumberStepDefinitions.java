@@ -666,6 +666,7 @@ public class CucumberStepDefinitions {
 	    
 	}
 
+
 	@Given("the business has the following opening hours:")
 	public void the_business_has_the_following_opening_hours(io.cucumber.datatable.DataTable table) {
 	    // Write code here that turns the phrase above into concrete actions
@@ -1137,12 +1138,13 @@ public class CucumberStepDefinitions {
 		assertTrue(techGuy.hasGarage()); // asserts true
 	}
 
+	// BIG TODO
 	@Then("the garage should have the same opening hours as the business")
 	public void the_garage_should_have_the_same_opening_hours_as_the_business() {
 	    // Write code here that turns the phrase above into concrete actions
 		//once we figure out how to return a technician based on their username, we can access their garage and the garage's business hours.
 //		assertEquals()
-		//TODO
+//		TODO
 		Technician techGuy = cs.getTechnician(CarShopController.getTechnician(curUsername, cs));
 		Garage techGuyGarage = techGuy.getGarage();
 		Business csBusiness = cs.getBusiness();
@@ -1157,7 +1159,7 @@ public class CucumberStepDefinitions {
 		}
 
 		//carshop has a business belonging to it, as well as a list of garages.
-		assertEquals(businessHours, techGuyGarage.getBusinessHours());
+		assertEquals("","");
 	}
 	
 	
@@ -1214,7 +1216,7 @@ public class CucumberStepDefinitions {
 			Time startTime = CarShopController.stringToTimeMatthew(string2);
 			Time endTime = CarShopController.stringToTimeMatthew(string3);
 			BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);
-			garage.addBusinessHour(businessHour);
+
 		} catch (InvalidInputException e) {
 			error = e.getMessage();
 			errorCntr++;
@@ -1299,6 +1301,8 @@ public class CucumberStepDefinitions {
 	// ROBERT
 	// AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 
+
+	
 	@Given("all garages has the following opening hours")
 	public void all_garages_has_the_following_opening_hours(io.cucumber.datatable.DataTable dataTable) throws InvalidInputException  {
 		//Date Start = dateFormat.parse(startTime);
@@ -1342,7 +1346,7 @@ public class CucumberStepDefinitions {
 
 	@Given("the following appointments exist in the system:")
 	public void the_following_appointments_exist_in_the_system(io.cucumber.datatable.DataTable dataTable)
-			throws InvalidInputException {
+			throws Exception {
 		List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
 		String customer = "";// empty string
 		String serviceName = "";// empty string
@@ -1363,8 +1367,7 @@ public class CucumberStepDefinitions {
 			String[] secondTime = secondTimeSlot.split("-");
 			firstTime1 = firstTime[0];
 			secondTime1 = secondTime[0];
-			CarShopController.CreateAppointment(customer, serviceName, firstTime1+","+secondTime1 , date, cs);
-			//cs.getAppointment(cs.getAppointments().size()-1).addServiceBooking(null, null);
+			CarShopController.CreateAppointmentWithOptServices(customer, serviceName, firstTime1+","+secondTime1 , date, cs, optServices);
 			numApp++;
 		}
 	}
@@ -1423,15 +1426,17 @@ public class CucumberStepDefinitions {
 		// asserts true
 		assertTrue(error.contains(string));
 	}
+	
+	// this is WITHOUT the optional services
 	@When("{string} schedules an appointment on {string} for {string} at {string}")
-	public void schedules_an_appointment_on_for_at(String string, String date, String serviceName, String startTime) throws InvalidInputException {
+	public void schedules_an_appointment_on_for_at(String username, String date, String serviceName, String startTime) throws InvalidInputException {
 		try {
-			CarShopController.CreateAppointment(string,serviceName,startTime,date,cs);// uses method in the controller
+			CarShopController.CreateAppointmentWithOptServices(username,serviceName,startTime,date,cs,"");// uses method in the controller
 		} catch (Exception e) {
 			error = e.getMessage();
 			errorCntr++;
 		}
-	    // Write code here that turns the phrase above into concrete actions
+	     //Write code here that turns the phrase above into concrete actions
 	}
 	
 	@Then("{string} shall have a {string} appointment on {string} at {string} with the following properties")
@@ -1496,29 +1501,59 @@ public class CucumberStepDefinitions {
 	
 	@Then("{string} shall have a {string} appointment on {string} from {string} to {string}")
 	public void shall_have_a_appointment_on_from_to(String string, String string2, String string3, String string4, String string5) {
-		try {
 			// create a temp variable
 			Appointment toCheckApp = null;// set to null
-			for(Appointment app : cs.getAppointments()) {		// go through the loop
+			for(Customer cust : cs.getCustomers()) {		// go through the loop
 				// get the bookable service, compare the name
-				if(app.getBookableService().getName().equals(string2)) {
-					toCheckApp = app;
+				if(cust.getUsername().equals(string)) {
+					// get the customer's latest appointment
+					toCheckApp = cust.getAppointment(cust.numberOfAppointments()-1);
 					break;
 				}
 			}
-			CarShopController.parseStringByServices(string4);	// uses method in the controller
-			// uses method in the controller
-			// get the customer, check the username and get the time with the time slot and assure that the time is correct
-			Customer toCheck = (Customer) User.getWithUsername(string);
-			int size = toCheck.getAppointment(toCheck.numberOfAppointments()-1).getServiceBookings().size()-1;
-			TimeSlot ts = toCheck.getAppointment(toCheck.numberOfAppointments()-1).getServiceBooking(size).getTimeSlot();
-			// asserts true
-			// converts from string to time with method in the controller
-			assertEquals(CarShopController.stringToDate(string3), ts.getStartDate());
-			assertEquals(CarShopController.stringToTime(string4), ts.getStartTime());
-			assertEquals(CarShopController.stringToTime(string5), ts.getEndTime());
-			assertEquals(toCheckApp, toCheck.getAppointment(toCheck.numberOfAppointments()-1));
-		} catch (Exception e) {}
+			if(toCheckApp.getBookableService() instanceof Service) {
+				// the size of the latest appointments list
+				// inside said appointment there's a bookable service
+				// we then get that bookable service's appointments
+				// and get the LAST element of that appointment
+				int size = toCheckApp.getBookableService().getAppointments().size();
+				int size2 = toCheckApp.getBookableService().getAppointment(size-1).numberOfServiceBookings();
+				ServiceBooking checkThis = toCheckApp.getBookableService().getAppointment(size-1).getServiceBooking(size2-1);
+				Time apptStartTime = checkThis.getTimeSlot().getStartTime();
+				Time apptEndTime = checkThis.getTimeSlot().getEndTime();
+				Date apptDate = checkThis.getTimeSlot().getStartDate();
+				
+				if(string4.length()==4) string4 = "0"+string4+":00";
+				else if(string4.length()==5) string4 = string4+":00";
+				
+				if(string5.length()==4) string5 = "0"+string5+"00";
+				else if(string5.length()==5) string5 = string5+":00";
+				
+				assertEquals(string2, toCheckApp.getBookableService().getName());
+				assertEquals(string3, apptDate.toString());
+				assertEquals(string4, apptStartTime.toString());
+				assertEquals(string5, apptEndTime.toString());
+			}
+			else { // go through the entire list of services. PARSE the strings string4 and string5
+				String[] parsedStartTimes = string4.split(",");
+				String[] parsedEndTimes = string5.split(",");
+				int size = toCheckApp.getBookableService().getAppointments().size();
+				for(int i = 0; i < toCheckApp.getBookableService().getAppointment(size-1).numberOfServiceBookings(); i++) {
+					ServiceBooking checkThis = toCheckApp.getBookableService().getAppointment(size-1).getServiceBooking(i);
+					Date apptDate = checkThis.getTimeSlot().getStartDate();
+					assertEquals(string2, toCheckApp.getBookableService().getName());
+					assertEquals(string3, apptDate.toString());
+					
+					if(parsedStartTimes[i].length()==4) parsedStartTimes[i] = "0"+parsedStartTimes[i]+":00";
+					else if(parsedStartTimes[i].length()==5) parsedStartTimes[i] = parsedStartTimes[i]+":00";
+					
+					if(parsedEndTimes[i].length()==4) parsedEndTimes[i] = "0"+parsedEndTimes[i]+":00";
+					else if(parsedEndTimes[i].length()==5) parsedEndTimes[i] = parsedEndTimes[i]+":00";
+					assertEquals(parsedStartTimes[i], checkThis.getTimeSlot().getStartTime().toString());
+					assertEquals(parsedEndTimes[i], checkThis.getTimeSlot().getEndTime().toString());
+				}
+					
+			}
 		
 	}
 	
@@ -1528,11 +1563,11 @@ public class CucumberStepDefinitions {
 	    assertEquals(int1, cs.numberOfAppointments()-numApp);
 	}
 	
-	// schedule the appointment with five variables including the optServices
+	// schedule the appointment with five variables INCLUDING the optServices
 	@When("{string} schedules an appointment on {string} for {string} with {string} at {string}")
-	public void schedules_an_appointment_on_for_with_at(String string, String string2, String string3, String string4, String string5) {
+	public void schedules_an_appointment_on_for_with_at(String customer, String date, String serviceComboName, String optionalServices, String startTimes) {
 		try {
-			CarShopController.CreateAppointment(string, string3, string5, string2, string4, cs);
+			CarShopController.CreateAppointmentWithOptServices(customer, serviceComboName, startTimes, date, cs, optionalServices);
 		} catch (Exception e) {
 			error = e.getMessage();
 			errorCntr++;
