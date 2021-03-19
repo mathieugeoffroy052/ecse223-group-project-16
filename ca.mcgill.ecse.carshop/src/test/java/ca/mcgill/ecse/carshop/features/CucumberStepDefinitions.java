@@ -666,7 +666,37 @@ public class CucumberStepDefinitions {
 	    
 	}
 
-
+//	@Given("the business has the following opening hours:")
+//	public void the_business_has_the_following_opening_hours(io.cucumber.datatable.DataTable table) {
+//	    // Write code here that turns the phrase above into concrete actions
+//	    // For automatic transformation, change DataTable to one of
+//	    // E, List<E>, List<List<E>>, List<Map<K,V>>, Map<K,V> or
+//	    // Map<K, List<V>>. E,K,V must be a String, Integer, Float,
+//	    // Double, Byte, Short, Long, BigInteger or BigDecimal.
+//		try {
+//		DayOfWeek dayOfWeek = null;// set to null
+//		Business business = cs.getBusiness();
+//		// create a list
+//		List<List<String>> rows = table.asLists(String.class);
+//		// create a list
+//		for (List<String> column : rows) {
+//			if(column.get(0).equals("day")) {
+//	    		continue;
+//	    	}
+//			dayOfWeek = CarShopController.getWeekDay(column.get(0));
+//			// converts from string to time with method in the controller
+//			Time startTime = CarShopController.stringToTimeMatthew(column.get(1));
+//			Time endTime = CarShopController.stringToTimeMatthew(column.get(2));
+//			BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);// create a new object
+//			business.addBusinessHour(businessHour);
+//		}
+//
+//		} catch (InvalidInputException e) {
+//			error = e.getMessage();
+//			errorCntr++;
+//		}
+//			
+//	}
 	@Given("the business has the following opening hours:")
 	public void the_business_has_the_following_opening_hours(io.cucumber.datatable.DataTable table) {
 	    // Write code here that turns the phrase above into concrete actions
@@ -1266,6 +1296,7 @@ public class CucumberStepDefinitions {
 			errorCntr++;
 		}
 	}
+	
 	@When("the user tries to add new business hours on {string} from {string} to {string} to garage belonging to the technician with type {string}")
 	public void the_user_tries_to_add_new_business_hours_on_from_to_to_garage_belonging_to_the_technician_with_type(String string, String string2, String string3, String string4) {
 	    // Write code here that turns the phrase above into concrete actions
@@ -1301,7 +1332,23 @@ public class CucumberStepDefinitions {
 	// ROBERT
 	// AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 
-
+//	@Given("all garages has the following opening hours")
+//	public void all_garages_has_the_following_opening_hours(io.cucumber.datatable.DataTable dataTable) throws InvalidInputException  {
+//		//Date Start = dateFormat.parse(startTime);
+//		//Date End = dateFormat.parse(endTime);
+//		List<Garage> garages = cs.getGarages();
+//		List<Map<String,String>> rows = dataTable.asMaps(String.class,String.class);
+//		
+//		for (Garage garage : garages) { 		// go through the loop
+//			for (Map<String,String> columns : rows) {		// go through the loop
+//				BusinessHour.DayOfWeek day = BusinessHour.DayOfWeek.valueOf(columns.get("day")); //columns.get("day");
+//				// converts from string to time with method in the controller
+//				Time start = CarShopController.stringToTime(columns.get("startTime")); //(Time) timeFormat.parse(columns.get("startTime"));
+//				Time end = CarShopController.stringToTime(columns.get("endTime")); //(Time) timeFormat.parse(columns.get("endtime"));
+//				garage.addBusinessHour(new BusinessHour(day, start, end, cs));// create a new object
+//			}	
+//		}
+//	}
 	
 	@Given("all garages has the following opening hours")
 	public void all_garages_has_the_following_opening_hours(io.cucumber.datatable.DataTable dataTable) throws InvalidInputException  {
@@ -1381,37 +1428,50 @@ public class CucumberStepDefinitions {
 	}
 	@When("{string} attempts to cancel their {string} appointment on {string} at {string}")
 	public void attempts_to_cancel_their_appointment_on_at(String string, String string2, String string3, String string4) throws InvalidInputException {
-		CarShopController.CancelAppointment(string, string2, string3, string4, cs);// uses method in the controller
-		numApp--;// uses method in the controller
-		// Write code here that turns the phrase above into concrete actions
+		try {
+			CarShopController.CancelAppointment(string, string2, string3, string4, cs);// uses method in the controller
+			numApp--;// uses method in the controller
+			// Write code here that turns the phrase above into concrete actions
+		} catch (Exception e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
+
 	}
+	
+	@When("{string} attempts to cancel {string}'s {string} appointment on {string} at {string}")
+	public void attempts_to_cancel_s_appointment_on_at(String string, String string2, String string3, String string4, String string5) {
+		try {
+			CarShopController.CancelAppointment(string, string3, string4, string5, cs);// uses method in the controller
+			numApp--;// uses method in the controller
+			// Write code here that turns the phrase above into concrete actions
+		} catch (Exception e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
+	}
+	
+	@SuppressWarnings("static-access")
 	@Then("{string}'s {string} appointment on {string} at {string} shall be removed from the system")
 	public void s_appointment_on_at_shall_be_removed_from_the_system(String string, String string2, String string3, String string4) throws InvalidInputException {
 		//assertEquals(getTimeSlots().getStartTime());
-		List<TimeSlot> timeSlot = cs.getTimeSlots();
-		// converts from string to time with method in the controller
-		Time startTime = CarShopController.stringToTime(string4);// uses method in the controller
-		Date date = CarShopController.stringToDate(string3);// uses method in the controller
-		TimeSlot a = null;// if null
-		for (TimeSlot ts: cs.getTimeSlots()) {		// go through the loop
-			if (ts.getStartTime().equals(startTime) && ts.getStartDate().equals(date)) {
-				a = ts;
-			}
-		}
-
-		Boolean appDNE = false;
-		Customer customer = ((Customer) CarShopApplication.getUser());
-		List<Appointment> appointment = customer.getAppointments();
-		for (Appointment app : appointment) {		// go through the loop
-			List<ServiceBooking> serviceBooking = app.getServiceBookings();
-			for (ServiceBooking sb: serviceBooking) {		// go through the loop
-				if (sb.getTimeSlot().equals(a)) {
-					appDNE = true;
+		Boolean empty = false;
+		Boolean found = false;
+		for(Customer c : cs.getCustomers()) {
+			if(c.equals((Customer) c.getWithUsername(string))) {
+				if(c.getAppointments().size()==0) {
+					empty = true;
+					break;
+				}
+				else for(Appointment app : c.getAppointments()) {
+					if(app.getBookableService().getName().equals(string2)) found = true;
 				}
 			}
 		}
+		//cs.getAppointments().g
 		// asserts true
-		assertTrue(appDNE);
+		if(found) assertEquals(true, found);
+		if(empty) assertEquals(true, empty);
 
 		// Write code here that turns the phrase above into concrete actions
 	}
@@ -1442,63 +1502,47 @@ public class CucumberStepDefinitions {
 	@Then("{string} shall have a {string} appointment on {string} at {string} with the following properties")
 	public void shall_have_a_appointment_on_at_with_the_following_properties(String string, String string2, String string3, String string4, io.cucumber.datatable.DataTable dataTable) throws InvalidInputException {
 		List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
-		String serviceName = null;// set to null
-		String optServices = null;// set to null
-		String date = null;// set to null
-		String startTime = null;// set to null
-		String endTime = null;// set to null
-		Customer cust = (Customer) User.getWithUsername("customer1");
+		String serviceName, optServices, date, startTime, endTime = null;// set to null
+
+		Customer cust = (Customer) User.getWithUsername(string);
 		for (Map<String, String> columns : rows) {
-		serviceName = columns.get("serviceName");
-		//optServices = columns.get("optServices");
-		date = columns.get("date");
-		startTime = columns.get("startTime");
-		endTime = columns.get("endTime");
-//		String timeSlots = columns.get("timeSlots");
-//		String[] time = timeSlots.split(",");
-//		String firstTimeSlot = time[0];
-//		String secondTimeSlot = time[1];
-//		String[] firstTime = firstTimeSlot.split("-");
-//		firstTime1 = firstTime[0];
-		}
-		// to compare
-		// converts from string to time with method in the controller
-		Date dateServiceToCompare = CarShopController.stringToDate(date);// uses method in the controller
-		Time startTimeToCompare = CarShopController.stringToTime(startTime);// uses method in the controller
-		Time endTimeToCompare = CarShopController.stringToTime(endTime);// uses method in the controller
-		
-		// create a temp variable
-		boolean sN = false;
-		List<Appointment> appointment = cs.getAppointments();
-		for (Appointment app: appointment) {		// go through the loop
-			if (app.getBookableService().getName().equals(string2)) {
-				sN = true;
+			serviceName = columns.get("serviceName");
+			//optServices = columns.get("optServices");
+			date = columns.get("date");
+			startTime = columns.get("timeSlots");
+			endTime = columns.get("endTime");
+			String timeSlots = columns.get("timeSlots");
+			String[] time = timeSlots.split(",");
+			for(int i = 0; i < time.length; i++) {
+				String firstTimeSlot = time[i];
+				String[] firstTime = firstTimeSlot.split("-");
+				String start = firstTime[0];
+				String end = firstTime[1];
+				//Boolean found = false;
+				for (Appointment app : cust.getAppointments()) {		// go through the loop
+					if (app.getBookableService().getName().equals(string2)) {
+						//found = true;
+						TimeSlot ts = app.getServiceBooking(i).getTimeSlot();
+						if(start.length()==4) start = "0"+start+":00";
+						else if(start.length()==5) start = start+":00";
+						
+						if(end.length()==4) end = "0"+end+":00";
+						else if(end.length()==5) end = end+":00";
+						assertEquals(date, ts.getStartDate().toString());
+						assertEquals(start, ts.getStartTime().toString());
+						assertEquals(end, ts.getEndTime().toString());
+					}
+					//found = false;
+				}
+				
+				
 			}
 		}
-		List<Appointment> checkedAppList = cust.getAppointments();
-		Appointment checkedApp = null;// set to null
-		for (Appointment app : checkedAppList ) {		// go through the loop
-			if (app.getBookableService().getName().equals(string2)) {
-				checkedApp = app;
-			}
-		}
-		assertNotNull(checkedApp);
-		List<ServiceBooking> serviceBooking = checkedApp.getServiceBookings();
-		for (ServiceBooking sb: serviceBooking) {		// go through the loop
-			String nameService = sb.getService().getName();
-			Date dateService = sb.getTimeSlot().getStartDate();
-			Time startTime1 = sb.getTimeSlot().getStartTime();
-			Time endTime1= sb.getTimeSlot().getEndTime();
-			assertEquals(serviceName, nameService);
-			assertEquals(dateServiceToCompare, dateService);
-			assertEquals(startTimeToCompare, startTime1);
-			assertEquals(endTimeToCompare, endTime1);	
-		}
-		
-		
+
 		//assertTrue(string2.equals(serviceName) && string3.equals(optServices) && string4.equals(date) && string5.equals(firstTime1));
 	}
-	
+
+
 	@Then("{string} shall have a {string} appointment on {string} from {string} to {string}")
 	public void shall_have_a_appointment_on_from_to(String string, String string2, String string3, String string4, String string5) {
 			// create a temp variable

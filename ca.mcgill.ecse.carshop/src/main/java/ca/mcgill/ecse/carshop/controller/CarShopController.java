@@ -301,12 +301,21 @@ public class CarShopController {
 	}
 	//cancel appointment method
 	public static void CancelAppointment(String custName, String name, String startDate2, String time, CarShop cs) throws InvalidInputException {
+		if(custName.contains("owner")) throw new InvalidInputException("An owner cannot cancel an appointment");
+		else if(custName.contains("Technician")) throw new InvalidInputException("A technician cannot cancel an appointment");
+		
 		Date date = stringToDate(startDate2);
 		Boolean gotAppointment = false;
 		Time stTime = stringToTime(time);
+		try {
+			// checking if the date is before the current date,
+			checkIfDateWorksWithCurrentTime(date, time);
+
+		} catch(Exception e) {
+			throw new InvalidInputException("Cannot cancel an appointment on the appointment date");
+		}
 //		BookableService serve = null;
 		Customer customer = (Customer) User.getWithUsername(custName);
-		List<Appointment> appointment = customer.getAppointments();
 //		List<BookableService> bookableService = cs.getBookableServices();
 //		for (BookableService bs: bookableService) {
 //			if (bs.getName().equals(name)) {
@@ -314,9 +323,10 @@ public class CarShopController {
 //			}
 //		}
 		Appointment appName = null;
-		for (Appointment app: appointment) {
+		for (Appointment app: customer.getAppointments()) {
 			if (app.getBookableService().getName().equals(name)) {
 				appName = app; 
+				break;
 			}
 		}
 		//checks whether its either owner, thechnician or a different customer that is cancelling the appointment
@@ -329,23 +339,14 @@ public class CarShopController {
 		if (CarShopApplication.getSystemDate().equals(date)) {
 			throw new InvalidInputException("Cannot cancel an appointment on the appointment date");
 		}
-		List<ServiceBooking> serviceBooking = appName.getServiceBookings();
-		for (ServiceBooking sb: serviceBooking) {
-			if (sb.getTimeSlot().getStartTime().equals(stTime)) {
-				gotAppointment = true;
-			}
-		}
-		if (! appName.getCustomer().getUsername().equals(custName)) {
+		if (appName==null || !appName.getCustomer().getUsername().equals(custName)) {
 			throw new InvalidInputException("A customer can only cancel their own appointments");
 		}
-		if (appName != null && gotAppointment == true) {
-		//List<ServiceBooking> servbook = appName.getServiceBookings();
-		//for (ServiceBooking sb: serviceBooking) {
-			//sb.getTimeSlot().delete();
-			//sb.delete(); }
-		//removes Appointment
-		cs.removeAppointment(appName);
+		for (int i = appName.getServiceBookings().size()-1; i >= 0 ; i--) {
+			appName.getServiceBooking(i).delete();
 		}
+		appName.delete();
+
 	}
 	
 	// stringToDate

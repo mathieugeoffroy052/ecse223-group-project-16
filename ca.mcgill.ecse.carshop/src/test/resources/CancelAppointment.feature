@@ -35,6 +35,13 @@ Feature: Cancel appointment
       | Wednesday | 9:00      | 17:00   |
       | Thursday  | 9:00      | 17:00   |
       | Friday    | 9:00      | 15:00   |
+    Given all garages has the following opening hours
+      | day       | startTime | endTime |
+      | Monday    | 9:00      | 17:00   |
+      | Tuesday   | 9:00      | 17:00   |
+      | Wednesday | 9:00      | 17:00   |
+      | Thursday  | 9:00      | 17:00   |
+      | Friday    | 9:00      | 15:00   |
     Given the following appointments exist in the system:
       | customer  | serviceName        | optServices        | date       | timeSlots              |
       | customer1 | engine-check-basic | transmission-check | 2021-02-22 | 9:00-10:00,10:10-11:25 |
