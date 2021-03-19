@@ -56,8 +56,8 @@ Feature: Make appointment
     Then there shall be 1 more appointment in the system
 
     Examples: 
-       row 1: appointment in regular available slot
-       row 2: appointment in another garage
+       #row 1: appointment in regular available slot
+       #row 2: appointment in another garage
       | serviceName  | date       | startTime | endTime |
       | engine-check | 2021-02-02 | 9:40      | 10:40   |
       | tire-change  | 2021-02-22 | 9:00      | 11:00   |
@@ -69,8 +69,8 @@ Feature: Make appointment
     Then there shall be 1 more appointment in the system
 
     Examples: 
-       row 1: appointment in regular available slot
-       row 2: appointment in another garage
+       #row 1: appointment in regular available slot
+       #row 2: appointment in another garage
       | serviceName              | optionalServices         | date       | startTimes       | endTimes         |
       | engine-check-basic       | transmission-check       | 2021-02-02 | 9:00,10:10       | 10:00,11:25      |
       | electronics-repair-basic | engine-check,tire-change | 2021-02-22 | 9:00,10:10,11:30 | 9:50,11:10,13:30 |
@@ -82,11 +82,11 @@ Feature: Make appointment
     Then there shall be 0 more appointment in the system
 
     Examples: 
-       row 1: slot is occupied by existing appointment
-       row 2: slot is during holiday
-       row 3: slot is not is not during the business hour of the garage (friday)
-       row 4: slot is not during a business hour (saturday)
-       row 5: slot is the past
+       #row 1: slot is occupied by existing appointment
+       #row 2: slot is during holiday
+       #row 3: slot is not is not during the business hour of the garage (friday)
+       #row 4: slot is not during a business hour (saturday)
+       #row 5: slot is the past
       | serviceName  | date       | startTime |
       | engine-check | 2021-02-22 | 9:40      |
       | engine-check | 2021-02-26 | 9:00      |
@@ -101,12 +101,12 @@ Feature: Make appointment
     Then there shall be 0 more appointment in the system
 
     Examples: 
-       row 1: slot is occupied by existing appointment
-       row 2: slots of services is overlapping
-       row 3: slot is during holiday
-       row 4: slot is not is not during the business hour of the garage (friday)
-       row 5: slot is not during a business hour (saturday)
-       row 6: slot is in the past
+       #row 1: slot is occupied by existing appointment
+       #row 2: slots of services is overlapping
+       #row 3: slot is during holiday
+       #row 4: slot is not is not during the business hour of the garage (friday)
+       #row 5: slot is not during a business hour (saturday)
+       #row 6: slot is in the past
       | serviceName        | optionalServices   | date       | startTimes | errorMessage                                                              |
       | engine-check-basic | transmission-check | 2021-02-22 | 9:30,10:30 | There are no available slots for engine-check-basic on 2021-02-22 at 9:30 |
       | engine-check-basic | transmission-check | 2021-02-02 | 9:00,9:30  | Time slots for two services are overlapping                               |
