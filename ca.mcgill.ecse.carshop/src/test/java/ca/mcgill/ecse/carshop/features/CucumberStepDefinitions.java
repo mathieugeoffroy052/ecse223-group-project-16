@@ -666,37 +666,6 @@ public class CucumberStepDefinitions {
 	    
 	}
 
-//	@Given("the business has the following opening hours:")
-//	public void the_business_has_the_following_opening_hours(io.cucumber.datatable.DataTable table) {
-//	    // Write code here that turns the phrase above into concrete actions
-//	    // For automatic transformation, change DataTable to one of
-//	    // E, List<E>, List<List<E>>, List<Map<K,V>>, Map<K,V> or
-//	    // Map<K, List<V>>. E,K,V must be a String, Integer, Float,
-//	    // Double, Byte, Short, Long, BigInteger or BigDecimal.
-//		try {
-//		DayOfWeek dayOfWeek = null;// set to null
-//		Business business = cs.getBusiness();
-//		// create a list
-//		List<List<String>> rows = table.asLists(String.class);
-//		// create a list
-//		for (List<String> column : rows) {
-//			if(column.get(0).equals("day")) {
-//	    		continue;
-//	    	}
-//			dayOfWeek = CarShopController.getWeekDay(column.get(0));
-//			// converts from string to time with method in the controller
-//			Time startTime = CarShopController.stringToTimeMatthew(column.get(1));
-//			Time endTime = CarShopController.stringToTimeMatthew(column.get(2));
-//			BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);// create a new object
-//			business.addBusinessHour(businessHour);
-//		}
-//
-//		} catch (InvalidInputException e) {
-//			error = e.getMessage();
-//			errorCntr++;
-//		}
-//			
-//	}
 	@Given("the business has the following opening hours:")
 	public void the_business_has_the_following_opening_hours(io.cucumber.datatable.DataTable table) {
 	    // Write code here that turns the phrase above into concrete actions
@@ -720,7 +689,11 @@ public class CucumberStepDefinitions {
 			Time endTime = CarShopController.stringToTimeMatthew(column.get(2));
 			BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);// create a new object
 			business.addBusinessHour(businessHour);
-
+			// new code
+			for(Garage g : cs.getGarages()) {
+				g.addBusinessHour(businessHour);
+			}
+			// new code
 		}
 		} catch (InvalidInputException e) {
 			error = e.getMessage();
@@ -1197,33 +1170,23 @@ public class CucumberStepDefinitions {
 	
 	
 	@Then("the garage belonging to the technician with type {string} should have opening hours on {string} from {string} to {string}")
-	public void the_garage_belonging_to_the_technician_with_type_should_have_opening_hours_on_from_to(String string, String string2, String string3, String string4) {
+	public void the_garage_belonging_to_the_technician_with_type_should_have_opening_hours_on_from_to(String type, String day, String startTime, String endTime) {
 	    // Write code here that turns the phrase above into concrete actions
 		try {
-		Technician technician = CarShopController.findTechnician(string, cs);
+		Technician technician = CarShopController.findTechnician(type, cs);
 		boolean test = false;
 		//TODO
 		List<BusinessHour> businessHours = technician.getGarage().getBusinessHours();
-		
-		DayOfWeek dayOfWeek = CarShopController.getWeekDay(string2);
-		Time startTime = CarShopController.stringToTimeMatthew(string3);
-		Time endTime = CarShopController.stringToTimeMatthew(string4);
-		BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);
-		
-		long endLong = endTime.getTime();
-		
+						
 		for(BusinessHour hours:businessHours) { 		// go through the loop
-			if(hours.getDayOfWeek().equals(CarShopController.getWeekDay(string2))) {
+			if(hours.getDayOfWeek().equals(CarShopController.getWeekDay(day))) {
 				// converts from string to time with method in the controller
-				if(hours.getStartTime().getTime() == (CarShopController.stringToTimeMatthew(string3)).getTime()) {
-					if(hours.getEndTime().getTime() == (CarShopController.stringToTimeMatthew(string4)).getTime()) {
+				if(hours.getStartTime().getTime() == (CarShopController.stringToTimeMatthew(startTime)).getTime()) {
+					if(hours.getEndTime().getTime() == (CarShopController.stringToTimeMatthew(endTime)).getTime()) {
 						test = true;
 						break;
 					}
 				}
-			}
-			if(hours.equals(businessHour)) {
-				test = true;
 			}
 		}
 
@@ -1236,17 +1199,10 @@ public class CucumberStepDefinitions {
 	}
 
 	@Given("there are opening hours on {string} from {string} to {string} for garage belonging to the technician with type {string}")
-	public void there_are_opening_hours_on_from_to_for_garage_belonging_to_the_technician_with_type(String string, String string2, String string3, String string4) {
+	public void there_are_opening_hours_on_from_to_for_garage_belonging_to_the_technician_with_type(String day, String startTime, String endTime, String type) {
 	    // Write code here that turns the phrase above into concrete actions
 		try {
-			Technician technician = CarShopController.findTechnician(string4, cs);
-			Garage garage = technician.getGarage();
-			DayOfWeek dayOfWeek = CarShopController.getWeekDay(string);
-			// converts from string to time with method in the controller
-			Time startTime = CarShopController.stringToTimeMatthew(string2);
-			Time endTime = CarShopController.stringToTimeMatthew(string3);
-			BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);
-
+			CarShopController.addBusinessHourIndividually(day, startTime, endTime, type, cs);
 		} catch (InvalidInputException e) {
 			error = e.getMessage();
 			errorCntr++;
@@ -1254,24 +1210,11 @@ public class CucumberStepDefinitions {
 	}
 
 	@When("the user tries to remove opening hours on {string} from {string} to {string} to garage belonging to the technician with type {string}")
-	public void the_user_tries_to_remove_opening_hours_on_from_to_to_garage_belonging_to_the_technician_with_type(String string, String string2, String string3, String string4) {
+	public void the_user_tries_to_remove_opening_hours_on_from_to_to_garage_belonging_to_the_technician_with_type(String day, String startTime, String endTime, String type) {
 	    // Write code here that turns the phrase above into concrete actions
 		try {
-		Technician technician = CarShopController.findTechnician(string4, cs);
-		DayOfWeek dayOfWeek = CarShopController.getWeekDay(string);
-		// converts from string to time with method in the controller
-		Time startTime = CarShopController.stringToTimeMatthew(string2);
-		Time endTime = CarShopController.stringToTimeMatthew(string3);
-		BusinessHour businessHour = new BusinessHour(dayOfWeek, startTime, endTime, cs);// create a new object
-		BusinessHour hoursToRemove = new BusinessHour(dayOfWeek, startTime, endTime, cs);// create a new object
-
-		try {
-			CarShopController.removeBusinessHour(hoursToRemove, CarShopApplication.getUser(), technician.getGarage(), cs);
-		}catch(Exception e) {
-			error = e.getMessage();
-			errorCntr++;
-		}
-		} catch (InvalidInputException e) {
+			CarShopController.removeBusinessHourIndividually(day, startTime, endTime, type, cs);
+		} catch (Exception e) {
 			error = e.getMessage();
 			errorCntr++;
 		}
@@ -1298,26 +1241,10 @@ public class CucumberStepDefinitions {
 	}
 	
 	@When("the user tries to add new business hours on {string} from {string} to {string} to garage belonging to the technician with type {string}")
-	public void the_user_tries_to_add_new_business_hours_on_from_to_to_garage_belonging_to_the_technician_with_type(String string, String string2, String string3, String string4) {
+	public void the_user_tries_to_add_new_business_hours_on_from_to_to_garage_belonging_to_the_technician_with_type(String day, String startTime, String endTime, String type) {
 	    // Write code here that turns the phrase above into concrete actions
 		try {
-		TechnicianType technicianType = CarShopController.getTechnicianType(string4);
-		DayOfWeek dayOfWeek = CarShopController.getWeekDay(string);
-		int toCheck = 0;
-		if(dayOfWeek.equals(BusinessHour.DayOfWeek.Monday)) toCheck = 0;
-		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Tuesday)) toCheck = 1;
-		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Wednesday)) toCheck = 2;
-		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Thursday)) toCheck = 3;
-		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Friday)) toCheck = 4;
-		else throw new InvalidInputException("The opening hours are not within the opening hours");
-		// converts from string to time with method in the controller
-		Time ourStartTime = CarShopController.stringToTimeMatthew(string2);
-		Time ourEndTime = CarShopController.stringToTimeMatthew(string3);
-		Technician technician = CarShopController.findTechnician(string4, cs);
-	
-		Garage garage = technician.getGarage();
-		BusinessHour businessHour = new BusinessHour(dayOfWeek, ourStartTime, ourEndTime, cs);
-		CarShopController.addBusinessHour(businessHour, CarShopApplication.getUser(), garage, cs);// CarShopApplication used
+			CarShopController.addBusinessHourIndividually(day, startTime, endTime, type, cs);
 		} catch (Exception e) {
 			error = e.getMessage();
 			errorCntr++;
@@ -1331,24 +1258,6 @@ public class CucumberStepDefinitions {
 
 	// ROBERT
 	// AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-
-//	@Given("all garages has the following opening hours")
-//	public void all_garages_has_the_following_opening_hours(io.cucumber.datatable.DataTable dataTable) throws InvalidInputException  {
-//		//Date Start = dateFormat.parse(startTime);
-//		//Date End = dateFormat.parse(endTime);
-//		List<Garage> garages = cs.getGarages();
-//		List<Map<String,String>> rows = dataTable.asMaps(String.class,String.class);
-//		
-//		for (Garage garage : garages) { 		// go through the loop
-//			for (Map<String,String> columns : rows) {		// go through the loop
-//				BusinessHour.DayOfWeek day = BusinessHour.DayOfWeek.valueOf(columns.get("day")); //columns.get("day");
-//				// converts from string to time with method in the controller
-//				Time start = CarShopController.stringToTime(columns.get("startTime")); //(Time) timeFormat.parse(columns.get("startTime"));
-//				Time end = CarShopController.stringToTime(columns.get("endTime")); //(Time) timeFormat.parse(columns.get("endtime"));
-//				garage.addBusinessHour(new BusinessHour(day, start, end, cs));// create a new object
-//			}	
-//		}
-//	}
 	
 	@Given("all garages has the following opening hours")
 	public void all_garages_has_the_following_opening_hours(io.cucumber.datatable.DataTable dataTable) throws InvalidInputException  {
@@ -1356,14 +1265,32 @@ public class CucumberStepDefinitions {
 		//Date End = dateFormat.parse(endTime);
 		List<Garage> garages = cs.getGarages();
 		List<Map<String,String>> rows = dataTable.asMaps(String.class,String.class);
-		
+		for (Garage g : garages) {
+			for(int i = g.getBusinessHours().size()-1; i >= 0; i--) {
+				g.getBusinessHour(i).setStartTime(null);
+				g.getBusinessHour(i).setEndTime(null);
+				g.getBusinessHour(i).setDayOfWeek(null);
+			}
+		}
 		for (Garage garage : garages) { 		// go through the loop
 			for (Map<String,String> columns : rows) {		// go through the loop
-				BusinessHour.DayOfWeek day = BusinessHour.DayOfWeek.valueOf(columns.get("day")); //columns.get("day");
+				int toCheck = 0;	// new code
+				BusinessHour.DayOfWeek dayOfWeek = BusinessHour.DayOfWeek.valueOf(columns.get("day")); //columns.get("day");
+				// new code
+				if(dayOfWeek.equals(BusinessHour.DayOfWeek.Monday)) toCheck = 0; 
+				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Tuesday)) toCheck = 1;
+				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Wednesday)) toCheck = 2;
+				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Thursday)) toCheck = 3;
+				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Friday)) toCheck = 4;
+				// new code
 				// converts from string to time with method in the controller
 				Time start = CarShopController.stringToTime(columns.get("startTime")); //(Time) timeFormat.parse(columns.get("startTime"));
 				Time end = CarShopController.stringToTime(columns.get("endTime")); //(Time) timeFormat.parse(columns.get("endtime"));
-				garage.addBusinessHour(new BusinessHour(day, start, end, cs));// create a new object
+				
+				garage.getBusinessHour(toCheck).setDayOfWeek(dayOfWeek);
+				garage.getBusinessHour(toCheck).setStartTime(start);
+				garage.getBusinessHour(toCheck).setEndTime(end);
+				//garage.addBusinessHour(new BusinessHour(dayOfWeek, start, end, cs));// create a new object (JUST THIS)
 			}	
 		}
 	}

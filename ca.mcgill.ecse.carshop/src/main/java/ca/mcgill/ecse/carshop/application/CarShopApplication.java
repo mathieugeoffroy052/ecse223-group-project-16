@@ -41,6 +41,7 @@ public class CarShopApplication {
 		accountType = null;
 		isLoggedIn = false;
 		currentDate = null;
+		username = null;
 	}
     
     public static void logIn(String username, String password) {

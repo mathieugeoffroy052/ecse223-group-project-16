@@ -40,7 +40,145 @@ public class CarShopController {
 	public CarShopController() {
 	}
 	
+	
+	public static void removeBusinessHourIndividually(String day, String startTime, String endTime, String type, CarShop cs) throws InvalidInputException {
+		if(CarShopApplication.getCurrentUser()!=null) {
+			TechnicianType technicianType = getTechnicianType(CarShopApplication.getCurrentUser());
+			if(technicianType!=null) {
+				String toCheckString = technicianType.toString().toLowerCase();
+				if(!toCheckString.equals(type.toLowerCase())) throw new InvalidInputException("You are not authorized to perform this operation");
+				Technician technician = cs.getTechnician(getTechnician(CarShopApplication.getCurrentUser(), cs));
+				Garage garage = technician.getGarage();
+				if(technicianType.equals(garage.getTechnician().getType())) {
+						
+				}else {
+					throw new InvalidInputException("You are not authorized to perform this operation");
+				}
+			}else {
+				throw new InvalidInputException("You are not authorized to perform this operation");
+			}
+		}
+		
+//		Technician technician = CarShopController.findTechnician(type, cs);
+//		DayOfWeek dayOfWeek = CarShopController.getWeekDay(day);
+//		// converts from string to time with method in the controller
+//		Time startTime1 = CarShopController.stringToTimeMatthew(startTime);
+//		Time endTime1 = CarShopController.stringToTimeMatthew(endTime);
+		
+		DayOfWeek dayOfWeek = CarShopController.getWeekDay(day);
+		int toCheck = 0;
+		if(dayOfWeek.equals(BusinessHour.DayOfWeek.Monday)) toCheck = 0; 
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Tuesday)) toCheck = 1;
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Wednesday)) toCheck = 2;
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Thursday)) toCheck = 3;
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Friday)) toCheck = 4;
+		else throw new InvalidInputException("The opening hours are not within the opening hours");
+		// converts from string to time with method in the controller
+//		Time ourStartTime = CarShopController.stringToTimeMatthew(startTime);
+//		Time ourEndTime = CarShopController.stringToTimeMatthew(endTime);
+		Technician technician = CarShopController.findTechnician(type, cs);
+		
+		Garage garage = technician.getGarage();
+		garage.getBusinessHour(toCheck).delete();
+	}
 	// TODO
+	public static void addBusinessHourIndividually(String day, String startTime, String endTime, String type, CarShop cs) throws InvalidInputException {
+		if(CarShopApplication.getCurrentUser()!=null) {
+			TechnicianType technicianType = getTechnicianType(CarShopApplication.getCurrentUser());
+			if(technicianType!=null) {
+				String toCheckString = technicianType.toString().toLowerCase();
+				if(!toCheckString.equals(type.toLowerCase())) throw new InvalidInputException("You are not authorized to perform this operation");
+				Technician technician = cs.getTechnician(getTechnician(CarShopApplication.getCurrentUser(), cs));
+				Garage garage = technician.getGarage();
+				if(technicianType.equals(garage.getTechnician().getType())) {
+						
+				}else {
+					throw new InvalidInputException("You are not authorized to perform this operation");
+				}
+			}else {
+				throw new InvalidInputException("You are not authorized to perform this operation");
+			}
+		}
+		
+		
+		DayOfWeek dayOfWeek = CarShopController.getWeekDay(day);
+		int toCheck = 0;
+		if(dayOfWeek.equals(BusinessHour.DayOfWeek.Monday)) toCheck = 0; 
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Tuesday)) toCheck = 1;
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Wednesday)) toCheck = 2;
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Thursday)) toCheck = 3;
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Friday)) toCheck = 4;
+		else throw new InvalidInputException("The opening hours are not within the opening hours");
+		// converts from string to time with method in the controller
+		Time ourStartTime = CarShopController.stringToTimeMatthew(startTime);
+		Time ourEndTime = CarShopController.stringToTimeMatthew(endTime);
+		Technician technician = CarShopController.findTechnician(type, cs);
+		
+		if(ourStartTime.after(ourEndTime)) throw new InvalidInputException("Start time must be before end time");
+		
+		// "The opening hours cannot overlap"
+		Garage garage = technician.getGarage();
+		if(garage.getBusinessHour(toCheck)!=null) {
+			
+			// case 1	| @		@ | or @|		@|	// before, after
+//			if((garage.getBusinessHour(toCheck).getStartTime().equals(ourStartTime) || 
+//				garage.getBusinessHour(toCheck).getStartTime().before(ourStartTime))
+//				&&
+//			(garage.getBusinessHour(toCheck).getEndTime().equals(ourEndTime) || 
+//				garage.getBusinessHour(toCheck).getEndTime().after(ourEndTime))) throw new InvalidInputException("The opening hours cannot overlap");
+			
+//			// case 2	| @		  | @	// before, before
+//			if((garage.getBusinessHour(toCheck).getStartTime().equals(ourStartTime) || 
+//					garage.getBusinessHour(toCheck).getStartTime().before(ourStartTime))
+//					&&
+//				(garage.getBusinessHour(toCheck).getEndTime().equals(ourEndTime) || 
+//					garage.getBusinessHour(toCheck).getEndTime().before(ourEndTime))) throw new InvalidInputException("The opening hours cannot overlap");
+//			
+//			// case 3	@ |		  @ |	// after, after
+//			else if((garage.getBusinessHour(toCheck).getStartTime().equals(ourStartTime) || 
+//					garage.getBusinessHour(toCheck).getStartTime().after(ourStartTime))
+//					&&
+//				(garage.getBusinessHour(toCheck).getEndTime().equals(ourEndTime) || 
+//					garage.getBusinessHour(toCheck).getEndTime().after(ourEndTime))) throw new InvalidInputException("The opening hours cannot overlap");
+//			
+//			// case 4	@ |		  @ |	// after, before
+//			else if((garage.getBusinessHour(toCheck).getStartTime().equals(ourStartTime) || 
+//					garage.getBusinessHour(toCheck).getStartTime().after(ourStartTime))
+//					&&
+//				(garage.getBusinessHour(toCheck).getEndTime().equals(ourEndTime) || 
+//					garage.getBusinessHour(toCheck).getEndTime().before(ourEndTime))) throw new InvalidInputException("The opening hours cannot overlap");
+			
+			// "The opening hours are not within the opening hours of the business"
+			if(garage.getBusinessHour(toCheck).getStartTime().after(ourStartTime) ||
+					garage.getBusinessHour(toCheck).getEndTime().before(ourEndTime)) throw new InvalidInputException("The opening hours are not within the opening hours of the business");
+		}
+		
+		
+		
+		garage.getBusinessHour(toCheck).setStartTime(ourStartTime);
+		garage.getBusinessHour(toCheck).setEndTime(ourEndTime);
+	}
+	
+	public static void changeBusinessHour(String day, String startTime, String endTime, String type, CarShop cs) throws InvalidInputException {
+
+		DayOfWeek dayOfWeek = CarShopController.getWeekDay(day);
+		int toCheck = 0;
+		if(dayOfWeek.equals(BusinessHour.DayOfWeek.Monday)) toCheck = 0; 
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Tuesday)) toCheck = 1;
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Wednesday)) toCheck = 2;
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Thursday)) toCheck = 3;
+		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Friday)) toCheck = 4;
+		else throw new InvalidInputException("The opening hours are not within the opening hours");
+		// converts from string to time with method in the controller
+		Time ourStartTime = CarShopController.stringToTimeMatthew(startTime);
+		Time ourEndTime = CarShopController.stringToTimeMatthew(endTime);
+		Technician technician = CarShopController.findTechnician(type, cs);		
+		// "The opening hours cannot overlap"
+		Garage garage = technician.getGarage();
+		
+		garage.getBusinessHour(toCheck).setStartTime(ourStartTime);
+		garage.getBusinessHour(toCheck).setEndTime(ourEndTime);
+	}
 	
 	// creating appointment method
 	@SuppressWarnings("static-access")
@@ -242,6 +380,7 @@ public class CarShopController {
 		LocalDate localDate = day.toLocalDate();
 		String DayOfWeek = localDate.getDayOfWeek().toString();
 		for (BusinessHour bhour: bhours) {
+			if(bhour.getDayOfWeek()==null) return false;
 			if (bhour.getDayOfWeek().toString().toLowerCase().equals(DayOfWeek.toLowerCase())) {
 				if ((endTime.before(bhour.getEndTime()) || endTime.equals(bhour.getEndTime())) && 
 						(startTime.after(bhour.getStartTime())  || startTime.equals(bhour.getStartTime()))) {
@@ -1114,9 +1253,9 @@ public class CarShopController {
 //			Technician technician = cs.getTechnician(getTechnician(username, cs));
 			if(technicianType.equals(garage.getTechnician().getType())) {
 				garage.addBusinessHour(addedHours);	
-		}else {
-			throw new InvalidInputException("You are not authorized to perform this operation");
-		}
+			}else {
+				throw new InvalidInputException("You are not authorized to perform this operation");
+			}
 		}else {
 			throw new InvalidInputException("You are not authorized to perform this operation");
 		}
@@ -1297,7 +1436,6 @@ public class CarShopController {
 	}
 	
 	
-
 	// define service
 	// defines services
 	public static void ownerDefinesService(String user, String name, String duration, String garage, CarShop cs) throws InvalidInputException {
