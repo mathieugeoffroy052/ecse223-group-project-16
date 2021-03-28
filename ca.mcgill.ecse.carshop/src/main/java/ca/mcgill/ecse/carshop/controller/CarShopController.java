@@ -42,29 +42,6 @@ public class CarShopController {
 	
 	// TODO
 	
-	// ROBERT
-	
-	@SuppressWarnings("static-access")
-	// creating appointment method with extra optional service
-	public static void CreateAppointment(String customer, String service, String startTime, String startDate, String optServices, CarShop cs) throws Exception {
-		
-		List<String> opts = CarShopController.parseStringByServices(optServices);
-		String toPutIn = null;
-		for(String opt : opts) {
-			Service toPut = null;
-			for(BookableService sb : cs.getBookableServices()) {
-				if(sb.getName().equals(opt)) {
-					toPut = (Service) sb;
-					break;
-				}
-			}
-			ComboItem sb1 = cs.getBookableService(0).getWithName(service).getMainService();
-			sb1.getServiceCombo().addService(true, toPut);
-		}
-		// TODO Implement this
-		CreateAppointmentWithOptServices(customer, service, startTime, startDate, cs, service);
-	}
-	
 	// creating appointment method
 	@SuppressWarnings("static-access")
 	public static void CreateAppointmentWithOptServices(String customer, String serviceComboName, String startTime, String startDate, CarShop cs, String optServices) throws Exception {
@@ -124,12 +101,7 @@ public class CarShopController {
 				appointment.delete();
 				throw new InvalidInputException("There are no available slots for " +  serviceComboName + " on " + startDate + " at " + startTime);
 			}
-//			if(!checkTimeAvailable(cs, startTime1, endTime, date)) {
-////				cs.removeAppointment(appointment);
-//				
-//				appointment.delete();
-//				throw new InvalidInputException("There are no available slots for " +  serviceComboName + " on " + startDate + " at " + startTime);
-//			}
+
 			TimeSlot timeSlot1 = cs.addTimeSlot(date, startTime1, date, endTime);
 			serv.addServiceBooking(timeSlot1, appointment);
 			 
