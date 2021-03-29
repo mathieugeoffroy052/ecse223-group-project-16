@@ -5,7 +5,7 @@ package ca.mcgill.ecse.carshop.model;
 import java.io.Serializable;
 import java.util.*;
 
-// line 241 "../../../../../CarShopStates.ump"
+// line 246 "../../../../../CarShopStates.ump"
 // line 58 "../../../../../CarShopPersistence.ump"
 // line 54 "../../../../../carshop.ump"
 public class Customer extends User implements Serializable
@@ -197,7 +197,7 @@ public class Customer extends User implements Serializable
     super.delete();
   }
 
-  // line 245 "../../../../../CarShopStates.ump"
+  // line 250 "../../../../../CarShopStates.ump"
    public void updateNoShow(){
     noShowCounter++;
   }

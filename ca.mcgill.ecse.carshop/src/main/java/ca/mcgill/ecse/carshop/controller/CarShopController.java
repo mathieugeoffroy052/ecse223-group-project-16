@@ -1726,17 +1726,25 @@ public class CarShopController {
 		if(!customerName.equals(appointment.getCustomer().getUsername())) {
 			throw new InvalidInputException("Only the customer can make changes to his appointment");
 		}
+		
 		setSystemDateAndTime(currentTime);
 		
 		BookableService service = BookableService.getWithName(serviceName);
+		if(!(service instanceof Service)) {
+			throw new InvalidInputException("This is not a service");
+		}
 		
 		Date date = appointment.getServiceBooking(0).getTimeSlot().getStartDate();
 		Time startTime = appointment.getServiceBooking(0).getTimeSlot().getStartTime();
 		Time endTime = findEndTime(service, startTime);
 		
-		if (appointmentConflitsWithAppointments(appointment, (Service) service, date, startTime, endTime)) {
+		if (appointmentConflitsWithAppointments(appointment, (Service) service, date, startTime, endTime, true)) {
 			throw new InvalidInputException("Appointment conflicts with existing appointments");
 		}
+		
+		
+		
+		appointment.changeAppointmentService((Service) service);
 		
 	}
 	
@@ -1898,12 +1906,21 @@ public class CarShopController {
 		return endTime;
 	}
 	
-	//if we want to change the time
-	private static boolean appointmentConflitsWithAppointments(Appointment appointment, Service name, Date date, Time startTime, Time endTime) {
+	/**
+	 * checks whether the new time conflicts with any existing appointments
+	 * @param appointment the appointment we want to change
+	 * @param name the service
+	 * @param date the new date
+	 * @param startTime the new start time
+	 * @param endTime the new end time
+	 * @param excludeSelf set to true if we want to exclude this appointment
+	 * @return true if conflicts
+	 */
+	private static boolean appointmentConflitsWithAppointments(Appointment appointment, Service name, Date date, Time startTime, Time endTime, boolean excludeSelf) {
 		Garage garage = name.getGarage();
 		List<Appointment> appointments = CarShopApplication.getCarShop().getAppointments();
 		for(Appointment appt : appointments) {
-			if (!appt.equals(appointment)) {
+			if (!excludeSelf || !appt.equals(appointment)) {
 				for(ServiceBooking serviceBooking : appt.getServiceBookings()) {
 					if (serviceBooking.getService().getGarage().equals(garage) 
 							&& serviceBooking.getTimeSlot().getStartDate().equals(date)) {
@@ -1915,6 +1932,13 @@ public class CarShopController {
 			}
 		}
 		return false;
+	}
+	
+	
+	
+	private static java.time.DayOfWeek DayOfWeekFromDate(Date date) {
+		LocalDate localDate = date.toLocalDate();
+		return localDate.getDayOfWeek();
 	}
 	
 	
