@@ -1729,4 +1729,107 @@ public class CarShopController {
 	
 	// END JERRY
 	
+	
+	/** ** START APPOINTMENT MANAGEMENT ** 
+
+
+	/**
+	 * method to create appointment with a single service
+	 */
+	public static void createAppointmentAt(String custumerName, String serviceName ,String date, String time, String currentTime) throws Exception {
+		setSystemDateAndTime(currentTime);
+		CreateAppointmentWithOptServices(custumerName, serviceName, time, date, CarShopApplication.getCarShop(), "");
+	}
+	
+	public static void changeServiceAt(Appointment appointment, String customerName, String serviceName, String currentTime) throws InvalidInputException {
+		setSystemDateAndTime(currentTime);
+	}
+	
+	public static void updateDateAndTimeAt(Appointment appointment, String customerName, String newDate, String newTime, String currentTime) throws InvalidInputException {
+		setSystemDateAndTime(currentTime);
+	}
+	
+	public static void cancelAppointmentAt(Appointment appointment, String customerName, String currentTime) throws InvalidInputException {
+		setSystemDateAndTime(currentTime);
+	}
+	
+	/**
+	 * method to create a combo appointment
+	 * @param customerName customer name
+	 * @param comboName combo name
+	 * @param optService optional services
+	 * @param date start date
+	 * @param time start time
+	 * @param currentTime current time
+	 * @throws Exception incorrect format
+	 */
+	public static void createComboAppointmentAt(String customerName, String comboName, String optService, String date, String time, String currentTime) throws Exception{
+		setSystemDateAndTime(currentTime);
+		CreateAppointmentWithOptServices(customerName, comboName, time, date, CarShopApplication.getCarShop(), optService);
+	}
+	
+	public static void addOptServiceAt(Appointment appointment, String customerName, String serviceName, String startTime, String currentTime) throws InvalidInputException{
+		setSystemDateAndTime(currentTime);
+	}
+	
+	/**
+	 * Method for the owner to start an appointment
+	 * @param appointment the appointment
+	 * @param currentTime time when the action was triggered
+	 * @throws InvalidInputException if the inputs are invalid
+	 */
+	public static void startAppointmentAt(Appointment appointment, String currentTime) throws InvalidInputException{
+		setSystemDateAndTime(currentTime);
+		appointment.startAppointment();
+	}
+	
+	/**
+	 * Method for the owner to end an appointment
+	 * @param appointment the appointment
+	 * @param currentTime time when the action was triggered
+	 * @throws InvalidInputException if the inputs are invalid
+	 */
+	public static void endAppointmentAt(Appointment appointment, String currentTime) throws InvalidInputException{
+		setSystemDateAndTime(currentTime);
+		appointment.endAppointment();
+	}
+	
+	/**
+	 * Method for the owner to update the "no show" counter of the customer
+	 * @param appointment the appointment
+	 * @param currentTime time when the action was triggered
+	 * @throws InvalidInputException if the inputs are invalid
+	 */
+	public static void updateNoShowAt(Appointment appointment, String currentTime) throws InvalidInputException{
+		setSystemDateAndTime(currentTime);
+		appointment.noShow();
+	}
+	
+	/**
+	 * Method to parse the date and time from a string, then update the system date/time
+	 * @param dateTime string representing the date and time
+	 * @throws InvalidInputException if the string is in an incorrect format
+	 */
+	private static void setSystemDateAndTime(String dateTime) throws InvalidInputException {
+		String datePattern = "yyyy-MM-dd";
+		String timePattern = "HH:mm";
+		String[] splitString = dateTime.split("\\+");// uses a formatter from java.sql.Date/Time
+		SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);// create a new object
+		SimpleDateFormat timeFormatter = new SimpleDateFormat(timePattern);// create a new object
+		Date newDate = null;
+		Time newTime = null;
+		try {
+			// uses a formatter from java.sql.Date/Time
+			newDate = new java.sql.Date(dateFormatter.parse(splitString[0]).getTime());// create a new object
+			newTime = new java.sql.Time(timeFormatter.parse(splitString[1]).getTime());// create a new object
+		} catch (Exception e) {
+			throw new InvalidInputException("Incorrect date time format");
+		}
+		CarShopApplication.setSystemDate(newDate);
+		CarShopApplication.setSystemTime(newTime);
+	}
+	
+	
+	
+	/** ** END APPOINTMENT MANAGEMENT ** **/
 }
