@@ -4,7 +4,7 @@
 package ca.mcgill.ecse.carshop.application;
 
 import java.sql.Time;
-import java.util.Date;
+import java.sql.Date;
 
 import ca.mcgill.ecse.carshop.model.CarShop;
 import ca.mcgill.ecse.carshop.model.Customer;
