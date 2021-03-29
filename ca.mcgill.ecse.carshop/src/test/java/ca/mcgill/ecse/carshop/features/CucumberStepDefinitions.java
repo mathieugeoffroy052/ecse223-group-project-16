@@ -1573,26 +1573,43 @@ public class CucumberStepDefinitions {
 
 	@Then("the appointment shall be booked")
 	public void the_appointment_shall_be_booked() {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+		assertNotNull(cs.getAppointment(2)); //checks to see if a second appointment exists (first one already created in background)
+		//we can do this because this @then test is always called after trying to add a second appointment
 	}
 
 	@Then("the service in the appointment shall be {string}")
 	public void the_service_in_the_appointment_shall_be(String string) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	    assertEquals(string, cs.getAppointment(2).getBookableService().getName());
+	    //compare the name given by the test to the name of the service for which the appointment is for
 	}
 
 	@Then("the appointment shall be for the date {string} with start time {string} and end time {string}")
-	public void the_appointment_shall_be_for_the_date_with_start_time_and_end_time(String string, String string2, String string3) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void the_appointment_shall_be_for_the_date_with_start_time_and_end_time(String string, String string2, String string3) throws InvalidInputException {
+	    Date expectedDate = CarShopController.stringToDate(string); //convert string date into comparable date format
+	    Time startTime = CarShopController.stringToTime(string2); // convert string time to comparable time format
+	    Time endTime = CarShopController.stringToTime(string3);
+	    List<ServiceBooking> appointmentServices = cs.getAppointment(2).getServiceBookings(); //get list of all servicebookings in the appointment
+	    //note that all our tests are adding a second appointment and checking its fields therefore we directly retrieve the second appointment from the list
+	    
+	    Date appDate = appointmentServices.get(0).getTimeSlot().getStartDate(); //get appointment start date
+	    Time appStartTime = appointmentServices.get(0).getTimeSlot().getStartTime(); //get appointment Start time by looking at first servicebooking
+	    
+	    ServiceBooking lastServiceBooking = null; //find last servicebooking for appointment to get appointment end time
+	    for (ServiceBooking serviceBooking : appointmentServices) {
+	    	lastServiceBooking = serviceBooking;
+	    }
+	    Time appEndTime = lastServiceBooking.getTimeSlot().getEndTime();
+	    
+		assertEquals(expectedDate, appDate); //compare expected date with date of the appointment
+		assertEquals(startTime, appStartTime);//compare start times 
+		assertEquals(endTime, appEndTime);//compare end times
+		
 	}
 
 	@Then("the username associated with the appointment shall be {string}")
 	public void the_username_associated_with_the_appointment_shall_be(String string) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	    assertEquals(string, cs.getAppointment(2).getCustomer().getUsername());
+	    //compare customer's username to the expected inputed string
 	}
 
 	@Then("the user {string} shall have {int} no-show records")
@@ -1603,8 +1620,8 @@ public class CucumberStepDefinitions {
 
 	@Then("the system shall have {int} appointments")
 	public void the_system_shall_have_appointments(Integer int1) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	    assertEquals(int1, cs.getAppointments().size());
+	    //get list of all appointments and compare size to expect number of appointments
 	}
 
 	@When("{string} attempts to update the date to {string} and time to {string} at {string}")
@@ -1621,8 +1638,8 @@ public class CucumberStepDefinitions {
 
 	@Then("the system shall have {int} appointment")
 	public void the_system_shall_have_appointment(Integer int1) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	    assertEquals(int1, cs.getAppointments().size());
+	    //get list of all appointments and compare size to expect number of appointments
 	}
 
 	@When("{string} makes a {string} appointment with service {string} for the date {string} and start time {string} at {string}")
