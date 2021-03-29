@@ -17,143 +17,138 @@ public class CarShopApplication {
 	private static User user = null;	//might need to remove static
 	public static AccountType accountType = null;
 	private static boolean isLoggedIn = false;
-	static Date currentDate = null;
 	private static String username = null;
 	private static Date systemDate = null;
 	private static Time systemTime = null;
-	
-    public enum AccountType{EngineTechnician, TireTechnician, TransmissionTechnician, ElectronicsTechnician, FluidsTechnician, 
-    	Customer, Owner};
 
-    public static CarShop getCarShop() {
-    	if(carShop == null) {
-    		carShop = new CarShop();
-    	}
-    	return carShop;
-    }
-    
-	public static void restart() {
-		if(carShop != null) {
-			carShop.delete();
+	public enum AccountType{EngineTechnician, TireTechnician, TransmissionTechnician, ElectronicsTechnician, FluidsTechnician, 
+		Customer, Owner};
+
+		public static CarShop getCarShop() {
+			if(carShop == null) {
+				carShop = new CarShop();
+			}
+			return carShop;
 		}
-		carShop = null;
-		user = null;
-		accountType = null;
-		isLoggedIn = false;
-		currentDate = null;
-		username = null;
-	}
-    
-    public static void logIn(String username, String password) {
-    	if(carShop.getOwner() != null && username.equals(carShop.getOwner().getUsername()) && password.equals(carShop.getOwner().getPassword())) {
-    		accountType = CarShopApplication.AccountType.Owner;
-    		user = carShop.getOwner();
-			isLoggedIn = true;
-			setUser(carShop.getOwner());
-    	}
-    	else if(username.contains("Technician")) {
-    		int i = carShop.getTechnicianWithString(username);
-    		String comparePassword = carShop.getTechnician(i).getPassword();
-    		if(password.equals(comparePassword)) {
-    			Technician.TechnicianType a = carShop.getTechnician(0).getTechnicianType(username);
-    			if(a.equals(Technician.TechnicianType.Engine)) {
-    				accountType = CarShopApplication.AccountType.EngineTechnician;
-        			user = carShop.getTechnician(i);
-    			}
-    			else if(a.equals(Technician.TechnicianType.Tire)) {
-    				accountType = CarShopApplication.AccountType.TireTechnician;
-        			user = carShop.getTechnician(i);
-    			}
-    			else if(a.equals(Technician.TechnicianType.Transmission)) {
-    				accountType = CarShopApplication.AccountType.TransmissionTechnician;
-        			user = carShop.getTechnician(i);
-    			}
-    			else if(a.equals(Technician.TechnicianType.Electronics)) {
-    				accountType = CarShopApplication.AccountType.ElectronicsTechnician;
-        			user = carShop.getTechnician(i);
-    			}
-    			else {
-    				accountType = CarShopApplication.AccountType.FluidsTechnician;
-        			user = carShop.getTechnician(i);
-    			}
-    			setUser(carShop.getTechnician(i));
-    			isLoggedIn = true;
-    		}
-    	}
-    	else {
-    		for(int i = 0; i < carShop.getCustomers().size(); i++) {
-    			if(carShop.getCustomer(i).getUsername().equals(username)) {
-    				if(carShop.getCustomer(i).getPassword().equals(password)) {
-    		    		accountType = CarShopApplication.AccountType.Customer;
-            			isLoggedIn = true;
-            			user = carShop.getCustomer(i);
-            			setUser(carShop.getCustomer(i));
-    				}
-    			}
-    		}
-    	}
-    	
-    }
-    
-    public static void setUsername(String name) {
-    	username = name;
-	}
-    
-    public static String getCurrentUser() {
-    	return username;
-    }
-    
-    public static void setSystemDate(Date date) {
-    	systemDate = date;
-    }
-    
-    public static Date getSystemDate() {
-		return systemDate;
-	}
-    
-    public static Time getSystemTime() {
-		return systemTime;
-	}
-    
-    public static void setSystemTime(Time time) {
-    	systemTime = time;
-    }
-    
-    public static User getUser() {
-		return user;
-    }
-    
-    public static void setUser(User newUser) {
-    	user = newUser;
-    }
-    
-    public static void setAccountType(AccountType type) {
-    	accountType = type;
-    }
 
-    
-    public static void logOut() {
-    	accountType = null;
-    	isLoggedIn = false;
-    	user = null;
-    }
-    
-    public static void setLoggedIn(Boolean bool) {
-    	isLoggedIn = bool;
-    }
-    
-    public static AccountType getAccountType() {
-    	return accountType;
-    }
-    
-    public static boolean getLoggedIn() {
-    	return isLoggedIn;
-    }
-    
-    public static void setDate(Date date) {
-    	currentDate = date;
-    }
-    
+		public static void restart() {
+			if(carShop != null) {
+				carShop.delete();
+			}
+			carShop = null;
+			user = null;
+			accountType = null;
+			isLoggedIn = false;
+			username = null;
+			systemDate = null;
+			systemTime = null;
+		}
 
-    
+		public static void logIn(String username, String password) {
+			if(carShop.getOwner() != null && username.equals(carShop.getOwner().getUsername()) && password.equals(carShop.getOwner().getPassword())) {
+				accountType = CarShopApplication.AccountType.Owner;
+				user = carShop.getOwner();
+				isLoggedIn = true;
+				setUser(carShop.getOwner());
+			}
+			else if(username.contains("Technician")) {
+				int i = carShop.getTechnicianWithString(username);
+				String comparePassword = carShop.getTechnician(i).getPassword();
+				if(password.equals(comparePassword)) {
+					Technician.TechnicianType a = carShop.getTechnician(0).getTechnicianType(username);
+					if(a.equals(Technician.TechnicianType.Engine)) {
+						accountType = CarShopApplication.AccountType.EngineTechnician;
+						user = carShop.getTechnician(i);
+					}
+					else if(a.equals(Technician.TechnicianType.Tire)) {
+						accountType = CarShopApplication.AccountType.TireTechnician;
+						user = carShop.getTechnician(i);
+					}
+					else if(a.equals(Technician.TechnicianType.Transmission)) {
+						accountType = CarShopApplication.AccountType.TransmissionTechnician;
+						user = carShop.getTechnician(i);
+					}
+					else if(a.equals(Technician.TechnicianType.Electronics)) {
+						accountType = CarShopApplication.AccountType.ElectronicsTechnician;
+						user = carShop.getTechnician(i);
+					}
+					else {
+						accountType = CarShopApplication.AccountType.FluidsTechnician;
+						user = carShop.getTechnician(i);
+					}
+					setUser(carShop.getTechnician(i));
+					isLoggedIn = true;
+				}
+			}
+			else {
+				for(int i = 0; i < carShop.getCustomers().size(); i++) {
+					if(carShop.getCustomer(i).getUsername().equals(username)) {
+						if(carShop.getCustomer(i).getPassword().equals(password)) {
+							accountType = CarShopApplication.AccountType.Customer;
+							isLoggedIn = true;
+							user = carShop.getCustomer(i);
+							setUser(carShop.getCustomer(i));
+						}
+					}
+				}
+			}
+
+		}
+
+		public static void setUsername(String name) {
+			username = name;
+		}
+
+		public static String getCurrentUser() {
+			return username;
+		}
+
+		public static void setSystemDate(Date date) {
+			systemDate = date;
+		}
+
+		public static Date getSystemDate() {
+			return systemDate;
+		}
+
+		public static Time getSystemTime() {
+			return systemTime;
+		}
+
+		public static void setSystemTime(Time time) {
+			systemTime = time;
+		}
+
+		public static User getUser() {
+			return user;
+		}
+
+		public static void setUser(User newUser) {
+			user = newUser;
+		}
+
+		public static void setAccountType(AccountType type) {
+			accountType = type;
+		}
+
+
+		public static void logOut() {
+			accountType = null;
+			isLoggedIn = false;
+			user = null;
+		}
+
+		public static void setLoggedIn(Boolean bool) {
+			isLoggedIn = bool;
+		}
+
+		public static AccountType getAccountType() {
+			return accountType;
+		}
+
+		public static boolean getLoggedIn() {
+			return isLoggedIn;
+		}
+
 }
+
