@@ -2,10 +2,12 @@
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
 
 package ca.mcgill.ecse.carshop.model;
+import java.io.Serializable;
 import java.util.*;
 
-// line 100 "../../../../../carshop.ump"
-public abstract class BookableService
+// line 10 "../../../../../CarShopPersistence.ump"
+// line 114 "../../../../../carshop.ump"
+public abstract class BookableService implements Serializable
 {
 
   //------------------------
@@ -223,12 +225,24 @@ public abstract class BookableService
     }
   }
 
-  // line 106 "../../../../../carshop.ump"
+
+  /**
+   * private static final long serialVersionUID = 2315072607928790501L;
+   */
+  // line 16 "../../../../../CarShopPersistence.ump"
+   public static  void reinitializeBookableServiceList(List<BookableService> bookableServices){
+    bookableservicesByName = new HashMap<String, BookableService>();
+	    for (BookableService bs : bookableServices) {
+	    	bookableservicesByName.put(bs.getName(), bs);
+	    }
+  }
+
+  // line 120 "../../../../../carshop.ump"
    public ComboItem getMainService(){
     return null;
   }
 
-  // line 110 "../../../../../carshop.ump"
+  // line 124 "../../../../../carshop.ump"
    public int getDuration(){
     if(this instanceof Service) {
 		  return this.getDuration();

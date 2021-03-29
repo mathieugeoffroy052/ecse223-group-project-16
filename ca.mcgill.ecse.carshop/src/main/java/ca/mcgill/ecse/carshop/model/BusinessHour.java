@@ -2,10 +2,12 @@
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
 
 package ca.mcgill.ecse.carshop.model;
+import java.io.Serializable;
 import java.sql.Time;
 
-// line 81 "../../../../../carshop.ump"
-public class BusinessHour
+// line 32 "../../../../../CarShopPersistence.ump"
+// line 95 "../../../../../carshop.ump"
+public class BusinessHour implements Serializable
 {
 
   //------------------------

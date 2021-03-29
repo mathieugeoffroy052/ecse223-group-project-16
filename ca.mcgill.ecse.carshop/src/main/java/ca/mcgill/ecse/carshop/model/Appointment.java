@@ -2,10 +2,12 @@
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
 
 package ca.mcgill.ecse.carshop.model;
+import java.io.Serializable;
 import java.util.*;
 
-// line 140 "../../../../../carshop.ump"
-public class Appointment
+// line 3 "../../../../../CarShopPersistence.ump"
+// line 154 "../../../../../carshop.ump"
+public class Appointment implements Serializable
 {
 
   //------------------------

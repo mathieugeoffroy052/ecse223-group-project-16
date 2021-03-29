@@ -1,6 +1,7 @@
 namespace ca.mcgill.ecse.carshop.model;
 
-//edit by mathieu
+use CarShopStates.ump;
+use CarShopPersistence.ump;
 
 class CarShop  {
   1 <@>- 0..1 Business business;
@@ -35,6 +36,15 @@ class User {
   abstract;
   unique username;
   password;
+  
+  public static Map<String, User> getUsersByUsername() {
+	return usersByUsername;
+  }
+
+  public static void setUsersByUsername(Map<String, User> usersByUsername) {
+	User.usersByUsername = usersByUsername;
+  }
+  
 }
 
 class Owner {
@@ -59,7 +69,9 @@ class Technician {
 	  int toCheck = carShop.getTechnicianWithString(string);
 	  if(toCheck == -1) return null;
 	  return carShop.getTechnician(toCheck).getType();
-  }
+    }
+  
+
   
 }
 

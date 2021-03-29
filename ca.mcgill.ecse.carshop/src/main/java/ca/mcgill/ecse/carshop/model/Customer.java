@@ -2,10 +2,12 @@
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
 
 package ca.mcgill.ecse.carshop.model;
+import java.io.Serializable;
 import java.util.*;
 
-// line 42 "../../../../../carshop.ump"
-public class Customer extends User
+// line 58 "../../../../../CarShopPersistence.ump"
+// line 54 "../../../../../carshop.ump"
+public class Customer extends User implements Serializable
 {
 
   //------------------------
@@ -175,6 +177,18 @@ public class Customer extends User
       aAppointment.delete();
     }
     super.delete();
+  }
+
+
+  /**
+   * private static final long serialVersionUID = -7403802774454467836L;
+   */
+  // line 64 "../../../../../CarShopPersistence.ump"
+   public static  void reinitializeUniqueUsernames(List<Customer> customers){
+    User.setUsersByUsername(new HashMap<String, User>());
+    for (User user : customers) {
+    	User.getUsersByUsername().put(user.getUsername(), user);
+    }
   }
 
 }

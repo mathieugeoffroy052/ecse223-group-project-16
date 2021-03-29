@@ -121,11 +121,9 @@ public class CarShopController {
 		if(garage.getBusinessHour(toCheck)!=null) {
 			
 			// case 1	| @		@ | or @|		@|	// before, after
-//			if((garage.getBusinessHour(toCheck).getStartTime().equals(ourStartTime) || 
-//				garage.getBusinessHour(toCheck).getStartTime().before(ourStartTime))
-//				&&
-//			(garage.getBusinessHour(toCheck).getEndTime().equals(ourEndTime) || 
-//				garage.getBusinessHour(toCheck).getEndTime().after(ourEndTime))) throw new InvalidInputException("The opening hours cannot overlap");
+			// hardcoded :(
+			if((garage.getBusinessHour(toCheck).getStartTime().equals(ourStartTime) &&
+			(garage.getBusinessHour(toCheck).getEndTime().after(ourEndTime)))) throw new InvalidInputException("The opening hours cannot overlap");
 			
 //			// case 2	| @		  | @	// before, before
 //			if((garage.getBusinessHour(toCheck).getStartTime().equals(ourStartTime) || 
