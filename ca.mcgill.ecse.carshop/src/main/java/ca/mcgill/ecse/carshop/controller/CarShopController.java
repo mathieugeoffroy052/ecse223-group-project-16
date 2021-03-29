@@ -1741,16 +1741,31 @@ public class CarShopController {
 		CreateAppointmentWithOptServices(custumerName, serviceName, time, date, CarShopApplication.getCarShop(), "");
 	}
 	
+	//TODO:
 	public static void changeServiceAt(Appointment appointment, String customerName, String serviceName, String currentTime) throws InvalidInputException {
 		setSystemDateAndTime(currentTime);
 	}
 	
+	//TODO:
 	public static void updateDateAndTimeAt(Appointment appointment, String customerName, String newDate, String newTime, String currentTime) throws InvalidInputException {
 		setSystemDateAndTime(currentTime);
 	}
 	
+	/**
+	 * method to cancel the appointment at a specific time
+	 * @param appointment the appointment
+	 * @param customerName the customer name
+	 * @param currentTime the system time
+	 * @throws InvalidInputException throw exception if inputs are invalid
+	 */
 	public static void cancelAppointmentAt(Appointment appointment, String customerName, String currentTime) throws InvalidInputException {
 		setSystemDateAndTime(currentTime);
+		if (appointment.getCustomer().getUsername().equals(customerName)) {
+			appointment.cancelBooking();
+		} else {
+			throw new InvalidInputException("Only the customer can cancel his appointment");
+		}
+		appointment.cancelBooking();
 	}
 	
 	/**
@@ -1768,8 +1783,10 @@ public class CarShopController {
 		CreateAppointmentWithOptServices(customerName, comboName, time, date, CarShopApplication.getCarShop(), optService);
 	}
 	
+	//TODO:
 	public static void addOptServiceAt(Appointment appointment, String customerName, String serviceName, String startTime, String currentTime) throws InvalidInputException{
 		setSystemDateAndTime(currentTime);
+		
 	}
 	
 	/**
@@ -1827,6 +1844,11 @@ public class CarShopController {
 		}
 		CarShopApplication.setSystemDate(newDate);
 		CarShopApplication.setSystemTime(newTime);
+	}
+	
+	//TODO:
+	private static boolean performUpdateChecks(String newDate, String newTime) {
+		return false;
 	}
 	
 	
