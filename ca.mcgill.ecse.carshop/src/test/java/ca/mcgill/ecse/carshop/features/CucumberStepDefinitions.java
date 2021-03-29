@@ -1562,8 +1562,8 @@ public class CucumberStepDefinitions {
 	
 	//TODO
 	@When("{string} makes a {string} appointment for the date {string} and time {string} at {string}")
-	public void makes_a_appointment_for_the_date_and_time_at(String string, String string2, String string3, String string4, String string5) throws InvalidInputException {
- 	    String[] systemTimeAndDate = string5.split("+"); //create string array for the inputed system time and date
+	public void makes_a_appointment_for_the_date_and_time_at(String customer, String bookableService, String date, String time, String systemInfo) throws InvalidInputException {
+ 	    String[] systemTimeAndDate = systemInfo.split("+"); //create string array for the inputed system time and date
 	    Date systemDate = CarShopController.stringToDate(systemTimeAndDate[0]); //first input of array is system date
 	    Time systemTime = CarShopController.stringToTime(systemTimeAndDate[1]); //second input is time
 	    
@@ -1571,7 +1571,7 @@ public class CucumberStepDefinitions {
 	    CarShopApplication.setSystemTime(systemTime);
 	    
 	    try {
-			CarShopController.CreateAppointmentWithOptServices(string, string2, string4, string3, cs, null); //create appointment with no optional services
+			CarShopController.CreateAppointmentWithOptServices(customer, bookableService, time, date, cs, null); //create appointment with no optional services
 			numApp++; //increment appointment counter
 		} catch (Exception e) {
 			error = e.getMessage();
