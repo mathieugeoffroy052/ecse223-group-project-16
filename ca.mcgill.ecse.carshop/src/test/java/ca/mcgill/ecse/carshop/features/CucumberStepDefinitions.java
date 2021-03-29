@@ -69,7 +69,7 @@ public class CucumberStepDefinitions {
 	
 	
 	
-	
+	//testing github
 // Sign Up Customer Account Kalvin
     
 
@@ -1560,7 +1560,6 @@ public class CucumberStepDefinitions {
 	    throw new io.cucumber.java.PendingException();
 	}
 	
-	//TODO
 	@When("{string} makes a {string} appointment for the date {string} and time {string} at {string}")
 	public void makes_a_appointment_for_the_date_and_time_at(String customer, String bookableService, String date, String time, String systemInfo) throws InvalidInputException {
  	    String[] systemTimeAndDate = systemInfo.split("+"); //create string array for the inputed system time and date
