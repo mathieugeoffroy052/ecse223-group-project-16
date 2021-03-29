@@ -1553,18 +1553,35 @@ public class CucumberStepDefinitions {
 	
 	//DELIVERABLE 3
 	
+	//TODO
 	@Given("{string} has {int} no-show records")
 	public void has_no_show_records(String string, Integer int1) {
 	    // Write code here that turns the phrase above into concrete actions
 	    throw new io.cucumber.java.PendingException();
 	}
-
+	
+	//TODO
 	@When("{string} makes a {string} appointment for the date {string} and time {string} at {string}")
-	public void makes_a_appointment_for_the_date_and_time_at(String string, String string2, String string3, String string4, String string5) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void makes_a_appointment_for_the_date_and_time_at(String customer, String bookableService, String date, String time, String systemInfo) throws InvalidInputException {
+ 	    String[] systemTimeAndDate = systemInfo.split("+"); //create string array for the inputed system time and date
+	    Date systemDate = CarShopController.stringToDate(systemTimeAndDate[0]); //first input of array is system date
+	    Time systemTime = CarShopController.stringToTime(systemTimeAndDate[1]); //second input is time
+	    
+	    CarShopApplication.setSystemDate(systemDate); //update system date and time
+	    CarShopApplication.setSystemTime(systemTime);
+	    
+	    try {
+			CarShopController.CreateAppointmentWithOptServices(customer, bookableService, time, date, cs, null); //create appointment with no optional services
+			numApp++; //increment appointment counter
+		} catch (Exception e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
+	    
+	    
 	}
 
+	//TODO
 	@When("{string} attempts to change the service in the appointment to {string} at {string}")
 	public void attempts_to_change_the_service_in_the_appointment_to_at(String string, String string2, String string3) {
 	    // Write code here that turns the phrase above into concrete actions
@@ -1573,28 +1590,46 @@ public class CucumberStepDefinitions {
 
 	@Then("the appointment shall be booked")
 	public void the_appointment_shall_be_booked() {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+		assertNotNull(cs.getAppointment(1)); //checks to see if a second appointment exists (first one already created in background)
+		//we can do this because this @then test is always called after trying to add a second appointment
 	}
 
 	@Then("the service in the appointment shall be {string}")
 	public void the_service_in_the_appointment_shall_be(String string) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	    assertEquals(string, cs.getAppointment(1).getBookableService().getName());
+	    //compare the name given by the test to the name of the service for which the appointment is for
 	}
 
 	@Then("the appointment shall be for the date {string} with start time {string} and end time {string}")
-	public void the_appointment_shall_be_for_the_date_with_start_time_and_end_time(String string, String string2, String string3) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void the_appointment_shall_be_for_the_date_with_start_time_and_end_time(String string, String string2, String string3) throws InvalidInputException {
+	    Date expectedDate = CarShopController.stringToDate(string); //convert string date into comparable date format
+	    Time startTime = CarShopController.stringToTime(string2); // convert string time to comparable time format
+	    Time endTime = CarShopController.stringToTime(string3);
+	    List<ServiceBooking> appointmentServices = cs.getAppointment(1).getServiceBookings(); //get list of all servicebookings in the appointment
+	    //note that all our tests are adding a second appointment and checking its fields therefore we directly retrieve the second appointment from the list
+	    
+	    Date appDate = appointmentServices.get(0).getTimeSlot().getStartDate(); //get appointment start date
+	    Time appStartTime = appointmentServices.get(0).getTimeSlot().getStartTime(); //get appointment Start time by looking at first servicebooking
+	    
+	    ServiceBooking lastServiceBooking = null; //find last servicebooking for appointment to get appointment end time
+	    for (ServiceBooking serviceBooking : appointmentServices) {
+	    	lastServiceBooking = serviceBooking;
+	    }
+	    Time appEndTime = lastServiceBooking.getTimeSlot().getEndTime();
+	    
+		assertEquals(expectedDate, appDate); //compare expected date with date of the appointment
+		assertEquals(startTime, appStartTime);//compare start times 
+		assertEquals(endTime, appEndTime);//compare end times
+		
 	}
 
 	@Then("the username associated with the appointment shall be {string}")
 	public void the_username_associated_with_the_appointment_shall_be(String string) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	    assertEquals(string, cs.getAppointment(1).getCustomer().getUsername());
+	    //compare customer's username to the expected inputed string
 	}
 
+	//TODO
 	@Then("the user {string} shall have {int} no-show records")
 	public void the_user_shall_have_no_show_records(String string, Integer int1) {
 	    // Write code here that turns the phrase above into concrete actions
@@ -1603,34 +1638,39 @@ public class CucumberStepDefinitions {
 
 	@Then("the system shall have {int} appointments")
 	public void the_system_shall_have_appointments(Integer int1) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	    assertEquals(int1, cs.getAppointments().size());
+	    //get list of all appointments and compare size to expect number of appointments
 	}
 
+	//TODO
 	@When("{string} attempts to update the date to {string} and time to {string} at {string}")
 	public void attempts_to_update_the_date_to_and_time_to_at(String string, String string2, String string3, String string4) {
 	    // Write code here that turns the phrase above into concrete actions
 	    throw new io.cucumber.java.PendingException();
 	}
 
+	//TODO
 	@When("{string} attempts to cancel the appointment at {string}")
 	public void attempts_to_cancel_the_appointment_at(String string, String string2) {
 	    // Write code here that turns the phrase above into concrete actions
 	    throw new io.cucumber.java.PendingException();
 	}
 
+	//TODO
 	@Then("the system shall have {int} appointment")
 	public void the_system_shall_have_appointment(Integer int1) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	    assertEquals(int1, cs.getAppointments().size());
+	    //get list of all appointments and compare size to expect number of appointments
 	}
 
+	//TODO
 	@When("{string} makes a {string} appointment with service {string} for the date {string} and start time {string} at {string}")
 	public void makes_a_appointment_with_service_for_the_date_and_start_time_at(String string, String string2, String string3, String string4, String string5, String string6) {
 	    // Write code here that turns the phrase above into concrete actions
 	    throw new io.cucumber.java.PendingException();
 	}
 
+	//TODO
 	@When("{string} attempts to add the optional service {string} to the service combo with start time {string} in the appointment at {string}")
 	public void attempts_to_add_the_optional_service_to_the_service_combo_with_start_time_in_the_appointment_at(String string, String string2, String string3, String string4) {
 	    // Write code here that turns the phrase above into concrete actions
@@ -1639,46 +1679,70 @@ public class CucumberStepDefinitions {
 
 	@Then("the service combo in the appointment shall be {string}")
 	public void the_service_combo_in_the_appointment_shall_be(String string) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	    Appointment appointment = cs.getAppointment(1); //get the second appointment (the one that was added)
+	    BookableService bookableService = appointment.getBookableService(); //get the appointment's bookable service
+	    if (bookableService instanceof Service) fail(); //fail test is the booked service is not a combo
+	    ServiceCombo serviceCombo = (ServiceCombo) bookableService;  //cast the booked service to a combo
+	    
+	    assertEquals(string, serviceCombo.getName()); //compare expected name to combo name
 	}
 
 	@Then("the service combo shall have {string} selected services")
 	public void the_service_combo_shall_have_selected_services(String string) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+		String[] expectedComboItems = string.split(",");//split expected services into string away with "," as delimiter
+		
+		Appointment appointment = cs.getAppointment(1); //get the second appointment (the one that was added)
+	    BookableService bookableService = appointment.getBookableService(); //get the appointment's bookable service
+	    if (bookableService instanceof Service) fail(); //fail test is the booked service is not a combo
+	    ServiceCombo serviceCombo = (ServiceCombo) bookableService;  //cast the booked service to a combo
+	    List<ComboItem> comboItems = serviceCombo.getServices();
+	    
+	    
+	    int i = 0; //counter variable to get index in comboItems list
+	    for (String expectedService : expectedComboItems) { //this assumes that the services can only have one order
+	    	assertEquals(expectedService, comboItems.get(i).getService().getName()); //compare expected service name to actual service name from the combo item
+	    	i++; //increments the index
+	    }
+	    
+	    
 	}
 
+	//TODO
 	@When("{string} attempts to update the date to {string} and start time to {string} at {string}")
 	public void attempts_to_update_the_date_to_and_start_time_to_at(String string, String string2, String string3, String string4) {
 	    // Write code here that turns the phrase above into concrete actions
 	    throw new io.cucumber.java.PendingException();
 	}
 
+	//TODO
 	@When("the owner starts the appointment at {string}")
 	public void the_owner_starts_the_appointment_at(String string) {
 	    // Write code here that turns the phrase above into concrete actions
 	    throw new io.cucumber.java.PendingException();
 	}
 
+	//TODO
 	@When("the owner ends the appointment at {string}")
 	public void the_owner_ends_the_appointment_at(String string) {
 	    // Write code here that turns the phrase above into concrete actions
 	    throw new io.cucumber.java.PendingException();
 	}
 
+	//TODO
 	@Then("the appointment shall be in progress")
 	public void the_appointment_shall_be_in_progress() {
 	    // Write code here that turns the phrase above into concrete actions
 	    throw new io.cucumber.java.PendingException();
 	}
 
+	//TODO
 	@When("the owner attempts to register a no-show for the appointment at {string}")
 	public void the_owner_attempts_to_register_a_no_show_for_the_appointment_at(String string) {
 	    // Write code here that turns the phrase above into concrete actions
 	    throw new io.cucumber.java.PendingException();
 	}
 
+	//TODO
 	@When("the owner attempts to end the appointment at {string}")
 	public void the_owner_attempts_to_end_the_appointment_at(String string) {
 	    // Write code here that turns the phrase above into concrete actions
