@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
@@ -708,7 +709,7 @@ public class CarShopController {
 		timeSlot.setEndTime(eTime);
 
 	}
-	// TODO:
+	
 	//method to delete time slots
 	public static void deleteTimeSlot(String type, String startDate, String startTime, String endDate, String endTime)
 			throws InvalidInputException {
@@ -983,19 +984,8 @@ public class CarShopController {
 		return (start1.before(end2) && start2.before(end1));
 	}
 
-//	private static boolean isProperBusinessName(String name) {
-//		return false;
-//	}
-//
-//	private static boolean isProperAddress(String address) {
-//		return false;
-//	}
-//
-//	private static boolean isProperPhoneNumer(String phoneNumer) {
-//		return false;
-//	}
 
-	// TODO: need other cases
+	// need other cases?
 	private static boolean isProperEmailAddress(String emailAddress) throws InvalidInputException {
 		if (!emailAddress.contains("@") || !emailAddress.contains(".")
 				|| emailAddress.indexOf("@") > emailAddress.indexOf("@")) {
@@ -1003,14 +993,6 @@ public class CarShopController {
 		}
 		return true;
 	}
-
-//	private static boolean isValidBusinessHour(BusinessHour businessHour) {
-//		return false;
-//	}
-//
-//	private static boolean isValidTimeSlot(TimeSlot timeSlot) {
-//		return false;
-//	}
 
 	// done, converts a String to a dayofweek
 	private static DayOfWeek convertDayOfWeek(String day) throws InvalidInputException {
@@ -1026,11 +1008,6 @@ public class CarShopController {
 		return CarShopApplication.getCurrentUser().equals("owner");
 	}
 
-//	private static BusinessHour findBusinessHour(DayOfWeek day, Time starTime, Time endTime) {
-//		CarShop carShop = CarShopApplication.getCarShop();
-//		BusinessHour foundBusinessHour = null;
-//		for(BusinessHour businessHour : carShop.)
-//	}
 
 	/** ** END HONG YI ** **/ 
 	
@@ -1743,11 +1720,34 @@ public class CarShopController {
 	
 	//TODO:
 	public static void changeServiceAt(Appointment appointment, String customerName, String serviceName, String currentTime) throws InvalidInputException {
+		if (appointment == null) {
+			throw new InvalidInputException("The appointment cannot be null");
+		}
+		if(!customerName.equals(appointment.getCustomer().getUsername())) {
+			throw new InvalidInputException("Only the customer can make changes to his appointment");
+		}
 		setSystemDateAndTime(currentTime);
+		
+		BookableService service = BookableService.getWithName(serviceName);
+		
+		Date date = appointment.getServiceBooking(0).getTimeSlot().getStartDate();
+		Time startTime = appointment.getServiceBooking(0).getTimeSlot().getStartTime();
+		Time endTime = findEndTime(service, startTime);
+		
+		if (appointmentConflitsWithAppointments(appointment, (Service) service, date, startTime, endTime)) {
+			throw new InvalidInputException("Appointment conflicts with existing appointments");
+		}
+		
 	}
 	
 	//TODO:
 	public static void updateDateAndTimeAt(Appointment appointment, String customerName, String newDate, String newTime, String currentTime) throws InvalidInputException {
+		if (appointment == null) {
+			throw new InvalidInputException("The appointment cannot be null");
+		}
+		if(!customerName.equals(appointment.getCustomer().getUsername())) {
+			throw new InvalidInputException("Only the customer can make changes to his appointment");
+		}
 		setSystemDateAndTime(currentTime);
 	}
 	
@@ -1759,11 +1759,18 @@ public class CarShopController {
 	 * @throws InvalidInputException throw exception if inputs are invalid
 	 */
 	public static void cancelAppointmentAt(Appointment appointment, String customerName, String currentTime) throws InvalidInputException {
+		if (appointment == null) {
+			throw new InvalidInputException("The appointment cannot be null");
+		}
 		setSystemDateAndTime(currentTime);
+		if (customerName.contains("owner")) {
+			throw new InvalidInputException("An owner cannot cancel an appointment");
+		}
+		if (customerName.contains("Technician")) {
+			throw new InvalidInputException("A technician cannot cancel an appointment");
+		}
 		if (appointment.getCustomer().getUsername().equals(customerName)) {
-			appointment.cancelBooking();
-		} else {
-			throw new InvalidInputException("Only the customer can cancel his appointment");
+			throw new InvalidInputException("A customer can only cancel their own appointments");
 		}
 		appointment.cancelBooking();
 	}
@@ -1785,7 +1792,14 @@ public class CarShopController {
 	
 	//TODO:
 	public static void addOptServiceAt(Appointment appointment, String customerName, String serviceName, String startTime, String currentTime) throws InvalidInputException{
+		if (appointment == null) {
+			throw new InvalidInputException("The appointment cannot be null");
+		}
+		if(!customerName.equals(appointment.getCustomer().getUsername())) {
+			throw new InvalidInputException("Only the customer can make changes to his appointment");
+		}
 		setSystemDateAndTime(currentTime);
+		
 		
 	}
 	
@@ -1796,6 +1810,9 @@ public class CarShopController {
 	 * @throws InvalidInputException if the inputs are invalid
 	 */
 	public static void startAppointmentAt(Appointment appointment, String currentTime) throws InvalidInputException{
+		if (appointment == null) {
+			throw new InvalidInputException("The appointment cannot be null");
+		}
 		setSystemDateAndTime(currentTime);
 		appointment.startAppointment();
 	}
@@ -1807,6 +1824,9 @@ public class CarShopController {
 	 * @throws InvalidInputException if the inputs are invalid
 	 */
 	public static void endAppointmentAt(Appointment appointment, String currentTime) throws InvalidInputException{
+		if (appointment == null) {
+			throw new InvalidInputException("The appointment cannot be null");
+		}
 		setSystemDateAndTime(currentTime);
 		appointment.endAppointment();
 	}
@@ -1818,12 +1838,15 @@ public class CarShopController {
 	 * @throws InvalidInputException if the inputs are invalid
 	 */
 	public static void updateNoShowAt(Appointment appointment, String currentTime) throws InvalidInputException{
+		if (appointment == null) {
+			throw new InvalidInputException("The appointment cannot be null");
+		}
 		setSystemDateAndTime(currentTime);
 		appointment.noShow();
 	}
 	
 	/**
-	 * Method to parse the date and time from a string, then update the system date/time
+	 * helper method to parse the date and time from a string, then update the system date/time
 	 * @param dateTime string representing the date and time
 	 * @throws InvalidInputException if the string is in an incorrect format
 	 */
@@ -1851,6 +1874,48 @@ public class CarShopController {
 		return false;
 	}
 	
+	//TODO:
+	private static boolean newAppointmentChecks() {
+		
+		return false;
+	}
+	
+	/**
+	 * helper method to find the end time of a service based on the start time
+	 * @param service the service
+	 * @param startTime the start time
+	 * @return the end time
+	 */
+	private static Time findEndTime(BookableService service, Time startTime) {
+		int duration = service.getDuration();
+		int minutes = duration % 60;
+		int hours = duration / 60;
+		
+		LocalTime localtime = startTime.toLocalTime();
+		localtime = localtime.plusMinutes(minutes);
+		localtime = localtime.plusHours(hours);
+		Time endTime = Time.valueOf(localtime);
+		return endTime;
+	}
+	
+	//if we want to change the time
+	private static boolean appointmentConflitsWithAppointments(Appointment appointment, Service name, Date date, Time startTime, Time endTime) {
+		Garage garage = name.getGarage();
+		List<Appointment> appointments = CarShopApplication.getCarShop().getAppointments();
+		for(Appointment appt : appointments) {
+			if (!appt.equals(appointment)) {
+				for(ServiceBooking serviceBooking : appt.getServiceBookings()) {
+					if (serviceBooking.getService().getGarage().equals(garage) 
+							&& serviceBooking.getTimeSlot().getStartDate().equals(date)) {
+						if(isTimeOverlap(startTime, endTime, serviceBooking.getTimeSlot().getStartTime(), serviceBooking.getTimeSlot().getEndTime())) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
 	
 	
 	/** ** END APPOINTMENT MANAGEMENT ** **/
