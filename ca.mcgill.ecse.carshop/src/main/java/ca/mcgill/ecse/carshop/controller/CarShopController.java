@@ -73,7 +73,7 @@ public class CarShopController {
 		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Wednesday)) toCheck = 2;
 		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Thursday)) toCheck = 3;
 		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Friday)) toCheck = 4;
-		else throw new InvalidInputException("The opening hours are not within the opening hours");
+		else throw new InvalidInputException("The opening hours are not within the opening hours of the business");
 		// converts from string to time with method in the controller
 //		Time ourStartTime = CarShopController.stringToTimeMatthew(startTime);
 //		Time ourEndTime = CarShopController.stringToTimeMatthew(endTime);
@@ -109,7 +109,7 @@ public class CarShopController {
 		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Wednesday)) toCheck = 2;
 		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Thursday)) toCheck = 3;
 		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Friday)) toCheck = 4;
-		else throw new InvalidInputException("The opening hours are not within the opening hours");
+		else throw new InvalidInputException("The opening hours are not within the opening hours of the business");
 		// converts from string to time with method in the controller
 		Time ourStartTime = CarShopController.stringToTimeMatthew(startTime);
 		Time ourEndTime = CarShopController.stringToTimeMatthew(endTime);
@@ -167,7 +167,7 @@ public class CarShopController {
 		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Wednesday)) toCheck = 2;
 		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Thursday)) toCheck = 3;
 		else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Friday)) toCheck = 4;
-		else throw new InvalidInputException("The opening hours are not within the opening hours");
+		else throw new InvalidInputException("The opening hours are not within the opening hours of the business");
 		// converts from string to time with method in the controller
 		Time ourStartTime = CarShopController.stringToTimeMatthew(startTime);
 		Time ourEndTime = CarShopController.stringToTimeMatthew(endTime);
@@ -203,10 +203,13 @@ public class CarShopController {
 		//String[] services = service.split(" ");
 		//BookableService serv = null;
 		String[] optServicesToPutIn;
-		if(!optServices.equals("")) {
-			optServicesToPutIn = optServices.split(",");
-			// puts the optional services in. Requires the service combo name to do so.
-			putOptServicesIn(optServicesToPutIn, serviceComboName);
+		if(optServices != null) {
+			if(!optServices.equals("")) {
+				optServicesToPutIn = optServices.split(",");
+				// puts the optional services in. Requires the service combo name to do so.
+				putOptServicesIn(optServicesToPutIn, serviceComboName);
+			}
+			
 		}
 		
 
@@ -246,7 +249,7 @@ public class CarShopController {
 			//if service is service combo
 			List<ComboItem> comboItems = ((ServiceCombo) bookServ).getServices();
 			//for(ComboItem ci: comboItems)
-			for (int i = 0; i < comboItems.size() ; i++) {
+			for (int i = 0; i < startTimes.length; i++) { // for (int i = 0; i < comboItems.size() ; i++) {
 				Time startTime1 = stringToTime(startTimes[i]);
 				
 				duration = comboItems.get(i).getService().getDuration();
@@ -346,6 +349,7 @@ public class CarShopController {
 			for(ComboItem checkIfSame : mainServiceInServiceCombo.getServiceCombo().getServices()) {
 				// if the service is already in the service combo...
 				if(checkIfSame.getService().equals((Service) toPut)) {
+					checkIfSame.setMandatory(false);	// newly added code
 					found = true;
 					break; // don't add the optional service (it's already there)
 				}
@@ -1398,9 +1402,13 @@ public class CarShopController {
 		else if(day.equals("Friday")) {
 			dayOfWeek = DayOfWeek.Friday;
 		}
-		else if(day.equals("Saturday") || day.equals("Sunday")) {
-			throw new InvalidInputException("The opening hours are not within the opening hours of the business");
+		else if(day.equals("Saturday")) {
+			dayOfWeek = DayOfWeek.Saturday;
 		}
+		else if(day.equals("Sunday")) {
+			dayOfWeek = DayOfWeek.Sunday;
+		}
+		
 		return dayOfWeek;
 	}
 	//method to convert strings to time
@@ -1753,18 +1761,34 @@ public class CarShopController {
 		Time endTime = findEndTime(service, startTime);
 		
 		if (appointmentConflitsWithAppointments(appointment, (Service) service, date, startTime, endTime, true)) {
+//			// new code
+//			CarShop cs = CarShopApplication.getCarShop();
+//			CarShopApplication.getCarShop().getAppointment(cs.getAppointments().size()-1).delete();
+//			// new code
 			throw new InvalidInputException("Appointment time conflicts with existing appointments");
 		}
 		
 		if (timeIsOutsideBusinessHours((Service) service, date, startTime, endTime)) {
+//			// new code
+//			CarShop cs = CarShopApplication.getCarShop();
+//			CarShopApplication.getCarShop().getAppointment(cs.getAppointments().size()-1).delete();
+//			// new code
 			throw new InvalidInputException("Appointment time is not in garage business hours");
 		}
 		
 		if (appointmentConflictsWithVacations(date, startTime, endTime)) {
+//			// new code
+//			CarShop cs = CarShopApplication.getCarShop();
+//			CarShopApplication.getCarShop().getAppointment(cs.getAppointments().size()-1).delete();
+//			// new code
 			throw new InvalidInputException("Appointment overlaps vacations");
 		}
 		
 		if (appointmentConflictsWithHolidays(date, startTime, endTime)) {
+//			// new code
+//			CarShop cs = CarShopApplication.getCarShop();
+//			CarShopApplication.getCarShop().getAppointment(cs.getAppointments().size()-1).delete();
+//			// new code
 			throw new InvalidInputException("Appointment overlaps holidays");
 		}
 		
@@ -1874,7 +1898,7 @@ public class CarShopController {
 		if (customerName.contains("Technician")) {
 			throw new InvalidInputException("A technician cannot cancel an appointment");
 		}
-		if (appointment.getCustomer().getUsername().equals(customerName)) {
+		if (!appointment.getCustomer().getUsername().equals(customerName)) {	// added !
 			throw new InvalidInputException("A customer can only cancel their own appointments");
 		}
 		appointment.cancelBooking();
@@ -2073,8 +2097,13 @@ public class CarShopController {
 	private static boolean timeIsOutsideBusinessHours(Service name, Date date, Time startTime, Time endTime) {
 		Garage garage = name.getGarage();
 		for(BusinessHour bHour : garage.getBusinessHours()) {
-			if (dayOfWeekFromDate(date).toString().equals(bHour.toString())) {
-				if (!startTime.before(bHour.getStartTime()) && !endTime.after(bHour.getEndTime())) {
+			String ourDate = dayOfWeekFromDate(date).toString().toLowerCase();
+			String existingDate = bHour.getDayOfWeek().toString().toLowerCase();
+			if (ourDate.equals(existingDate)) {
+				Time existingStartTime = bHour.getStartTime();
+				Time existingEndTime = bHour.getEndTime();
+				if (!startTime.before(existingStartTime) && 
+						!endTime.after(existingEndTime)) {	// changed to an OR statement
 					return false;
 				}
 			}
