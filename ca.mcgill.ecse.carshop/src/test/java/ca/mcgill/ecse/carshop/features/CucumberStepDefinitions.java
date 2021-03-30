@@ -1666,7 +1666,6 @@ public class CucumberStepDefinitions {
 	    }
 	}
 
-	//TODO
 	@Then("the system shall have {int} appointment")
 	public void the_system_shall_have_appointment(Integer int1) {
 	    assertEquals(int1, cs.getAppointments().size());
@@ -1675,9 +1674,15 @@ public class CucumberStepDefinitions {
 
 	//TODO
 	@When("{string} makes a {string} appointment with service {string} for the date {string} and start time {string} at {string}")
-	public void makes_a_appointment_with_service_for_the_date_and_start_time_at(String string, String string2, String string3, String string4, String string5, String string6) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void makes_a_appointment_with_service_for_the_date_and_start_time_at(String username, String service, String optionalService, String date, String StartTime, String currentTimeDate) {
+	    try {
+	    	CarShopController.createAppointmentAt(username, service, optionalService, date, StartTime, currentTimeDate);
+	    	currentAppointment = cs.getAppointment(cs.getAppointments().size()-1); //most recent appointment
+			numApp++; //increment appointment counter
+	    } catch (Exception e) {
+	    	error = e.getMessage();
+			errorCntr++;
+	    }
 	}
 
 	//TODO

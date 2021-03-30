@@ -1711,11 +1711,18 @@ public class CarShopController {
 
 
 	/**
-	 * method to create appointment with a single service
+	 * method to create an appointment for single service or combos
+	 * @param customerName customer name
+	 * @param serviceName main service or combo
+	 * @param optService optional services (service or combo)
+	 * @param date start date
+	 * @param startTime start time
+	 * @param currentTime current time
+	 * @throws Exception incorrect format
 	 */
-	public static void createAppointmentAt(String custumerName, String serviceName ,String date, String time, String currentTime) throws Exception {
+	public static void createAppointmentAt(String customerName, String serviceName, String optionalService, String date, String startTime, String currentTime) throws Exception {
 		setSystemDateAndTime(currentTime);
-		CreateAppointmentWithOptServices(custumerName, serviceName, time, date, CarShopApplication.getCarShop(), "");
+		CreateAppointmentWithOptServices(customerName, serviceName, startTime, date, CarShopApplication.getCarShop(), optionalService);
 	}
 	
 	/**
@@ -1873,21 +1880,7 @@ public class CarShopController {
 		appointment.cancelBooking();
 	}
 	
-	/**
-	 * method to create a combo appointment
-	 * @param customerName customer name
-	 * @param comboName combo name
-	 * @param optService optional services
-	 * @param date start date
-	 * @param time start time
-	 * @param currentTime current time
-	 * @throws Exception incorrect format
-	 */
-	public static void createComboAppointmentAt(String customerName, String comboName, String optService, String date, String time, String currentTime) throws Exception{
-		setSystemDateAndTime(currentTime);
-		CreateAppointmentWithOptServices(customerName, comboName, time, date, CarShopApplication.getCarShop(), optService);
-	}
-	
+		
 	/**
 	 * method to add an optional service to an appointment
 	 * @param appointment the appointment
