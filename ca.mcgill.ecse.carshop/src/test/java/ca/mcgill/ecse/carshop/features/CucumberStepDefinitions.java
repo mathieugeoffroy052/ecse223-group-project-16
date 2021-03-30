@@ -1568,7 +1568,7 @@ public class CucumberStepDefinitions {
  	    CarShopController.setSystemDateAndTime(systemInfo); 
 	    
 	    try {
-			CarShopController.CreateAppointmentWithOptServices(customer, bookableService, time, date, cs, null); //create appointment with no optional services
+			CarShopController.createAppointmentAt(customer, bookableService, null, date, time, systemInfo); //create appointment with no optional services
 			currentAppointment = cs.getAppointment(cs.getAppointments().size()-1); //most recent appointment
 			numApp++; //increment appointment counter
 		} catch (Exception e) {
