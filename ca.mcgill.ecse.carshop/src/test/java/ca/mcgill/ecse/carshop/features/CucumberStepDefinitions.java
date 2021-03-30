@@ -1363,7 +1363,7 @@ public class CucumberStepDefinitions {
 			String[] secondTime = secondTimeSlot.split("-");
 			firstTime1 = firstTime[0];
 			secondTime1 = secondTime[0];
-			CarShopController.CreateAppointmentWithOptServices(customer, serviceName, firstTime1+","+secondTime1 , date, cs, optServices);
+			CarShopController.CreateAppointmentWithOptServices(customer, serviceName, firstTime1+","+secondTime1 , date, cs, optServices, false);
 			numApp++;
 		}
 	}
@@ -1440,7 +1440,7 @@ public class CucumberStepDefinitions {
 	@When("{string} schedules an appointment on {string} for {string} at {string}")
 	public void schedules_an_appointment_on_for_at(String username, String date, String serviceName, String startTime) throws InvalidInputException {
 		try {
-			CarShopController.CreateAppointmentWithOptServices(username,serviceName,startTime,date,cs,"");// uses method in the controller
+			CarShopController.CreateAppointmentWithOptServices(username,serviceName,startTime,date,cs,"", false);// uses method in the controller
 		} catch (Exception e) {
 			error = e.getMessage();
 			errorCntr++;
@@ -1560,7 +1560,7 @@ public class CucumberStepDefinitions {
 	@When("{string} schedules an appointment on {string} for {string} with {string} at {string}")
 	public void schedules_an_appointment_on_for_with_at(String customer, String date, String serviceComboName, String optionalServices, String startTimes) {
 		try {
-			CarShopController.CreateAppointmentWithOptServices(customer, serviceComboName, startTimes, date, cs, optionalServices);
+			CarShopController.CreateAppointmentWithOptServices(customer, serviceComboName, startTimes, date, cs, optionalServices, false);
 		} catch (Exception e) {
 			error = e.getMessage();
 			errorCntr++;

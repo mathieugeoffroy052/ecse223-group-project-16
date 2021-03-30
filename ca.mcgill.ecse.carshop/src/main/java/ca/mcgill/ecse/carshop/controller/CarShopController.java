@@ -181,7 +181,7 @@ public class CarShopController {
 	
 	// creating appointment method
 	@SuppressWarnings("static-access")
-	public static void CreateAppointmentWithOptServices(String customer, String serviceComboName, String startTime, String startDate, CarShop cs, String optServices) throws Exception {
+	public static void CreateAppointmentWithOptServices(String customer, String serviceComboName, String startTime, String startDate, CarShop cs, String optServices, boolean isTrue) throws Exception {
 		if(customer.contains("owner") || customer.contains("Technician")) throw new InvalidInputException("Only customers can make an appointment");
 		String[] startTimes = startTime.split(","); // gets the start time of the first service
 		Date date = stringToDate(startDate);	// turns the string "date" to an actual date
@@ -207,7 +207,7 @@ public class CarShopController {
 			if(!optServices.equals("")) {
 				optServicesToPutIn = optServices.split(",");
 				// puts the optional services in. Requires the service combo name to do so.
-				putOptServicesIn(optServicesToPutIn, serviceComboName);
+				putOptServicesIn(optServicesToPutIn, serviceComboName, isTrue);
 			}
 			
 		}
@@ -331,7 +331,7 @@ public class CarShopController {
 	}
 
 	@SuppressWarnings("static-access")
-	private static boolean putOptServicesIn(String[] optServicesToPutIn, String serviceComboName) {
+	private static boolean putOptServicesIn(String[] optServicesToPutIn, String serviceComboName, boolean isTrue) {
 		// TODO Auto-generated method stub
 		Boolean toReturn = false;
 		CarShop cs = CarShopApplication.getCarShop();
@@ -349,9 +349,17 @@ public class CarShopController {
 			for(ComboItem checkIfSame : mainServiceInServiceCombo.getServiceCombo().getServices()) {
 				// if the service is already in the service combo...
 				if(checkIfSame.getService().equals((Service) toPut)) {
-					checkIfSame.setMandatory(false);	// newly added code
-					found = true;
-					break; // don't add the optional service (it's already there)
+					if(!isTrue) {
+						checkIfSame.setMandatory(false);	// newly added code
+						found = true;
+						break; // don't add the optional service (it's already there)
+					}
+					else {
+						checkIfSame.setMandatory(true);	// newly added code
+						found = true;
+						break; // don't add the optional service (it's already there)
+					}
+
 				}
 			}
 			if(!found) {mainServiceInServiceCombo.getServiceCombo().addService(true, toPut);
@@ -1730,7 +1738,7 @@ public class CarShopController {
 	 */
 	public static void createAppointmentAt(String customerName, String serviceName, String optionalService, String date, String startTime, String currentTime) throws Exception {
 		setSystemDateAndTime(currentTime);
-		CreateAppointmentWithOptServices(customerName, serviceName, startTime, date, CarShopApplication.getCarShop(), optionalService);
+		CreateAppointmentWithOptServices(customerName, serviceName, startTime, date, CarShopApplication.getCarShop(), optionalService, true);
 	}
 	
 	/**
