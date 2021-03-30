@@ -1744,11 +1744,14 @@ public class CucumberStepDefinitions {
 		}
 	}
 
-	//TODO
 	@When("the owner ends the appointment at {string}")
-	public void the_owner_ends_the_appointment_at(String string) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void the_owner_ends_the_appointment_at(String currentDateTime) {
+		try {
+			CarShopController.endAppointmentAt(currentAppointment, currentDateTime);
+		} catch (Exception e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
 	}
 
 	//TODO

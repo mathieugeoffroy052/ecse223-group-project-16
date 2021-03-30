@@ -1971,6 +1971,9 @@ public class CarShopController {
 		if (appointment == null) {
 			throw new InvalidInputException("The appointment cannot be null");
 		}
+		if (!appointment.getCarShop().getOwner().equals(CarShopApplication.getUser())) {
+			throw new InvalidInputException("Only the owner can start appointments.");
+		}
 		setSystemDateAndTime(currentTime);
 		appointment.endAppointment();
 	}
