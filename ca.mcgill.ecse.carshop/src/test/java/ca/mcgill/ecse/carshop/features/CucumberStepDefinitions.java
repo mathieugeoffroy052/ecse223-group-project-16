@@ -52,12 +52,9 @@ import io.cucumber.java.en.When;
 public class CucumberStepDefinitions {
 	
 	private CarShop cs;
+	
 	private String error;
 	private int errorCntr;
-	
-
-	// Hongyi
-//	private String error;
 	private int errorCounter;
 
 	private static TOBusiness toBusiness;
@@ -67,9 +64,11 @@ public class CucumberStepDefinitions {
 	private static BusinessHour oldBusinessHour;
 	private static String[] oldBusinessHourInfo;
 	
+	private static Appointment currentAppointment;
 	
 	
-	//testing github
+	
+
 // Sign Up Customer Account Kalvin
     
 
@@ -98,6 +97,11 @@ public class CucumberStepDefinitions {
 			oldBusinessHour = null;
 			oldBusinessHourInfo = null;
 			oldBusinessHourInfo = new String[3];	// create a new businesshour
+		}
+		
+		@BeforeEach
+		public static void resetCurrentAppointment() {
+			currentAppointment = null;
 		}
 
 
@@ -1561,15 +1565,11 @@ public class CucumberStepDefinitions {
 	
 	@When("{string} makes a {string} appointment for the date {string} and time {string} at {string}")
 	public void makes_a_appointment_for_the_date_and_time_at(String customer, String bookableService, String date, String time, String systemInfo) throws InvalidInputException {
- 	    String[] systemTimeAndDate = systemInfo.split("+"); //create string array for the inputed system time and date
-	    Date systemDate = CarShopController.stringToDate(systemTimeAndDate[0]); //first input of array is system date
-	    Time systemTime = CarShopController.stringToTime(systemTimeAndDate[1]); //second input is time
-	    
-	    CarShopApplication.setSystemDate(systemDate); //update system date and time
-	    CarShopApplication.setSystemTime(systemTime);
+ 	    CarShopController.setSystemDateAndTime(systemInfo); 
 	    
 	    try {
 			CarShopController.CreateAppointmentWithOptServices(customer, bookableService, time, date, cs, null); //create appointment with no optional services
+			currentAppointment = cs.getAppointment(cs.getAppointments().size()-1); //most recent appointment
 			numApp++; //increment appointment counter
 		} catch (Exception e) {
 			error = e.getMessage();
@@ -1579,11 +1579,16 @@ public class CucumberStepDefinitions {
 	    
 	}
 
-	//TODO
 	@When("{string} attempts to change the service in the appointment to {string} at {string}")
-	public void attempts_to_change_the_service_in_the_appointment_to_at(String string, String string2, String string3) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void attempts_to_change_the_service_in_the_appointment_to_at(String username, String serviceName, String timeOfChange) {
+		try {
+			CarShopController.changeServiceAt(currentAppointment, username, serviceName, timeOfChange);
+		} catch (Exception e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
+
+	    
 	}
 
 	@Then("the appointment shall be booked")

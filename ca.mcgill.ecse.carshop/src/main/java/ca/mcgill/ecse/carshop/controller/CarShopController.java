@@ -1998,7 +1998,7 @@ public class CarShopController {
 	 * @param dateTime string representing the date and time
 	 * @throws InvalidInputException if the string is in an incorrect format
 	 */
-	private static void setSystemDateAndTime(String dateTime) throws InvalidInputException {
+	public static void setSystemDateAndTime(String dateTime) throws InvalidInputException {
 		String datePattern = "yyyy-MM-dd";
 		String timePattern = "HH:mm";
 		String[] splitString = dateTime.split("\\+");// uses a formatter from java.sql.Date/Time
