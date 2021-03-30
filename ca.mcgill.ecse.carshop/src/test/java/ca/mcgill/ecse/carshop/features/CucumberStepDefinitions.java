@@ -29,6 +29,7 @@ import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 import ca.mcgill.ecse.carshop.controller.TOBusiness;
 import ca.mcgill.ecse.carshop.model.Appointment;
+import ca.mcgill.ecse.carshop.model.Appointment.AppointmentStatus;
 import ca.mcgill.ecse.carshop.model.BookableService;
 import ca.mcgill.ecse.carshop.model.CarShop;
 import ca.mcgill.ecse.carshop.model.ComboItem;
@@ -1754,11 +1755,9 @@ public class CucumberStepDefinitions {
 		}
 	}
 
-	//TODO
 	@Then("the appointment shall be in progress")
 	public void the_appointment_shall_be_in_progress() {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	    assertEquals(AppointmentStatus.InProgress, currentAppointment.getAppointmentStatus());
 	}
 
 	//TODO
