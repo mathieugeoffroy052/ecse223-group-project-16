@@ -1718,7 +1718,14 @@ public class CarShopController {
 		CreateAppointmentWithOptServices(custumerName, serviceName, time, date, CarShopApplication.getCarShop(), "");
 	}
 	
-	//TODO:
+	/**
+	 * change the service of a service appointment
+	 * @param appointment the appointment
+	 * @param customerName the customer name
+	 * @param serviceName the new service name
+	 * @param currentTime the logged system time
+	 * @throws InvalidInputException if inputs are incorrect
+	 */
 	public static void changeServiceAt(Appointment appointment, String customerName, String serviceName, String currentTime) throws InvalidInputException {
 		if (appointment == null) {
 			throw new InvalidInputException("The appointment cannot be null");
@@ -1739,16 +1746,34 @@ public class CarShopController {
 		Time endTime = findEndTime(service, startTime);
 		
 		if (appointmentConflitsWithAppointments(appointment, (Service) service, date, startTime, endTime, true)) {
-			throw new InvalidInputException("Appointment conflicts with existing appointments");
+			throw new InvalidInputException("Appointment time conflicts with existing appointments");
 		}
 		
+		if (timeIsOutsideBusinessHours((Service) service, date, startTime, endTime)) {
+			throw new InvalidInputException("Appointment time is not in garage business hours");
+		}
 		
+		if (appointmentConflictsWithVacations(date, startTime, endTime)) {
+			throw new InvalidInputException("Appointment overlaps vacations");
+		}
+		
+		if (appointmentConflictsWithHolidays(date, startTime, endTime)) {
+			throw new InvalidInputException("Appointment overlaps holidays");
+		}
 		
 		appointment.changeAppointmentService((Service) service);
 		
 	}
-	
-	//TODO:
+
+	/**
+	 * method to update the time of an appointment, works for single service and combos
+	 * @param appointment the appointment
+	 * @param customerName the customer name
+	 * @param newDate the new date
+	 * @param newTime the new start times
+	 * @param currentTime the logged system time
+	 * @throws InvalidInputException if inputs are invalid
+	 */
 	public static void updateDateAndTimeAt(Appointment appointment, String customerName, String newDate, String newTime, String currentTime) throws InvalidInputException {
 		if (appointment == null) {
 			throw new InvalidInputException("The appointment cannot be null");
@@ -1757,6 +1782,71 @@ public class CarShopController {
 			throw new InvalidInputException("Only the customer can make changes to his appointment");
 		}
 		setSystemDateAndTime(currentTime);
+		
+		if (appointment.getBookableService() instanceof Service) {
+			Date startDate = stringtoDate(newDate);
+			Time startTime = stringToTime(newTime);
+			Service service = (Service) appointment.getBookableService();
+			Time endTime = findEndTime(service, startTime);
+			
+			if (appointmentConflitsWithAppointments(appointment, service, startDate, startTime, endTime, true)) {
+				throw new InvalidInputException("Appointment time conflicts with existing appointments");
+			}
+			
+			if (timeIsOutsideBusinessHours(service, startDate, startTime, endTime)) {
+				throw new InvalidInputException("Appointment time is not in garage business hours");
+			}
+			
+			if (appointmentConflictsWithVacations(startDate, startTime, endTime)) {
+				throw new InvalidInputException("Appointment overlaps vacations");
+			}
+			
+			if (appointmentConflictsWithHolidays(startDate, startTime, endTime)) {
+				throw new InvalidInputException("Appointment overlaps holidays");
+			}
+			
+			List<Time> startTimes = new ArrayList<Time>();
+			startTimes.add(startTime);
+			appointment.changeStartDateAndTime(startDate, startTimes);
+			
+		} else {
+			Date date = stringtoDate(newDate);
+			List<Time> startTimes = parseComboStartTimes(newTime);
+			List<Service> services = new ArrayList<>();
+			List<ServiceBooking> serviceBookings = appointment.getServiceBookings();
+			for(ServiceBooking serviceBooking : serviceBookings) {
+				services.add(serviceBooking.getService());
+			}
+			List<Time> endTimes = new ArrayList<>();
+			for(int i = 0; i < services.size(); i++) {
+				Service service = services.get(i);
+				Time startTime = startTimes.get(i);
+				Time endTime = findEndTime(service, startTime);
+				endTimes.add(endTime);
+			}
+			if (comboTimeConflictsWithAppointments(appointment, services, date, startTimes, endTimes, true)) {
+				throw new InvalidInputException("Combo items times conflicts with existing appointments");
+			}
+			
+			if (comboItemsConflicts(startTimes, endTimes)) {
+				throw new InvalidInputException("Combo items times conflict with each other");
+			}
+			
+			if (comboTimesIsOutsideBusinessHours(services, date, startTimes, endTimes)) {
+				throw new InvalidInputException("Combo items times are outside business hours");
+			}
+			
+			if (comboTimesConflictsWithVacations(date, startTimes, endTimes)) {
+				throw new InvalidInputException("Combo items conflict with vacations");
+			}
+			
+			if (comboTimesConflictsWithHolidays(date, startTimes, endTimes)) {
+				throw new InvalidInputException("Combo items conflict with holidays");
+			}
+			
+			appointment.changeStartDateAndTime(date, startTimes);
+		}
+		
 	}
 	
 	/**
@@ -1798,7 +1888,15 @@ public class CarShopController {
 		CreateAppointmentWithOptServices(customerName, comboName, time, date, CarShopApplication.getCarShop(), optService);
 	}
 	
-	//TODO:
+	/**
+	 * method to add an optional service to an appointment
+	 * @param appointment the appointment
+	 * @param customerName the customer name
+	 * @param serviceName the service name
+	 * @param startTime the start time
+	 * @param currentTime the logged system time
+	 * @throws InvalidInputException if the input is invalid
+	 */
 	public static void addOptServiceAt(Appointment appointment, String customerName, String serviceName, String startTime, String currentTime) throws InvalidInputException{
 		if (appointment == null) {
 			throw new InvalidInputException("The appointment cannot be null");
@@ -1808,7 +1906,49 @@ public class CarShopController {
 		}
 		setSystemDateAndTime(currentTime);
 		
+		BookableService bookableService = BookableService.getWithName(serviceName);
+		if(!(bookableService instanceof Service)) {
+			throw new InvalidInputException("This is not a service");
+		}
 		
+		Service service = (Service) bookableService;
+		Date date = appointment.getServiceBooking(0).getTimeSlot().getStartDate();
+		Time sTime = stringToTime(startTime);
+		Time eTime = findEndTime(service, sTime);
+		
+		if (appointmentConflitsWithAppointments(appointment, service, date, sTime, eTime, true)) {
+			throw new InvalidInputException("Can't add item, time conflicts with other appointment");
+		}
+		
+		List<Time> startTimes = new ArrayList<>();
+		List<Time> endTimes = new ArrayList<>();
+		List<ServiceBooking> serviceBookings = appointment.getServiceBookings();
+		for(int i = 0; i < serviceBookings.size(); i++) {
+			Time start = serviceBookings.get(i).getTimeSlot().getStartTime();
+			Time end = serviceBookings.get(i).getTimeSlot().getEndTime();
+			startTimes.add(start);
+			endTimes.add(end);
+		}
+		startTimes.add(sTime);
+		endTimes.add(eTime);
+		
+		if (comboItemsConflicts(startTimes, endTimes)) {
+			throw new InvalidInputException("Can't add item, time conflicts with other items");
+		}
+		
+		if (timeIsOutsideBusinessHours(service, date, sTime, eTime)) {
+			throw new InvalidInputException("Can't add item, time is outside business hours");
+		}
+		
+		if (appointmentConflictsWithVacations(date, sTime, eTime)) {
+			throw new InvalidInputException("Can't add item, time is during vacations");
+		}
+		
+		if (appointmentConflictsWithHolidays(date, sTime, eTime)) {
+			throw new InvalidInputException("Can't add item, time is during holidays");
+		}
+		
+		appointment.addOptServiceToCombo(service, sTime);
 	}
 	
 	/**
@@ -1877,17 +2017,6 @@ public class CarShopController {
 		CarShopApplication.setSystemTime(newTime);
 	}
 	
-	//TODO:
-	private static boolean performUpdateChecks(String newDate, String newTime) {
-		return false;
-	}
-	
-	//TODO:
-	private static boolean newAppointmentChecks() {
-		
-		return false;
-	}
-	
 	/**
 	 * helper method to find the end time of a service based on the start time
 	 * @param service the service
@@ -1934,13 +2063,185 @@ public class CarShopController {
 		return false;
 	}
 	
+	/**
+	 * checks whether the new time conflicts is outside business hours
+	 * @param name the service
+	 * @param date the date 
+	 * @param startTime the start time
+	 * @param endTime the end time
+	 * @return true if it conflicts
+	 */
+	private static boolean timeIsOutsideBusinessHours(Service name, Date date, Time startTime, Time endTime) {
+		Garage garage = name.getGarage();
+		for(BusinessHour bHour : garage.getBusinessHours()) {
+			if (dayOfWeekFromDate(date).toString().equals(bHour.toString())) {
+				if (!startTime.before(bHour.getStartTime()) && !endTime.after(bHour.getEndTime())) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 	
-	
-	private static java.time.DayOfWeek DayOfWeekFromDate(Date date) {
+	/**
+	 * helper method to get the day of week of a day
+	 * @param date the date
+	 * @return a java.time.DayOfWeek object
+	 */
+	private static java.time.DayOfWeek dayOfWeekFromDate(Date date) {
 		LocalDate localDate = date.toLocalDate();
 		return localDate.getDayOfWeek();
 	}
 	
+	/**
+	 * checks if the appointment time conflicts with vacations
+	 * @param date the appointment date
+	 * @param startTime the appointment start time
+	 * @param endTime the appointment end time
+	 * @return true if conflicts
+	 */
+	private static boolean appointmentConflictsWithVacations(Date date, Time startTime, Time endTime) {
+		List<TimeSlot> vacationSlots = CarShopApplication.getCarShop().getBusiness().getVacations();
+		
+		for(TimeSlot timeSlot : vacationSlots) {
+			if(timeSlot.getStartDate().before(date) && timeSlot.getEndDate().after(date)
+					|| (timeSlot.getStartDate().equals(date) && timeSlot.getStartTime().before(endTime))
+					|| (timeSlot.getEndDate().equals(date) && timeSlot.getEndTime().after(startTime))) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * checks if the appointment time conflicts with holidays
+	 * @param date the appointment date
+	 * @param startTime the appointment start time
+	 * @param endTime the appointment end time
+	 * @return true if conflicts
+	 */
+	private static boolean appointmentConflictsWithHolidays(Date date, Time startTime, Time endTime) {
+		List<TimeSlot> holidaySlots = CarShopApplication.getCarShop().getBusiness().getHolidays();
+		
+		for(TimeSlot timeSlot : holidaySlots) {
+			if(timeSlot.getStartDate().before(date) && timeSlot.getEndDate().after(date)
+					|| (timeSlot.getStartDate().equals(date) && timeSlot.getStartTime().before(endTime))
+					|| (timeSlot.getEndDate().equals(date) && timeSlot.getEndTime().after(startTime))) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * method to check if the combo times conflict with existing appointments
+	 * @param appointment the appointment
+	 * @param services the list of services
+	 * @param date the date
+	 * @param startTimes the list of start times
+	 * @param endTimes the list of end times
+	 * @param excludeSelf set true if we want to exclude this appointment
+	 * @return true if conflicts
+	 */
+	private static boolean comboTimeConflictsWithAppointments(Appointment appointment, List<Service> services, Date date, List<Time> startTimes, List<Time> endTimes, boolean excludeSelf) {
+		for(int i = 0; i < services.size(); i++) {
+			Service service = services.get(i);
+			if (appointmentConflitsWithAppointments(appointment, service, date, startTimes.get(i), endTimes.get(i), excludeSelf)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * helper method to parse all the start times of a service combo
+	 * @param string the start times
+	 * @return a list of sql.Time
+	 * @throws InvalidInputException if input is invalid
+	 */
+	private static List<Time> parseComboStartTimes(String string) throws InvalidInputException {
+		List<Time> startTimes = new ArrayList<Time>();
+		String[] strings = string.split(",");
+		for(String s : strings) {
+			startTimes.add(stringToTime(s));
+		}
+				
+		return startTimes;
+	}
+	
+	/**
+	 * checks if combo items conflict with each other
+	 * @param startTimes the start times of the items
+	 * @param endTimes the end times of the items
+	 * @return true if conflicts
+	 */
+	private static boolean comboItemsConflicts(List<Time> startTimes, List<Time> endTimes) {
+		for(int i = 0; i < startTimes.size(); i++) {
+			for (int j = 0; j < startTimes.size(); j++) {
+				if(i != j && isTimeOverlap(startTimes.get(i), endTimes.get(i), startTimes.get(j), endTimes.get(j))) {
+					return true;
+				}
+				
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * checks if combo items are outside business hours
+	 * @param services the services
+	 * @param date the date
+	 * @param startTimes the start times
+	 * @param endTimes the end times
+	 * @return true if conflics
+	 */
+	private static boolean comboTimesIsOutsideBusinessHours(List<Service> services, Date date, List<Time> startTimes, List<Time> endTimes) {
+		for (int i = 0; i < services.size(); i++) {
+			Service service = services.get(i);
+			Time startTime = startTimes.get(i);
+			Time endTime = endTimes.get(i);
+			
+			if (timeIsOutsideBusinessHours(service, date, startTime, endTime)) {
+				return true;
+			}
+		}
+		return false;
+		
+	}
+	
+	/**
+	 * checks if combo items conflict with vacations
+	 * @param services the services
+	 * @param date the date
+	 * @param startTimes the start times
+	 * @param endTimes the end times
+	 * @return true if conflics
+	 */
+	private static boolean comboTimesConflictsWithVacations(Date date, List<Time> startTimes, List<Time> endTimes) {
+		for(int i = 0; i < startTimes.size(); i++) {
+			if (appointmentConflictsWithVacations(date, startTimes.get(i), endTimes.get(i))) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * checks if combo items conflict with holidays
+	 * @param services the services
+	 * @param date the date
+	 * @param startTimes the start times
+	 * @param endTimes the end times
+	 * @return true if conflics
+	 */
+	private static boolean comboTimesConflictsWithHolidays(Date date, List<Time> startTimes, List<Time> endTimes) {
+		for(int i = 0; i < startTimes.size(); i++) {
+			if (appointmentConflictsWithHolidays(date, startTimes.get(i), endTimes.get(i))) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	/** ** END APPOINTMENT MANAGEMENT ** **/
 }
