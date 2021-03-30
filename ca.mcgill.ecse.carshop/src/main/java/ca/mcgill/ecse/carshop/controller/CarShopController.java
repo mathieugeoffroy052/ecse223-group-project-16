@@ -350,7 +350,7 @@ public class CarShopController {
 				// if the service is already in the service combo...
 				if(checkIfSame.getService().equals((Service) toPut)) {
 					if(!isTrue) {
-						checkIfSame.setMandatory(false);	// newly added code
+//						checkIfSame.setMandatory(false);	// newly added code //not sure if this is needed
 						found = true;
 						break; // don't add the optional service (it's already there)
 					}
