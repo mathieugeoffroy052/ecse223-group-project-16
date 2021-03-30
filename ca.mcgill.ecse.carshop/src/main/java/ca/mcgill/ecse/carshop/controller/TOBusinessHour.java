@@ -4,22 +4,16 @@
 package ca.mcgill.ecse.carshop.controller;
 import java.sql.Time;
 
-// line 35 "../../../../../CarShopTransferObjects.ump"
+// line 39 "../../../../../CarShopTransferObjects.ump"
 public class TOBusinessHour
 {
-
-  //------------------------
-  // ENUMERATIONS
-  //------------------------
-
-  public enum DayOfWeek { Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday }
 
   //------------------------
   // MEMBER VARIABLES
   //------------------------
 
   //TOBusinessHour Attributes
-  private DayOfWeek dayOfWeek;
+  private String dayOfWeek;
   private Time startTime;
   private Time endTime;
 
@@ -27,7 +21,7 @@ public class TOBusinessHour
   // CONSTRUCTOR
   //------------------------
 
-  public TOBusinessHour(DayOfWeek aDayOfWeek, Time aStartTime, Time aEndTime)
+  public TOBusinessHour(String aDayOfWeek, Time aStartTime, Time aEndTime)
   {
     dayOfWeek = aDayOfWeek;
     startTime = aStartTime;
@@ -38,7 +32,7 @@ public class TOBusinessHour
   // INTERFACE
   //------------------------
 
-  public boolean setDayOfWeek(DayOfWeek aDayOfWeek)
+  public boolean setDayOfWeek(String aDayOfWeek)
   {
     boolean wasSet = false;
     dayOfWeek = aDayOfWeek;
@@ -62,7 +56,7 @@ public class TOBusinessHour
     return wasSet;
   }
 
-  public DayOfWeek getDayOfWeek()
+  public String getDayOfWeek()
   {
     return dayOfWeek;
   }
@@ -83,8 +77,8 @@ public class TOBusinessHour
 
   public String toString()
   {
-    return super.toString() + "["+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "dayOfWeek" + "=" + (getDayOfWeek() != null ? !getDayOfWeek().equals(this)  ? getDayOfWeek().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+    return super.toString() + "["+
+            "dayOfWeek" + ":" + getDayOfWeek()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "startTime" + "=" + (getStartTime() != null ? !getStartTime().equals(this)  ? getStartTime().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "endTime" + "=" + (getEndTime() != null ? !getEndTime().equals(this)  ? getEndTime().toString().replaceAll("  ","    ") : "this" : "null");
   }

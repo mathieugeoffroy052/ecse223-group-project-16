@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.model.CarShop;
 
-@RunWith(Cucumber.class)
+@RunWith(Cucumber.class)  // /CancelAppointment.feature
 @CucumberOptions(plugin = "pretty", features = "src/test/resources")
 public class CucumberFeaturesTestRunner {
 }

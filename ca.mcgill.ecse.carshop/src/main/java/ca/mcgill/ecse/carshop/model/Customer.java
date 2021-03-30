@@ -2,15 +2,21 @@
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
 
 package ca.mcgill.ecse.carshop.model;
+import java.io.Serializable;
 import java.util.*;
 
-// line 42 "../../../../../carshop.ump"
-public class Customer extends User
+// line 241 "../../../../../CarShopStates.ump"
+// line 58 "../../../../../CarShopPersistence.ump"
+// line 54 "../../../../../carshop.ump"
+public class Customer extends User implements Serializable
 {
 
   //------------------------
   // MEMBER VARIABLES
   //------------------------
+
+  //Customer Attributes
+  private int noShowCounter;
 
   //Customer Associations
   private CarShop carShop;
@@ -23,6 +29,7 @@ public class Customer extends User
   public Customer(String aUsername, String aPassword, CarShop aCarShop)
   {
     super(aUsername, aPassword);
+    noShowCounter = 0;
     boolean didAddCarShop = setCarShop(aCarShop);
     if (!didAddCarShop)
     {
@@ -34,6 +41,19 @@ public class Customer extends User
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setNoShowCounter(int aNoShowCounter)
+  {
+    boolean wasSet = false;
+    noShowCounter = aNoShowCounter;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public int getNoShowCounter()
+  {
+    return noShowCounter;
+  }
   /* Code from template association_GetOne */
   public CarShop getCarShop()
   {
@@ -177,4 +197,28 @@ public class Customer extends User
     super.delete();
   }
 
+  // line 245 "../../../../../CarShopStates.ump"
+   public void updateNoShow(){
+    noShowCounter++;
+  }
+
+
+  /**
+   * private static final long serialVersionUID = -7403802774454467836L;
+   */
+  // line 64 "../../../../../CarShopPersistence.ump"
+   public static  void reinitializeUniqueUsernames(List<Customer> customers){
+    User.setUsersByUsername(new HashMap<String, User>());
+    for (User user : customers) {
+    	User.getUsersByUsername().put(user.getUsername(), user);
+    }
+  }
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "noShowCounter" + ":" + getNoShowCounter()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "carShop = "+(getCarShop()!=null?Integer.toHexString(System.identityHashCode(getCarShop())):"null");
+  }
 }

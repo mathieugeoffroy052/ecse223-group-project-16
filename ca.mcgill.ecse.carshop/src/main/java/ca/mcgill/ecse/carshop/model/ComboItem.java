@@ -2,9 +2,11 @@
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
 
 package ca.mcgill.ecse.carshop.model;
+import java.io.Serializable;
 
-// line 130 "../../../../../carshop.ump"
-public class ComboItem
+// line 51 "../../../../../CarShopPersistence.ump"
+// line 144 "../../../../../carshop.ump"
+public class ComboItem implements Serializable
 {
 
   //------------------------
@@ -115,7 +117,7 @@ public class ComboItem
     }
   }
 
-  // line 134 "../../../../../carshop.ump"
+  // line 148 "../../../../../carshop.ump"
    public String isMandatory(){
     if(this.mandatory == true) return "mandatory";
   else return "";

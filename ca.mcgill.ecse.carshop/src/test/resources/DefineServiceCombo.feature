@@ -83,4 +83,4 @@ Feature: Define Service Combo
       | username        | error                                            |
       | customer1       | You are not authorized to perform this operation |
       | customer2       | You are not authorized to perform this operation |
-      #| Tire-Technician | You are not authorized to perform this operation |
+      | Tire-Technician | You are not authorized to perform this operation |

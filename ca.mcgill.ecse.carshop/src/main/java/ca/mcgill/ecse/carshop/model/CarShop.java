@@ -2,12 +2,14 @@
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
 
 package ca.mcgill.ecse.carshop.model;
+import java.io.Serializable;
 import java.util.*;
 import java.sql.Time;
 import java.sql.Date;
 
-// line 3 "../../../../../carshop.ump"
-public class CarShop
+// line 39 "../../../../../CarShopPersistence.ump"
+// line 6 "../../../../../carshop.ump"
+public class CarShop implements Serializable
 {
 
   //------------------------
@@ -932,7 +934,17 @@ public class CarShop
     
   }
 
-  // line 15 "../../../../../carshop.ump"
+
+  /**
+   * private static final long serialVersionUID = 2045406856025012133L;
+   */
+  // line 45 "../../../../../CarShopPersistence.ump"
+   public void reinitialize(){
+    BookableService.reinitializeBookableServiceList(this.getBookableServices());
+	    Customer.reinitializeUniqueUsernames(this.getCustomers());
+  }
+
+  // line 18 "../../../../../carshop.ump"
    public int getTechnicianWithString(String str){
     int iend = str.indexOf("-");
 		String subString = null;

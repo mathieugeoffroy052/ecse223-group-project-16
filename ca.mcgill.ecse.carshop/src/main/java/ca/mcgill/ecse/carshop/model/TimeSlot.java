@@ -2,11 +2,13 @@
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
 
 package ca.mcgill.ecse.carshop.model;
+import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
 
-// line 88 "../../../../../carshop.ump"
-public class TimeSlot
+// line 109 "../../../../../CarShopPersistence.ump"
+// line 102 "../../../../../carshop.ump"
+public class TimeSlot implements Serializable
 {
 
   //------------------------

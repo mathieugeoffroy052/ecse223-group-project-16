@@ -3,7 +3,7 @@
 
 package ca.mcgill.ecse.carshop.controller;
 
-// line 72 "../../../../../CarShopTransferObjects.ump"
+// line 79 "../../../../../CarShopTransferObjects.ump"
 public class TOAppointment
 {
 
@@ -11,18 +11,42 @@ public class TOAppointment
   // MEMBER VARIABLES
   //------------------------
 
+  //TOAppointment Attributes
+  private String name;
+
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public TOAppointment()
-  {}
+  public TOAppointment(String aName)
+  {
+    name = aName;
+  }
 
   //------------------------
   // INTERFACE
   //------------------------
 
+  public boolean setName(String aName)
+  {
+    boolean wasSet = false;
+    name = aName;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public String getName()
+  {
+    return name;
+  }
+
   public void delete()
   {}
 
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "name" + ":" + getName()+ "]";
+  }
 }
