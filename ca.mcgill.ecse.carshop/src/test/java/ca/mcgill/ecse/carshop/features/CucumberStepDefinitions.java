@@ -1553,11 +1553,10 @@ public class CucumberStepDefinitions {
 	
 	//DELIVERABLE 3
 	
-	//TODO
 	@Given("{string} has {int} no-show records")
-	public void has_no_show_records(String string, Integer int1) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void has_no_show_records(String username, Integer int1) {
+	    Customer customer = (Customer) User.getWithUsername(username);
+	    customer.setNoShowCounter(int1); //set customer's no show number to given int
 	}
 	
 	@When("{string} makes a {string} appointment for the date {string} and time {string} at {string}")
@@ -1628,11 +1627,12 @@ public class CucumberStepDefinitions {
 	    //compare customer's username to the expected inputed string
 	}
 
-	//TODO
 	@Then("the user {string} shall have {int} no-show records")
-	public void the_user_shall_have_no_show_records(String string, Integer int1) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void the_user_shall_have_no_show_records(String username, Integer int1) {
+	    Customer customer = (Customer) User.getWithUsername(username); //get customer with username
+	    int noShowNum = customer.getNoShowCounter(); //get no shows
+	    
+	    assertEquals(int1, noShowNum); //compare no show counter to expected
 	}
 
 	@Then("the system shall have {int} appointments")
