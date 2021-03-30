@@ -671,7 +671,7 @@ public class CucumberStepDefinitions {
 	    
 	}
 
-	@Given("the business has the following opening hours:")
+	@Given("the business has the following opening hours(:)")
 	public void the_business_has_the_following_opening_hours(io.cucumber.datatable.DataTable table) {
 	    // Write code here that turns the phrase above into concrete actions
 	    // For automatic transformation, change DataTable to one of
@@ -1269,6 +1269,18 @@ public class CucumberStepDefinitions {
 		//Date Start = dateFormat.parse(startTime);
 		//Date End = dateFormat.parse(endTime);
 		List<Garage> garages = cs.getGarages();
+		
+		if(garages.get(garages.size()-1).getBusinessHours().size()==0) {
+			List<BusinessHour> originalBusinessHours = cs.getBusiness().getBusinessHours();
+			for(int i = 0; i < originalBusinessHours.size(); i++) {			
+				BusinessHour businessHourToAdd = cs.getBusiness().getBusinessHour(i);
+				for(Garage g : garages) {
+					g.addBusinessHour(businessHourToAdd);
+				}
+			}
+		}
+
+		// else, if garage list is not empty it will proceed as normal
 		List<Map<String,String>> rows = dataTable.asMaps(String.class,String.class);
 		for (Garage g : garages) {
 			for(int i = g.getBusinessHours().size()-1; i >= 0; i--) {
@@ -1287,6 +1299,9 @@ public class CucumberStepDefinitions {
 				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Wednesday)) toCheck = 2;
 				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Thursday)) toCheck = 3;
 				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Friday)) toCheck = 4;
+				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Saturday)) toCheck = 5;
+				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Sunday)) toCheck = 6;
+
 				// new code
 				// converts from string to time with method in the controller
 				Time start = CarShopController.stringToTime(columns.get("startTime")); //(Time) timeFormat.parse(columns.get("startTime"));
@@ -1298,6 +1313,8 @@ public class CucumberStepDefinitions {
 				//garage.addBusinessHour(new BusinessHour(dayOfWeek, start, end, cs));// create a new object (JUST THIS)
 			}	
 		}
+
+		
 	}
 
 	@Given("the business has the following holidays")
@@ -1346,7 +1363,7 @@ public class CucumberStepDefinitions {
 			String[] secondTime = secondTimeSlot.split("-");
 			firstTime1 = firstTime[0];
 			secondTime1 = secondTime[0];
-			CarShopController.CreateAppointmentWithOptServices(customer, serviceName, firstTime1+","+secondTime1 , date, cs, optServices);
+			CarShopController.CreateAppointmentWithOptServices(customer, serviceName, firstTime1+","+secondTime1 , date, cs, optServices, false);
 			numApp++;
 		}
 	}
@@ -1423,7 +1440,7 @@ public class CucumberStepDefinitions {
 	@When("{string} schedules an appointment on {string} for {string} at {string}")
 	public void schedules_an_appointment_on_for_at(String username, String date, String serviceName, String startTime) throws InvalidInputException {
 		try {
-			CarShopController.CreateAppointmentWithOptServices(username,serviceName,startTime,date,cs,"");// uses method in the controller
+			CarShopController.CreateAppointmentWithOptServices(username,serviceName,startTime,date,cs,"", false);// uses method in the controller
 		} catch (Exception e) {
 			error = e.getMessage();
 			errorCntr++;
@@ -1543,7 +1560,7 @@ public class CucumberStepDefinitions {
 	@When("{string} schedules an appointment on {string} for {string} with {string} at {string}")
 	public void schedules_an_appointment_on_for_with_at(String customer, String date, String serviceComboName, String optionalServices, String startTimes) {
 		try {
-			CarShopController.CreateAppointmentWithOptServices(customer, serviceComboName, startTimes, date, cs, optionalServices);
+			CarShopController.CreateAppointmentWithOptServices(customer, serviceComboName, startTimes, date, cs, optionalServices, false);
 		} catch (Exception e) {
 			error = e.getMessage();
 			errorCntr++;
@@ -1557,6 +1574,8 @@ public class CucumberStepDefinitions {
 	
 	
 	//DELIVERABLE 3
+	
+	// ** appointment management system START **
 	
 	@Given("{string} has {int} no-show records")
 	public void has_no_show_records(String username, Integer int1) {
@@ -1594,13 +1613,16 @@ public class CucumberStepDefinitions {
 
 	@Then("the appointment shall be booked")
 	public void the_appointment_shall_be_booked() {
-		assertNotNull(cs.getAppointment(1)); //checks to see if a second appointment exists (first one already created in background)
+//		assertNotNull(cs.getAppointment(1)); //checks to see if a second appointment exists (first one already created in background)
+		assertNotNull(cs.getAppointment(cs.getAppointments().size()-1)); // JERRYY
 		//we can do this because this @then test is always called after trying to add a second appointment
 	}
 
 	@Then("the service in the appointment shall be {string}")
 	public void the_service_in_the_appointment_shall_be(String string) {
-	    assertEquals(string, cs.getAppointment(1).getBookableService().getName());
+//	    assertEquals(string, cs.getAppointment(1).getBookableService().getName()); // JERRYY
+	    
+	    assertEquals(string, cs.getAppointment(cs.getAppointments().size()-1).getBookableService().getName());
 	    //compare the name given by the test to the name of the service for which the appointment is for
 	}
 
