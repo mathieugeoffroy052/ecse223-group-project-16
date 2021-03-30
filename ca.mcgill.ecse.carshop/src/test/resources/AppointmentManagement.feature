@@ -57,7 +57,7 @@ Feature: Appointment management process
       #When "customer1" makes a "engine-check" appointment for the date "2021-04-10" and time "10:00" at "2021-04-04+09:00"
    #refers to the action that user issues the "make an appointment for ..." command on 2021-04-04 at 09:00
    #this allows setting the system time to this specified date and enables thorough testing the behavior of the software
-  # Matthew
+   
   Scenario: Change the appointment for a service at least one day ahead
     When "customer1" makes a "engine-check" appointment for the date "2021-04-10" and time "10:00" at "2021-04-04+09:00"
     When "customer1" attempts to change the service in the appointment to "tire-change" at "2021-04-09+09:10"
@@ -68,7 +68,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Matthew
   Scenario: Change the appointment for a service on its day
     When "customer1" makes a "engine-check" appointment for the date "2021-04-10" and time "10:00" at "2021-04-04+09:00"
     When "customer1" attempts to change the service in the appointment to "tire-change" at "2021-04-10+09:10"
@@ -79,7 +78,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Robert
   Scenario: Change date and time of appointment for a service at least one day ahead
     When "customer1" makes a "engine-check" appointment for the date "2021-04-10" and time "10:00" at "2021-04-04+09:00"
     When "customer1" attempts to update the date to "2021-04-11" and time to "11:00" at "2021-04-09+09:30"
@@ -90,7 +88,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Robert
   Scenario: Change the date and time of appointment for a service on its day
     When "customer1" makes a "engine-check" appointment for the date "2021-04-10" and time "10:00" at "2021-04-04+09:00"
     When "customer1" attempts to update the date to "2021-04-11" and time to "11:00" at "2021-04-10+09:30"
@@ -101,14 +98,12 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Robert
   Scenario: Cancel the appointment for a service at least one day ahead
     When "customer1" makes a "engine-check" appointment for the date "2021-04-10" and time "10:00" at "2021-04-04+09:00"
     When "customer1" attempts to cancel the appointment at "2021-04-09+09:00"
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 1 appointment
 
-	# Robert
   Scenario: Cancel the appointment for a service on its day
     When "customer1" makes a "engine-check" appointment for the date "2021-04-10" and time "10:00" at "2021-04-04+09:00"
     When "customer1" attempts to cancel the appointment at "2021-04-10+09:00"
@@ -119,7 +114,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
- # add to an optional service to an already existing service combo
   Scenario: Change the appointment for a service combo at least one day ahead
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-10" and start time "10:00,12:00" at "2021-04-04+09:00"
     When "customer1" attempts to add the optional service "engine-check" to the service combo with start time "12:20" in the appointment at "2021-04-09+09:00"
@@ -131,7 +125,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Jerry
   Scenario: Change the appointment for a service combo on its day
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-10" and start time "10:00,12:00" at "2021-04-04+09:00"
     When "customer1" attempts to add the optional service "engine-check" to the service combo with start time "12:20" in the appointment at "2021-04-10+09:00"
@@ -143,7 +136,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Mathieu
   Scenario: Change the date and time of appointment for a service combo at least one day ahead
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-10" and start time "10:00,12:00" at "2021-04-04+09:00"
     When "customer1" attempts to update the date to "2021-04-11" and start time to "11:00,13:00" at "2021-04-09+09:30"
@@ -155,7 +147,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Matthew / Hong Yi
   Scenario: Change the date and time of appointment for a service combo on its day
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-10" and start time "10:00,12:00" at "2021-04-04+09:00"
     When "customer1" attempts to update the date to "2021-04-11" and start time to "11:00,13:00" at "2021-04-10+09:30"
@@ -167,14 +158,12 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Matthew
   Scenario: Customer attempts to cancel the appointment for a service combo at least one day ahead
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-10" and start time "10:00,12:00" at "2021-04-04+09:00"
     When "customer1" attempts to cancel the appointment at "2021-04-09+09:00"
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 1 appointment
 
-	# Kalvin
   Scenario: Customer attempts to cancel the appointment for a service combo on its day
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-10" and start time "10:00,12:00" at "2021-04-04+09:00"
     When "customer1" attempts to cancel the appointment at "2021-04-10+09:00"
@@ -186,7 +175,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Mathieu
   Scenario: Customer arrives and the appointment for service completes without any changes
     When "customer1" makes a "engine-check" appointment for the date "2021-04-10" and time "10:00" at "2021-04-04+09:00"
     When the owner starts the appointment at "2021-04-10+10:00"
@@ -194,7 +182,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 1 appointment
 
-	# Mathieu
   Scenario: Customer arrives and the appointment for service combo completes without any changes
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-10" and start time "10:00,12:00" at "2021-04-04+09:00"
     When the owner starts the appointment at "2021-04-10+10:00"
@@ -202,7 +189,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 1 appointment
 
-	# Jerry
   Scenario: Customer arrives to the appointment and updates the service combo
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-10" and start time "10:00,12:00" at "2021-04-04+09:00"
     When the owner starts the appointment at "2021-04-10+10:00"
@@ -215,7 +201,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Mathieu
   Scenario: Customer arrives to the appointment early and the owner attempts to start the appointment
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-10" and start time "10:00,12:00" at "2021-04-04+09:00"
     When the owner starts the appointment at "2021-04-10+09:55"
@@ -227,14 +212,12 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Kalvin
   Scenario: Customer does not show up for the appointment
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-10" and start time "10:00,12:00" at "2021-04-04+09:00"
     When the owner attempts to register a no-show for the appointment at "2021-04-10+12:11"
     Then the user "customer1" shall have 1 no-show records
     Then the system shall have 1 appointment
 
-	# Kalvin
   Scenario: Change date of appointment with service while the appointment is in progress
     When "customer1" makes a "engine-check" appointment for the date "2021-04-10" and time "10:00" at "2021-04-04+09:00"
     When the owner starts the appointment at "2021-04-10+10:00"
@@ -246,7 +229,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Kalvin
   Scenario: Cancel appointment while the appointment is in progress
     When "customer1" makes a "engine-check" appointment for the date "2021-04-10" and time "10:00" at "2021-04-04+09:00"
     When the owner starts the appointment at "2021-04-10+10:00"
@@ -258,7 +240,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Kalvin
   Scenario: Start appointment while the appointment is in progress
     When "customer1" makes a "engine-check" appointment for the date "2021-04-10" and time "10:00" at "2021-04-04+09:00"
     When the owner starts the appointment at "2021-04-10+10:00"
@@ -270,7 +251,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Kalvin
   Scenario: Register no-show for customer while the appointment is in progress
     When "customer1" makes a "engine-check" appointment for the date "2021-04-10" and time "10:00" at "2021-04-04+09:00"
     When the owner starts the appointment at "2021-04-10+10:01"
@@ -282,7 +262,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Kalvin
   Scenario: End appointment while the appointment is not in progress
     When "customer1" makes a "engine-check" appointment for the date "2021-04-10" and time "10:00" at "2021-04-04+09:00"
     When the owner attempts to end the appointment at "2021-04-10+09:10"
@@ -293,7 +272,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Mathieu + Robert
   Scenario: Update appointment time for service and new time overlaps with another appointment
     When "customer1" makes a "electronics-repair" appointment for the date "2021-04-08" and time "14:25" at "2021-04-04+09:00"
     When "customer1" attempts to change the service in the appointment to "tire-change" at "2021-04-07+09:00"
@@ -304,7 +282,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Matthew
   Scenario: Update appointment time for service and new time is outside business hours
     When "customer1" makes a "tire-change" appointment for the date "2021-04-08" and time "16:45" at "2021-04-04+09:00"
     When "customer1" attempts to change the service in the appointment to "engine-check" at "2021-04-07+09:00"
@@ -315,7 +292,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Hong Yi
   Scenario: Update appointment time for service and new time overlaps vacation
     When "customer1" makes a "engine-check" appointment for the date "2021-04-10" and time "10:00" at "2021-04-04+09:00"
     When "customer1" attempts to update the date to "2021-04-16" and time to "12:00" at "2021-04-07+09:30"
@@ -326,7 +302,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Hong Yi
   Scenario: Update appointment time for service and new date is on a holiday
     When "customer1" makes a "engine-check" appointment for the date "2021-04-10" and time "10:00" at "2021-04-04+09:00"
     When "customer1" attempts to update the date to "2021-04-18" and time to "12:00" at "2021-04-07+09:30"
@@ -337,7 +312,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Mathieu
   Scenario: Update appointment time for service combo and new time overlaps with another appointment
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-08" and start time "11:20,12:40" at "2021-04-04+09:00"
     When "customer1" attempts to add the optional service "tire-change" to the service combo with start time "14:20" in the appointment at "2021-04-07+09:00"
@@ -349,7 +323,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Jerry
   Scenario: Update appointment time for service combo and new time overlaps with another combo item booking
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-08" and start time "11:20,12:40" at "2021-04-04+09:00"
     When "customer1" attempts to add the optional service "tire-change" to the service combo with start time "12:40" in the appointment at "2021-04-07+09:00"
@@ -361,7 +334,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Matthew
   Scenario: Update appointment time for service combo and new time is outside business hours
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-08" and start time "15:20,16:40" at "2021-04-04+09:00"
     When "customer1" attempts to add the optional service "tire-change" to the service combo with start time "16:55" in the appointment at "2021-04-07+09:00"
@@ -373,7 +345,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Hong Yi
   Scenario: Update appointment time for service combo and new time overlaps vacation
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-10" and start time "10:00,12:00" at "2021-04-04+09:00"
     When "customer1" attempts to update the date to "2021-04-16" and start time to "10:00,12:00" at "2021-04-07+09:30"
@@ -385,7 +356,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Hong Yi
   Scenario: Update appointment time for service combo and new date is on a holiday
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-10" and start time "10:00,12:00" at "2021-04-04+09:00"
     When "customer1" attempts to update the date to "2021-04-18" and start time to "10:00,12:00" at "2021-04-07+09:30"
@@ -397,7 +367,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Jerry
   Scenario: Customer arrives to the appointment and adds an optional service to the service combo and new time overlaps an existing appointment
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-08" and start time "11:20,12:40" at "2021-04-04+09:00"
     When the owner starts the appointment at "2021-04-08+11:20"
@@ -410,7 +379,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Jerry
   Scenario: Customer arrives to the appointment and adds an optional service to the service combo and new time overlaps with another combo item booking
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-08" and start time "11:20,12:40" at "2021-04-04+09:00"
     When the owner starts the appointment at "2021-04-08+11:20"
@@ -423,7 +391,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Hong Yi (consult Jerry)
   Scenario: Customer arrives to the appointment and adds an optional service to the service combo and new time is outside business hours
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-08" and start time "15:20,16:40" at "2021-04-04+09:00"
     When the owner starts the appointment at "2021-04-08+15:20"
@@ -436,7 +403,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Hong Yi (consult Jerry)
   Scenario: Customer arrives to the appointment and adds an optional service to the service combo and new time overlaps vacation
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-14" and start time "10:00,11:40" at "2021-04-04+09:00"
     When the owner starts the appointment at "2021-04-14+10:02"
@@ -449,7 +415,6 @@ Feature: Appointment management process
     Then the user "customer1" shall have 0 no-show records
     Then the system shall have 2 appointments
 
-	# Hong Yi (consult Jerry)
   Scenario: Customer arrives to the appointment and adds an optional service to the service combo and new time overlaps holiday
     When "customer1" makes a "transmission-check-combo" appointment with service "electronics-repair" for the date "2021-04-18" and start time "08:00,09:40" at "2021-04-04+09:00"
     When the owner starts the appointment at "2021-04-18+08:03"
