@@ -1646,11 +1646,14 @@ public class CucumberStepDefinitions {
 	    //get list of all appointments and compare size to expect number of appointments
 	}
 
-	//TODO
 	@When("{string} attempts to update the date to {string} and time to {string} at {string}")
-	public void attempts_to_update_the_date_to_and_time_to_at(String string, String string2, String string3, String string4) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void attempts_to_update_the_date_to_and_time_to_at(String username, String newDate, String newTime, String currentTimeDate) {
+	    try {
+	    	CarShopController.updateDateAndTimeAt(currentAppointment, username, newDate, newTime, currentTimeDate);
+	    } catch (Exception e) {
+	    	error = e.getMessage();
+			errorCntr++;
+	    }
 	}
 
 	//TODO
