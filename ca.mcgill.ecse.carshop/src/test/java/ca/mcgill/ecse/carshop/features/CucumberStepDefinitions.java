@@ -1672,7 +1672,6 @@ public class CucumberStepDefinitions {
 	    //get list of all appointments and compare size to expect number of appointments
 	}
 
-	//TODO
 	@When("{string} makes a {string} appointment with service {string} for the date {string} and start time {string} at {string}")
 	public void makes_a_appointment_with_service_for_the_date_and_start_time_at(String username, String service, String optionalService, String date, String StartTime, String currentTimeDate) {
 	    try {
@@ -1685,11 +1684,14 @@ public class CucumberStepDefinitions {
 	    }
 	}
 
-	//TODO
 	@When("{string} attempts to add the optional service {string} to the service combo with start time {string} in the appointment at {string}")
-	public void attempts_to_add_the_optional_service_to_the_service_combo_with_start_time_in_the_appointment_at(String string, String string2, String string3, String string4) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void attempts_to_add_the_optional_service_to_the_service_combo_with_start_time_in_the_appointment_at(String username, String optService, String startTime, String currentDateTime) {
+		try {
+	    	CarShopController.addOptServiceAt(currentAppointment, username, optService, startTime, currentDateTime);
+	    } catch (Exception e) {
+	    	error = e.getMessage();
+			errorCntr++;
+	    }
 	}
 
 	@Then("the service combo in the appointment shall be {string}")
