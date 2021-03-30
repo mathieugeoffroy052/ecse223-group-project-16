@@ -7,7 +7,7 @@ class Appointment {
   AppointmentStatus{
     
     Booked {
-      //hello
+      
       changeAppointmentService(Service newService)[!startingSoon()] /{changeService(newService);}
       -> Booked;
       changeAppointmentService(Service newService)[startingSoon()]/{
