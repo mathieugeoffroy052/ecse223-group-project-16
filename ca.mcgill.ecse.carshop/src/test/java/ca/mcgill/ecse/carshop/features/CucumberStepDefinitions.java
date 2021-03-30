@@ -1760,11 +1760,14 @@ public class CucumberStepDefinitions {
 	    assertEquals(AppointmentStatus.InProgress, currentAppointment.getAppointmentStatus());
 	}
 
-	//TODO
 	@When("the owner attempts to register a no-show for the appointment at {string}")
-	public void the_owner_attempts_to_register_a_no_show_for_the_appointment_at(String string) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void the_owner_attempts_to_register_a_no_show_for_the_appointment_at(String currentDateTime) {
+		try {
+			CarShopController.updateNoShowAt(currentAppointment, currentDateTime);
+		} catch (Exception e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
 	}
 
 	//TODO
