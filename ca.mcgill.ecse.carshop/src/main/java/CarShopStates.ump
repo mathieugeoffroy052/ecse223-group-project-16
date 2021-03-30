@@ -100,6 +100,9 @@ class Appointment {
 	private void changeService(Service serviceName) {
 		if (this.getBookableService() instanceof Service) {
 			this.setBookableService(serviceName);
+			this.getServiceBooking(0).setService(serviceName);
+			Time endTime = findEndTime(serviceName, this.getServiceBooking(0).getTimeSlot().getStartTime());
+			this.getServiceBooking(0).getTimeSlot().setEndTime(endTime);
 		}
 	}
 
@@ -132,6 +135,8 @@ class Appointment {
 			Time endTime = findEndTime(service, startTime);
 			
 			TimeSlot newTimeSlot = new TimeSlot(date, startTime, date, endTime, carShop);
+			
+			new ServiceBooking(service, newTimeSlot, this);
 		}
 	}
 	

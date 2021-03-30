@@ -324,7 +324,7 @@ public class Appointment implements Serializable
     return wasEventProcessed;
   }
 
-  private boolean __autotransition6__()
+  private boolean __autotransition7__()
   {
     boolean wasEventProcessed = false;
     
@@ -353,7 +353,7 @@ public class Appointment implements Serializable
         delete();
         break;
       case HasEnded:
-        __autotransition6__();
+        __autotransition7__();
         break;
     }
   }
@@ -578,10 +578,13 @@ public class Appointment implements Serializable
    private void changeService(Service serviceName){
     if (this.getBookableService() instanceof Service) {
 			this.setBookableService(serviceName);
+			this.getServiceBooking(0).setService(serviceName);
+			Time endTime = findEndTime(serviceName, this.getServiceBooking(0).getTimeSlot().getStartTime());
+			this.getServiceBooking(0).getTimeSlot().setEndTime(endTime);
 		}
   }
 
-  // line 107 "../../../../../CarShopStates.ump"
+  // line 110 "../../../../../CarShopStates.ump"
    private void changeDateAndTime(Date date, List<Time> times){
     if (this.getBookableService() instanceof Service) {
 			Time endTime = findEndTime(this.getBookableService(), times.get(0));
@@ -605,77 +608,79 @@ public class Appointment implements Serializable
 		}
   }
 
-  // line 130 "../../../../../CarShopStates.ump"
+  // line 133 "../../../../../CarShopStates.ump"
    private void addOptService(Service service, Time startTime){
     if (this.bookableService instanceof ServiceCombo) {
 			Date date = this.getServiceBooking(0).getTimeSlot().getStartDate();
 			Time endTime = findEndTime(service, startTime);
 			
 			TimeSlot newTimeSlot = new TimeSlot(date, startTime, date, endTime, carShop);
+			
+			new ServiceBooking(service, newTimeSlot, this);
 		}
   }
 
-  // line 139 "../../../../../CarShopStates.ump"
+  // line 144 "../../../../../CarShopStates.ump"
    private void startingAppointmentUnsuccessful(){
     throw new RuntimeException("Cannot start appointment early");
   }
 
-  // line 143 "../../../../../CarShopStates.ump"
+  // line 148 "../../../../../CarShopStates.ump"
    private void changeServiceUnsuccessful(Service service){
     throw new RuntimeException("Cannot change the service now, appointment starting within 24 hours");
   }
 
-  // line 147 "../../../../../CarShopStates.ump"
+  // line 152 "../../../../../CarShopStates.ump"
    private void changeDateAndTimeUnsuccessful(Date date, List<Time> newStartTimes){
     throw new RuntimeException("Cannot change the start time now, appointment starting within 24 hours");
   }
 
-  // line 151 "../../../../../CarShopStates.ump"
+  // line 156 "../../../../../CarShopStates.ump"
    private void cancelAppointmentUnsuccessful(){
     throw new RuntimeException("Cannot cancel appointment now, appointment starting within 24 hours");
   }
 
-  // line 155 "../../../../../CarShopStates.ump"
+  // line 160 "../../../../../CarShopStates.ump"
    private void addOptServiceUnsuccessful(Service service, Time startTime){
     throw new RuntimeException("Cannot add optional now, appointment starting within 24 hours");
   }
 
-  // line 159 "../../../../../CarShopStates.ump"
+  // line 164 "../../../../../CarShopStates.ump"
    private void updateNoShow(){
     this.getCustomer().updateNoShow();
   }
 
-  // line 163 "../../../../../CarShopStates.ump"
+  // line 168 "../../../../../CarShopStates.ump"
    private void endAppointmentUnsuccessful(){
     throw new RuntimeException("Cannot end appointment before it starts");
   }
 
-  // line 167 "../../../../../CarShopStates.ump"
+  // line 172 "../../../../../CarShopStates.ump"
    private void startAppointmentInProgress(){
     throw new RuntimeException("Appointment is already in progress");
   }
 
-  // line 171 "../../../../../CarShopStates.ump"
+  // line 176 "../../../../../CarShopStates.ump"
    private void changeServiceInProgress(Service service){
     throw new RuntimeException("Cannot change the service, appointment is in progress");
   }
 
-  // line 175 "../../../../../CarShopStates.ump"
+  // line 180 "../../../../../CarShopStates.ump"
    private void changeDateAndTimeInProgress(Date date, List<Time> times){
     throw new RuntimeException("Cannot change start time now, appointment is in progress");
   }
 
-  // line 179 "../../../../../CarShopStates.ump"
+  // line 184 "../../../../../CarShopStates.ump"
    private void cancelAppointmentInProgress(){
     throw new RuntimeException("Cannot cancel, appointment is in progress");
   }
 
-  // line 183 "../../../../../CarShopStates.ump"
+  // line 188 "../../../../../CarShopStates.ump"
    private void updateNoShowInProgress(){
     throw new RuntimeException("Cannot update no show, appointment is in progress");
   }
 
-  // line 189 "../../../../../CarShopStates.ump"
+  // line 194 "../../../../../CarShopStates.ump"
    private boolean startingSoon(){
     Date systemDate = CarShopApplication.getSystemDate();
 		Time systemTime = CarShopApplication.getSystemTime();
@@ -698,7 +703,7 @@ public class Appointment implements Serializable
 		return false;
   }
 
-  // line 211 "../../../../../CarShopStates.ump"
+  // line 216 "../../../../../CarShopStates.ump"
    private boolean isEarly(){
     Date systemDate = CarShopApplication.getSystemDate();
 		Time systemTime = CarShopApplication.getSystemTime();
@@ -712,7 +717,7 @@ public class Appointment implements Serializable
 		return true;
   }
 
-  // line 224 "../../../../../CarShopStates.ump"
+  // line 229 "../../../../../CarShopStates.ump"
    private boolean hasEnded(){
     Date systemDate = CarShopApplication.getSystemDate();
 		Time systemTime = CarShopApplication.getSystemTime();
