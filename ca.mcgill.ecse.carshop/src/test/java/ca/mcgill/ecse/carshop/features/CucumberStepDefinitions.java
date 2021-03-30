@@ -1656,11 +1656,14 @@ public class CucumberStepDefinitions {
 	    }
 	}
 
-	//TODO
 	@When("{string} attempts to cancel the appointment at {string}")
-	public void attempts_to_cancel_the_appointment_at(String string, String string2) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void attempts_to_cancel_the_appointment_at(String username, String currentTimeDate) {
+	    try {
+	    	CarShopController.cancelAppointmentAt(currentAppointment, username, currentTimeDate);
+	    } catch (Exception e) {
+	    	error = e.getMessage();
+			errorCntr++;
+	    }
 	}
 
 	//TODO
