@@ -5,6 +5,7 @@ import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -2189,9 +2190,7 @@ public class CarShopController {
 		List<TimeSlot> vacationSlots = CarShopApplication.getCarShop().getBusiness().getVacations();
 		
 		for(TimeSlot timeSlot : vacationSlots) {
-			if(timeSlot.getStartDate().before(date) && timeSlot.getEndDate().after(date)
-					|| (timeSlot.getStartDate().equals(date) && timeSlot.getStartTime().before(endTime))
-					|| (timeSlot.getEndDate().equals(date) && timeSlot.getEndTime().after(startTime))) {
+			if(inDateTimeRange(date, startTime, endTime, timeSlot.getStartDate(), timeSlot.getStartTime(), timeSlot.getEndDate(), timeSlot.getEndTime())) {
 				return true;
 			}
 		}
@@ -2209,9 +2208,7 @@ public class CarShopController {
 		List<TimeSlot> holidaySlots = CarShopApplication.getCarShop().getBusiness().getHolidays();
 		
 		for(TimeSlot timeSlot : holidaySlots) {
-			if(timeSlot.getStartDate().before(date) && timeSlot.getEndDate().after(date)
-					|| (timeSlot.getStartDate().equals(date) && timeSlot.getStartTime().before(endTime))
-					|| (timeSlot.getEndDate().equals(date) && timeSlot.getEndTime().after(startTime))) {
+			if(inDateTimeRange(date, startTime, endTime, timeSlot.getStartDate(), timeSlot.getStartTime(), timeSlot.getEndDate(), timeSlot.getEndTime())) {
 				return true;
 			}
 		}
@@ -2340,7 +2337,25 @@ public class CarShopController {
 	 * @return
 	 */
 	private static boolean inDateTimeRange(Date inputDate, Time inputStartTime, Time inputEndTime, Date startDate, Time startTime, Date endDate, Time endTime){
-		if (inputDate.equals(startDate) && (inputStartTime.equals(startTime) || inputStartTime.after(startTime))|| inputDate.equals(endDate) && (inputEndTime.equals(endTime) || inputEndTime.before(endTime))|| (inputDate.after(startDate) && inputDate.before(endDate))) {
+		LocalTime inputStartTimeLocal = inputStartTime.toLocalTime();
+		LocalTime inputEndTimeLocal = inputEndTime.toLocalTime();
+		LocalDate inputDateLocal = inputDate.toLocalDate();
+		LocalDateTime inputStartDateTime = LocalDateTime.of(inputDateLocal, inputStartTimeLocal);
+		LocalDateTime inputEndDateTime = LocalDateTime.of(inputDateLocal, inputEndTimeLocal);
+		
+		LocalTime startTimeLocal = startTime.toLocalTime();
+		LocalTime endTimeLocal = endTime.toLocalTime();
+		LocalDate startDateLocal = startDate.toLocalDate();
+		LocalDate endDateLocal = endDate.toLocalDate();
+		LocalDateTime startDateTime = LocalDateTime.of(startDateLocal, startTimeLocal);
+		LocalDateTime endDateTime = LocalDateTime.of(endDateLocal, endTimeLocal);
+		
+			
+		if ((startDateTime.isBefore(inputStartDateTime) && endDateTime.isAfter(inputEndDateTime))
+				|| (inputStartDateTime.isBefore(startDateTime) && inputEndDateTime.isAfter(endDateTime))
+				|| (inputStartDateTime.isBefore(startDateTime) && startDateTime.isBefore(inputEndDateTime))
+				|| (inputStartDateTime.isBefore(endDateTime) && endDateTime.isBefore(inputEndDateTime))
+				) {
 			return true;
 		}
 		return false;
