@@ -1347,23 +1347,41 @@ public class CucumberStepDefinitions {
 		String customer = "";// empty string
 		String serviceName = "";// empty string
 		String date = "";// empty string
-		String firstTime1 = "";// empty string
-		String secondTime1 = "";// empty string
+//		String firstTime1 = "";// empty string
+//		String secondTime1 = "";// empty string
 		for (Map<String, String> columns : rows) {
 			customer = columns.get("customer");
 			serviceName = columns.get("serviceName");
 			String optServices = columns.get("optServices");
 			date = (columns.get("date"));
 			String timeSlots = columns.get("timeSlots");
-			Date dates = CarShopController.stringToDate(columns.get("date"));
+//			Date dates = CarShopController.stringToDate(columns.get("date"));
 			String[] ts1 = timeSlots.split(",");
-			String firstTimeSlot = ts1[0];
-			String secondTimeSlot = ts1[1];
-			String[] firstTime = firstTimeSlot.split("-");
-			String[] secondTime = secondTimeSlot.split("-");
-			firstTime1 = firstTime[0];
-			secondTime1 = secondTime[0];
-			CarShopController.CreateAppointmentWithOptServices(customer, serviceName, firstTime1+","+secondTime1 , date, cs, optServices, false);
+			
+			//store the start times in a string
+			String startTimeString = "";
+			String endTimeString = "";
+			for(int i = 0; i < ts1.length; i++) {
+				String timeSlot = ts1[i];
+				//add colon in front of each item except the first one
+				if (i != 0) {
+					startTimeString += ",";
+					endTimeString += ",";
+				}
+				String[] timeStrings = timeSlot.split("-");
+				startTimeString += timeStrings[0];
+				endTimeString += timeStrings[1];
+			}
+			
+//			String firstTimeSlot = ts1[0];
+//			String secondTimeSlot = ts1[1];
+//			String[] firstTime = firstTimeSlot.split("-");
+//			String[] secondTime = secondTimeSlot.split("-");
+//			firstTime1 = firstTime[0];
+//			secondTime1 = secondTime[0];
+			
+			//can have more than 2 startTimes
+			CarShopController.CreateAppointmentWithOptServices(customer, serviceName, startTimeString , date, cs, optServices, false);
 			numApp++;
 		}
 	}
@@ -1627,26 +1645,54 @@ public class CucumberStepDefinitions {
 	}
 
 	@Then("the appointment shall be for the date {string} with start time {string} and end time {string}")
-	public void the_appointment_shall_be_for_the_date_with_start_time_and_end_time(String string, String string2, String string3) throws InvalidInputException {
-	    Date expectedDate = CarShopController.stringToDate(string); //convert string date into comparable date format
-	    Time startTime = CarShopController.stringToTime(string2); // convert string time to comparable time format
-	    Time endTime = CarShopController.stringToTime(string3);
+	public void the_appointment_shall_be_for_the_date_with_start_time_and_end_time(String stringDate, String stringStartTimes, String stringEndTimes) throws InvalidInputException {
+	    Date expectedDate = CarShopController.stringToDate(stringDate); //convert string date into comparable date format
+//	    Time startTime = CarShopController.stringToTime(stringStartTimes); // convert string time to comparable time format
+//	    Time endTime = CarShopController.stringToTime(stringEndTimes);
 	    List<ServiceBooking> appointmentServices = cs.getAppointment(1).getServiceBookings(); //get list of all servicebookings in the appointment
 	    //note that all our tests are adding a second appointment and checking its fields therefore we directly retrieve the second appointment from the list
 	    
 	    Date appDate = appointmentServices.get(0).getTimeSlot().getStartDate(); //get appointment start date
-	    Time appStartTime = appointmentServices.get(0).getTimeSlot().getStartTime(); //get appointment Start time by looking at first servicebooking
+//	    Time appStartTime = appointmentServices.get(0).getTimeSlot().getStartTime(); //get appointment Start time by looking at first servicebooking
 	    
-	    ServiceBooking lastServiceBooking = null; //find last servicebooking for appointment to get appointment end time
-	    for (ServiceBooking serviceBooking : appointmentServices) {
-	    	lastServiceBooking = serviceBooking;
-	    }
-	    Time appEndTime = lastServiceBooking.getTimeSlot().getEndTime();
+//	    ServiceBooking lastServiceBooking = null; //find last servicebooking for appointment to get appointment end time
+//	    for (ServiceBooking serviceBooking : appointmentServices) {
+//	    	lastServiceBooking = serviceBooking;
+//	    }
+//	    Time appEndTime = lastServiceBooking.getTimeSlot().getEndTime();
 	    
 		assertEquals(expectedDate, appDate); //compare expected date with date of the appointment
-		assertEquals(startTime, appStartTime);//compare start times 
-		assertEquals(endTime, appEndTime);//compare end times
+//		assertEquals(startTime, appStartTime);//compare start times 
+//		assertEquals(endTime, appEndTime);//compare end times
 		
+		
+		// there can be multiple start times and end times if we are checking for a service combo
+		
+		//parse the start times
+		List<Time> expectedStartTimes = CarShopController.parseComboTimes(stringStartTimes);
+		
+		//parse the end times
+		List<Time> expectedEndTimes = CarShopController.parseComboTimes(stringEndTimes);
+		
+		//get actual start/end times
+		List<Time> actualStartTimes = new ArrayList<>();
+		List<Time> actualEndTimes = new ArrayList<>();
+		for(ServiceBooking serviceBooking: appointmentServices) {
+			actualStartTimes.add(serviceBooking.getTimeSlot().getStartTime());
+			actualEndTimes.add(serviceBooking.getTimeSlot().getEndTime());
+		}
+		
+		//assert list are the same length
+		assertEquals(expectedStartTimes.size(), actualStartTimes.size());
+		assertEquals(expectedEndTimes.size(), actualEndTimes.size());
+		
+		//assert list elements are equal
+		for(int i = 0; i < expectedStartTimes.size(); i++) {
+			assertEquals(expectedStartTimes.get(i), actualStartTimes.get(i));
+		}
+		for(int i = 0; i < expectedEndTimes.size(); i++) {
+			assertEquals(expectedEndTimes.get(i), actualEndTimes.get(i));
+		}
 	}
 
 	@Then("the username associated with the appointment shall be {string}")
@@ -1734,13 +1780,16 @@ public class CucumberStepDefinitions {
 		Appointment appointment = cs.getAppointment(1); //get the second appointment (the one that was added)
 	    BookableService bookableService = appointment.getBookableService(); //get the appointment's bookable service
 	    if (bookableService instanceof Service) fail(); //fail test is the booked service is not a combo
-	    ServiceCombo serviceCombo = (ServiceCombo) bookableService;  //cast the booked service to a combo
-	    List<ComboItem> comboItems = serviceCombo.getServices();
+//	    ServiceCombo serviceCombo = (ServiceCombo) bookableService;  //cast the booked service to a combo
+//	    List<ComboItem> comboItems = serviceCombo.getServices();
 	    
+	    //since some of the services in a service combo are not mandatory, the customer doesn't have to book every service on the list
+	    //this get the list of all the services the customer actually booked, not the list of all services in the combo
+	    List<ServiceBooking> serviceBookings = appointment.getServiceBookings();
 	    
 	    int i = 0; //counter variable to get index in comboItems list
 	    for (String expectedService : expectedComboItems) { //this assumes that the services can only have one order
-	    	assertEquals(expectedService, comboItems.get(i).getService().getName()); //compare expected service name to actual service name from the combo item
+	    	assertEquals(expectedService, serviceBookings.get(i).getService().getName()); //compare expected service name to actual service name from the combo item
 	    	i++; //increments the index
 	    }
 	    
