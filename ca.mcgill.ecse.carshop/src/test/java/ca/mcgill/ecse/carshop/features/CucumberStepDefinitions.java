@@ -1633,6 +1633,8 @@ public class CucumberStepDefinitions {
 	public void the_appointment_shall_be_booked() {
 //		assertNotNull(cs.getAppointment(1)); //checks to see if a second appointment exists (first one already created in background)
 		assertNotNull(currentAppointment); // JERRYY
+		//check the state of the appointment
+		assertEquals(AppointmentStatus.Booked, currentAppointment.getAppointmentStatus());
 		//we can do this because this @then test is always called after trying to add a second appointment
 	}
 
