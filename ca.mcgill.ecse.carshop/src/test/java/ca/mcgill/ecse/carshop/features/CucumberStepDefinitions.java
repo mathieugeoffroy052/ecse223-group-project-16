@@ -1632,7 +1632,7 @@ public class CucumberStepDefinitions {
 	@Then("the appointment shall be booked")
 	public void the_appointment_shall_be_booked() {
 //		assertNotNull(cs.getAppointment(1)); //checks to see if a second appointment exists (first one already created in background)
-		assertNotNull(cs.getAppointment(cs.getAppointments().size()-1)); // JERRYY
+		assertNotNull(currentAppointment); // JERRYY
 		//we can do this because this @then test is always called after trying to add a second appointment
 	}
 
@@ -1640,7 +1640,7 @@ public class CucumberStepDefinitions {
 	public void the_service_in_the_appointment_shall_be(String string) {
 //	    assertEquals(string, cs.getAppointment(1).getBookableService().getName()); // JERRYY
 	    
-	    assertEquals(string, cs.getAppointment(cs.getAppointments().size()-1).getBookableService().getName());
+	    assertEquals(string, currentAppointment.getBookableService().getName());
 	    //compare the name given by the test to the name of the service for which the appointment is for
 	}
 
@@ -1697,7 +1697,7 @@ public class CucumberStepDefinitions {
 
 	@Then("the username associated with the appointment shall be {string}")
 	public void the_username_associated_with_the_appointment_shall_be(String string) {
-	    assertEquals(string, cs.getAppointment(1).getCustomer().getUsername());
+	    assertEquals(string, currentAppointment.getCustomer().getUsername());
 	    //compare customer's username to the expected inputed string
 	}
 
@@ -1765,8 +1765,8 @@ public class CucumberStepDefinitions {
 
 	@Then("the service combo in the appointment shall be {string}")
 	public void the_service_combo_in_the_appointment_shall_be(String string) {
-	    Appointment appointment = cs.getAppointment(1); //get the second appointment (the one that was added)
-	    BookableService bookableService = appointment.getBookableService(); //get the appointment's bookable service
+	    
+	    BookableService bookableService = currentAppointment.getBookableService(); //get the appointment's bookable service
 	    if (bookableService instanceof Service) fail(); //fail test is the booked service is not a combo
 	    ServiceCombo serviceCombo = (ServiceCombo) bookableService;  //cast the booked service to a combo
 	    
@@ -1777,15 +1777,15 @@ public class CucumberStepDefinitions {
 	public void the_service_combo_shall_have_selected_services(String string) {
 		String[] expectedComboItems = string.split(",");//split expected services into string away with "," as delimiter
 		
-		Appointment appointment = cs.getAppointment(1); //get the second appointment (the one that was added)
-	    BookableService bookableService = appointment.getBookableService(); //get the appointment's bookable service
+		
+	    BookableService bookableService = currentAppointment.getBookableService(); //get the appointment's bookable service
 	    if (bookableService instanceof Service) fail(); //fail test is the booked service is not a combo
 //	    ServiceCombo serviceCombo = (ServiceCombo) bookableService;  //cast the booked service to a combo
 //	    List<ComboItem> comboItems = serviceCombo.getServices();
 	    
 	    //since some of the services in a service combo are not mandatory, the customer doesn't have to book every service on the list
 	    //this get the list of all the services the customer actually booked, not the list of all services in the combo
-	    List<ServiceBooking> serviceBookings = appointment.getServiceBookings();
+	    List<ServiceBooking> serviceBookings = currentAppointment.getServiceBookings();
 	    
 	    int i = 0; //counter variable to get index in comboItems list
 	    for (String expectedService : expectedComboItems) { //this assumes that the services can only have one order
@@ -1809,6 +1809,8 @@ public class CucumberStepDefinitions {
 	@When("the owner starts the appointment at {string}")
 	public void the_owner_starts_the_appointment_at(String currentDateTime) {
 		try {
+			String ownerPassword = cs.getOwner().getPassword();
+			CarShopApplication.logIn("owner", ownerPassword);
 			CarShopController.startAppointmentAt(currentAppointment, currentDateTime);
 		} catch (Exception e) {
 			error = e.getMessage();
@@ -1819,6 +1821,8 @@ public class CucumberStepDefinitions {
 	@When("the owner ends the appointment at {string}")
 	public void the_owner_ends_the_appointment_at(String currentDateTime) {
 		try {
+			String ownerPassword = cs.getOwner().getPassword();
+			CarShopApplication.logIn("owner", ownerPassword);
 			CarShopController.endAppointmentAt(currentAppointment, currentDateTime);
 		} catch (Exception e) {
 			error = e.getMessage();
@@ -1834,6 +1838,8 @@ public class CucumberStepDefinitions {
 	@When("the owner attempts to register a no-show for the appointment at {string}")
 	public void the_owner_attempts_to_register_a_no_show_for_the_appointment_at(String currentDateTime) {
 		try {
+			String ownerPassword = cs.getOwner().getPassword();
+			CarShopApplication.logIn("owner", ownerPassword);
 			CarShopController.updateNoShowAt(currentAppointment, currentDateTime);
 		} catch (Exception e) {
 			error = e.getMessage();
@@ -1844,6 +1850,8 @@ public class CucumberStepDefinitions {
 	@When("the owner attempts to end the appointment at {string}")
 	public void the_owner_attempts_to_end_the_appointment_at(String currentDateTime) {
 		try {
+			String ownerPassword = cs.getOwner().getPassword();
+			CarShopApplication.logIn("owner", ownerPassword);
 			CarShopController.endAppointmentAt(currentAppointment, currentDateTime);
 		} catch (Exception e) {
 			error = e.getMessage();
