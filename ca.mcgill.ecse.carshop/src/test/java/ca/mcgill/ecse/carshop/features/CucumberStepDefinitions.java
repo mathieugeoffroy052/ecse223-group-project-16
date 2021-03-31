@@ -1645,26 +1645,54 @@ public class CucumberStepDefinitions {
 	}
 
 	@Then("the appointment shall be for the date {string} with start time {string} and end time {string}")
-	public void the_appointment_shall_be_for_the_date_with_start_time_and_end_time(String string, String string2, String string3) throws InvalidInputException {
-	    Date expectedDate = CarShopController.stringToDate(string); //convert string date into comparable date format
-	    Time startTime = CarShopController.stringToTime(string2); // convert string time to comparable time format
-	    Time endTime = CarShopController.stringToTime(string3);
+	public void the_appointment_shall_be_for_the_date_with_start_time_and_end_time(String stringDate, String stringStartTimes, String stringEndTimes) throws InvalidInputException {
+	    Date expectedDate = CarShopController.stringToDate(stringDate); //convert string date into comparable date format
+//	    Time startTime = CarShopController.stringToTime(stringStartTimes); // convert string time to comparable time format
+//	    Time endTime = CarShopController.stringToTime(stringEndTimes);
 	    List<ServiceBooking> appointmentServices = cs.getAppointment(1).getServiceBookings(); //get list of all servicebookings in the appointment
 	    //note that all our tests are adding a second appointment and checking its fields therefore we directly retrieve the second appointment from the list
 	    
 	    Date appDate = appointmentServices.get(0).getTimeSlot().getStartDate(); //get appointment start date
-	    Time appStartTime = appointmentServices.get(0).getTimeSlot().getStartTime(); //get appointment Start time by looking at first servicebooking
+//	    Time appStartTime = appointmentServices.get(0).getTimeSlot().getStartTime(); //get appointment Start time by looking at first servicebooking
 	    
-	    ServiceBooking lastServiceBooking = null; //find last servicebooking for appointment to get appointment end time
-	    for (ServiceBooking serviceBooking : appointmentServices) {
-	    	lastServiceBooking = serviceBooking;
-	    }
-	    Time appEndTime = lastServiceBooking.getTimeSlot().getEndTime();
+//	    ServiceBooking lastServiceBooking = null; //find last servicebooking for appointment to get appointment end time
+//	    for (ServiceBooking serviceBooking : appointmentServices) {
+//	    	lastServiceBooking = serviceBooking;
+//	    }
+//	    Time appEndTime = lastServiceBooking.getTimeSlot().getEndTime();
 	    
 		assertEquals(expectedDate, appDate); //compare expected date with date of the appointment
-		assertEquals(startTime, appStartTime);//compare start times 
-		assertEquals(endTime, appEndTime);//compare end times
+//		assertEquals(startTime, appStartTime);//compare start times 
+//		assertEquals(endTime, appEndTime);//compare end times
 		
+		
+		// there can be multiple start times and end times if we are checking for a service combo
+		
+		//parse the start times
+		List<Time> expectedStartTimes = CarShopController.parseComboTimes(stringStartTimes);
+		
+		//parse the end times
+		List<Time> expectedEndTimes = CarShopController.parseComboTimes(stringEndTimes);
+		
+		//get actual start/end times
+		List<Time> actualStartTimes = new ArrayList<>();
+		List<Time> actualEndTimes = new ArrayList<>();
+		for(ServiceBooking serviceBooking: appointmentServices) {
+			actualStartTimes.add(serviceBooking.getTimeSlot().getStartTime());
+			actualEndTimes.add(serviceBooking.getTimeSlot().getEndTime());
+		}
+		
+		//assert list are the same length
+		assertEquals(expectedStartTimes.size(), actualStartTimes.size());
+		assertEquals(expectedEndTimes.size(), actualEndTimes.size());
+		
+		//assert list elements are equal
+		for(int i = 0; i < expectedStartTimes.size(); i++) {
+			assertEquals(expectedStartTimes.get(i), actualStartTimes.get(i));
+		}
+		for(int i = 0; i < expectedEndTimes.size(); i++) {
+			assertEquals(expectedEndTimes.get(i), actualEndTimes.get(i));
+		}
 	}
 
 	@Then("the username associated with the appointment shall be {string}")

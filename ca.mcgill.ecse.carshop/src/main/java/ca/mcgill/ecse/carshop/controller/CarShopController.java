@@ -1873,7 +1873,7 @@ public class CarShopController {
 			
 		} else {
 			Date date = stringtoDate(newDate);
-			List<Time> startTimes = parseComboStartTimes(newTime);
+			List<Time> startTimes = parseComboTimes(newTime);
 			List<Service> services = new ArrayList<>();
 			List<ServiceBooking> serviceBookings = appointment.getServiceBookings();
 			for(ServiceBooking serviceBooking : serviceBookings) {
@@ -2218,7 +2218,7 @@ public class CarShopController {
 	 * @return a list of sql.Time
 	 * @throws InvalidInputException if input is invalid
 	 */
-	private static List<Time> parseComboStartTimes(String string) throws InvalidInputException {
+	public static List<Time> parseComboTimes(String string) throws InvalidInputException {
 		List<Time> startTimes = new ArrayList<Time>();
 		String[] strings = string.split(",");
 		for(String s : strings) {
