@@ -2009,9 +2009,9 @@ public class CarShopController {
 		if (appointment == null) {
 			throw new InvalidInputException("The appointment cannot be null");
 		}
-		if (!appointment.getCarShop().getOwner().equals(CarShopApplication.getUser())) {
-			throw new InvalidInputException("Only the owner can start appointments.");
-		}
+//		if (!appointment.getCarShop().getOwner().equals(CarShopApplication.getUser())) {
+//			throw new InvalidInputException("Only the owner can start appointments.");
+//		}
 		setSystemDateAndTime(currentTime);
 		appointment.startAppointment();
 	}
@@ -2026,9 +2026,9 @@ public class CarShopController {
 		if (appointment == null) {
 			throw new InvalidInputException("The appointment cannot be null");
 		}
-		if (!appointment.getCarShop().getOwner().equals(CarShopApplication.getUser())) {
-			throw new InvalidInputException("Only the owner can end appointments.");
-		}
+//		if (!appointment.getCarShop().getOwner().equals(CarShopApplication.getUser())) {
+//			throw new InvalidInputException("Only the owner can end appointments.");
+//		}
 		setSystemDateAndTime(currentTime);
 		appointment.endAppointment();
 	}
