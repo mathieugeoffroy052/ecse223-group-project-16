@@ -1347,23 +1347,41 @@ public class CucumberStepDefinitions {
 		String customer = "";// empty string
 		String serviceName = "";// empty string
 		String date = "";// empty string
-		String firstTime1 = "";// empty string
-		String secondTime1 = "";// empty string
+//		String firstTime1 = "";// empty string
+//		String secondTime1 = "";// empty string
 		for (Map<String, String> columns : rows) {
 			customer = columns.get("customer");
 			serviceName = columns.get("serviceName");
 			String optServices = columns.get("optServices");
 			date = (columns.get("date"));
 			String timeSlots = columns.get("timeSlots");
-			Date dates = CarShopController.stringToDate(columns.get("date"));
+//			Date dates = CarShopController.stringToDate(columns.get("date"));
 			String[] ts1 = timeSlots.split(",");
-			String firstTimeSlot = ts1[0];
-			String secondTimeSlot = ts1[1];
-			String[] firstTime = firstTimeSlot.split("-");
-			String[] secondTime = secondTimeSlot.split("-");
-			firstTime1 = firstTime[0];
-			secondTime1 = secondTime[0];
-			CarShopController.CreateAppointmentWithOptServices(customer, serviceName, firstTime1+","+secondTime1 , date, cs, optServices, false);
+			
+			//store the start times in a string
+			String startTimeString = "";
+			String endTimeString = "";
+			for(int i = 0; i < ts1.length; i++) {
+				String timeSlot = ts1[i];
+				//add colon in front of each item except the first one
+				if (i != 0) {
+					startTimeString += ",";
+					endTimeString += ",";
+				}
+				String[] timeStrings = timeSlot.split("-");
+				startTimeString += timeStrings[0];
+				endTimeString += timeStrings[1];
+			}
+			
+//			String firstTimeSlot = ts1[0];
+//			String secondTimeSlot = ts1[1];
+//			String[] firstTime = firstTimeSlot.split("-");
+//			String[] secondTime = secondTimeSlot.split("-");
+//			firstTime1 = firstTime[0];
+//			secondTime1 = secondTime[0];
+			
+			//can have more than 2 startTimes
+			CarShopController.CreateAppointmentWithOptServices(customer, serviceName, startTimeString , date, cs, optServices, false);
 			numApp++;
 		}
 	}
@@ -1734,13 +1752,16 @@ public class CucumberStepDefinitions {
 		Appointment appointment = cs.getAppointment(1); //get the second appointment (the one that was added)
 	    BookableService bookableService = appointment.getBookableService(); //get the appointment's bookable service
 	    if (bookableService instanceof Service) fail(); //fail test is the booked service is not a combo
-	    ServiceCombo serviceCombo = (ServiceCombo) bookableService;  //cast the booked service to a combo
-	    List<ComboItem> comboItems = serviceCombo.getServices();
+//	    ServiceCombo serviceCombo = (ServiceCombo) bookableService;  //cast the booked service to a combo
+//	    List<ComboItem> comboItems = serviceCombo.getServices();
 	    
+	    //since some of the services in a service combo are not mandatory, the customer doesn't have to book every service on the list
+	    //this get the list of all the services the customer actually booked, not the list of all services in the combo
+	    List<ServiceBooking> serviceBookings = appointment.getServiceBookings();
 	    
 	    int i = 0; //counter variable to get index in comboItems list
 	    for (String expectedService : expectedComboItems) { //this assumes that the services can only have one order
-	    	assertEquals(expectedService, comboItems.get(i).getService().getName()); //compare expected service name to actual service name from the combo item
+	    	assertEquals(expectedService, serviceBookings.get(i).getService().getName()); //compare expected service name to actual service name from the combo item
 	    	i++; //increments the index
 	    }
 	    

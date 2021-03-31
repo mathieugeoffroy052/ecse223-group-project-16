@@ -202,7 +202,7 @@ public class CarShopController {
 
 		//String[] services = service.split(" ");
 		//BookableService serv = null;
-		String[] optServicesToPutIn;
+		String[] optServicesToPutIn = null;
 		if(optServices != null) {
 			if(!optServices.equals("")) {
 				optServicesToPutIn = optServices.split(",");
@@ -247,25 +247,45 @@ public class CarShopController {
 			 
 		} else {
 			//if service is service combo
-			List<ComboItem> comboItems = ((ServiceCombo) bookServ).getServices();
+//			List<ComboItem> comboItems = ((ServiceCombo) bookServ).getServices();
 			//for(ComboItem ci: comboItems)
-			for (int i = 0; i < startTimes.length; i++) { // for (int i = 0; i < comboItems.size() ; i++) {
+			
+			//since some services are opt, we need to actually find the services we want to add
+			List<Service> servicesToAddList = new ArrayList<>();
+			
+			
+			//find main service
+			Service mainService = ((ServiceCombo)bookServ).getMainService().getService();
+			servicesToAddList.add(mainService);
+			
+			//add optional services
+			for(String string : optServicesToPutIn) {
+				BookableService serviceToAdd = BookableService.getWithName(string); 
+				if (serviceToAdd instanceof Service) {
+					servicesToAddList.add((Service) serviceToAdd);
+				}
+			}
+			
+			//changed the condition of the for loop
+			for (int i = 0; i < servicesToAddList.size(); i++) { // for (int i = 0; i < comboItems.size() ; i++) {
 				Time startTime1 = stringToTime(startTimes[i]);
 				
-				duration = comboItems.get(i).getService().getDuration();
+//				duration = comboItems.get(i).getService().getDuration();
 				
-				minutes = duration%60;
+//				minutes = duration%60;
 //				String minutes2 = String.format("%02d", minutes);
-				hours = duration/60;
+//				hours = duration/60;
 //				String hours2 = String.format("%02d", hours);
 //				String time = hours2 + ":" + minutes2;
 				
 				
-				LocalTime localtime = startTime1.toLocalTime();
-				localtime = localtime.plusMinutes(minutes);
-				localtime = localtime.plusHours(hours);
-				Time endTime = Time.valueOf(localtime);
-				if(!checkInGarageBusinessHours(cs, startTime1, endTime, date, comboItems.get(i).getService().getGarage())) {
+//				LocalTime localtime = startTime1.toLocalTime();
+//				localtime = localtime.plusMinutes(minutes);
+//				localtime = localtime.plusHours(hours);
+				
+				//use helper method to find end time
+				Time endTime = findEndTime(servicesToAddList.get(i), startTime1);
+				if(!checkInGarageBusinessHours(cs, startTime1, endTime, date, servicesToAddList.get(i).getGarage())) {
 
 					appointment.delete();
 					throw new InvalidInputException("There are no available slots for " +  serviceComboName + " on " + startDate + " at " + startTime);
@@ -276,7 +296,7 @@ public class CarShopController {
 //					appointment.delete();
 //					throw new InvalidInputException("There are no available slots for " +  serviceComboName + " on " + startDate + " at " + startTime);
 //				}
-				if(!checkByGarageServiceBookings(cs, comboItems.get(i).getService(), startTime1, endTime, date)) {
+				if(!checkByGarageServiceBookings(cs, servicesToAddList.get(i), startTime1, endTime, date)) {
 					
 					appointment.delete();
 					throw new InvalidInputException("There are no available slots for " +  serviceComboName + " on " + startDate + " at " + startTime);
@@ -286,7 +306,10 @@ public class CarShopController {
 					throw new InvalidInputException("Time slots for two services are overlapping");
 				}
 				TimeSlot timeSlot1 = cs.addTimeSlot(date, startTime1, date, endTime);
-				comboItems.get(i).getService().addServiceBooking(timeSlot1, appointment);
+				// create new service booking
+				new ServiceBooking(servicesToAddList.get(i), timeSlot1, appointment);
+				
+//				comboItems.get(i).getService().addServiceBooking(timeSlot1, appointment);
 			}
 		}
 	}
