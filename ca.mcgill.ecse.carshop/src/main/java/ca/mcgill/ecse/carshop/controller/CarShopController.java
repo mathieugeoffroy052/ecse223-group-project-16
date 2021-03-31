@@ -2009,9 +2009,9 @@ public class CarShopController {
 		if (appointment == null) {
 			throw new InvalidInputException("The appointment cannot be null");
 		}
-//		if (!appointment.getCarShop().getOwner().equals(CarShopApplication.getUser())) {
-//			throw new InvalidInputException("Only the owner can start appointments.");
-//		}
+		if (!appointment.getCarShop().getOwner().equals(CarShopApplication.getUser())) {
+			throw new InvalidInputException("Only the owner can start appointments.");
+		}
 		setSystemDateAndTime(currentTime);
 		appointment.startAppointment();
 	}
@@ -2026,9 +2026,9 @@ public class CarShopController {
 		if (appointment == null) {
 			throw new InvalidInputException("The appointment cannot be null");
 		}
-//		if (!appointment.getCarShop().getOwner().equals(CarShopApplication.getUser())) {
-//			throw new InvalidInputException("Only the owner can end appointments.");
-//		}
+		if (!appointment.getCarShop().getOwner().equals(CarShopApplication.getUser())) {
+			throw new InvalidInputException("Only the owner can end appointments.");
+		}
 		setSystemDateAndTime(currentTime);
 		appointment.endAppointment();
 	}
@@ -2042,6 +2042,9 @@ public class CarShopController {
 	public static void updateNoShowAt(Appointment appointment, String currentTime) throws InvalidInputException{
 		if (appointment == null) {
 			throw new InvalidInputException("The appointment cannot be null");
+		}
+		if (!appointment.getCarShop().getOwner().equals(CarShopApplication.getUser())) {
+			throw new InvalidInputException("Only the owner set no shows.");
 		}
 		setSystemDateAndTime(currentTime);
 		appointment.noShow();
@@ -2183,9 +2186,7 @@ public class CarShopController {
 		List<TimeSlot> holidaySlots = CarShopApplication.getCarShop().getBusiness().getHolidays();
 		
 		for(TimeSlot timeSlot : holidaySlots) {
-			if(timeSlot.getStartDate().before(date) && timeSlot.getEndDate().after(date)
-					|| (timeSlot.getStartDate().equals(date) && timeSlot.getStartTime().before(endTime))
-					|| (timeSlot.getEndDate().equals(date) && timeSlot.getEndTime().after(startTime))) {
+			if(inDateTimeRange(date, startTime, endTime, timeSlot.getStartDate(), timeSlot.getStartTime(), timeSlot.getEndDate(), timeSlot.getEndTime())) {
 				return true;
 			}
 		}
@@ -2298,6 +2299,24 @@ public class CarShopController {
 			if (appointmentConflictsWithHolidays(date, startTimes.get(i), endTimes.get(i))) {
 				return true;
 			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Method compares input date inclusively to date range denoted by start date and end date, inputs cannot be null
+	 * @param inputDate
+	 * @param inputStartTime 
+	 * @param inputEndTime
+	 * @param startDate
+	 * @param startTime - time that range starts at on start day
+	 * @param endDate
+	 * @param endTime - time that range ends on end day
+	 * @return
+	 */
+	private static boolean inDateTimeRange(Date inputDate, Time inputStartTime, Time inputEndTime, Date startDate, Time startTime, Date endDate, Time endTime){
+		if (inputDate.equals(startDate) && (inputStartTime.equals(startTime) || inputStartTime.after(startTime))|| inputDate.equals(endDate) && (inputEndTime.equals(endTime) || inputEndTime.before(endTime))|| (inputDate.after(startDate) && inputDate.before(endDate))) {
+			return true;
 		}
 		return false;
 	}
