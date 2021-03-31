@@ -35,6 +35,7 @@ import ca.mcgill.ecse.carshop.model.Technician;
 import ca.mcgill.ecse.carshop.model.Technician.TechnicianType;
 import ca.mcgill.ecse.carshop.model.TimeSlot;
 import ca.mcgill.ecse.carshop.model.User;
+import ca.mcgill.ecse.carshop.persistence.CarShopPersistence;
 
 
 public class CarShopController {
@@ -82,8 +83,10 @@ public class CarShopController {
 		
 		Garage garage = technician.getGarage();
 		garage.getBusinessHour(toCheck).delete();
+		
+
 	}
-	// TODO
+
 	public static void addBusinessHourIndividually(String day, String startTime, String endTime, String type, CarShop cs) throws InvalidInputException {
 		if(CarShopApplication.getCurrentUser()!=null) {
 			TechnicianType technicianType = getTechnicianType(CarShopApplication.getCurrentUser());
@@ -339,7 +342,6 @@ public class CarShopController {
 	}
 	
 	private static boolean checkByGarageServiceBookings(CarShop cs, Service serv, Time startTime1, Time endTime, Date date) {
-		// TODO Auto-generated method stub
 		for(ServiceBooking sb : serv.getServiceBookings()) {
 			if(sb.getTimeSlot().getStartDate().equals(date)) {	// if the date is the same
 				if((sb.getTimeSlot().getStartTime().before(startTime1) || 
@@ -379,7 +381,6 @@ public class CarShopController {
 
 	@SuppressWarnings("static-access")
 	private static boolean putOptServicesIn(String[] optServicesToPutIn, String serviceComboName, boolean isTrue) {
-		// TODO Auto-generated method stub
 		Boolean toReturn = false;
 		CarShop cs = CarShopApplication.getCarShop();
 		for(String opt : optServicesToPutIn) {
@@ -418,7 +419,6 @@ public class CarShopController {
 	}
 
 	private static void checkIfDateWorksWithCurrentTime(Date date, String time) throws Exception {
-		// TODO Auto-generated method stub
 		Time enteredTime = stringToTime(time);
 		Date currentDate = (Date) CarShopApplication.getSystemDate();
 		Time currentTime = (Time) CarShopApplication.getSystemTime();
@@ -1070,7 +1070,6 @@ public class CarShopController {
 
 	/** ** END HONG YI ** **/ 
 	
-	// TODO Kalvin
 	
 	//method to sign up users
 	public static User signUpUser(String username, String password, CarShopApplication.AccountType userType) throws InvalidInputException

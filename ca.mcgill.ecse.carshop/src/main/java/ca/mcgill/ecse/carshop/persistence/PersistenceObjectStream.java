@@ -9,6 +9,7 @@ public class PersistenceObjectStream {
 
 	private static String filename = "output.txt";
 
+	// Save data to the designated file
 	public static void serialize(Object object) {
 		FileOutputStream fileOut;
 		try {
@@ -23,6 +24,7 @@ public class PersistenceObjectStream {
 
 	}
 
+	// Extracts saved data, which can now be used
 	public static Object deserialize() {
 		Object o = null;
 		ObjectInputStream in;
