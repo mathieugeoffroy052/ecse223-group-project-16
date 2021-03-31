@@ -29,6 +29,7 @@ import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 import ca.mcgill.ecse.carshop.controller.TOBusiness;
 import ca.mcgill.ecse.carshop.model.Appointment;
+import ca.mcgill.ecse.carshop.model.Appointment.AppointmentStatus;
 import ca.mcgill.ecse.carshop.model.BookableService;
 import ca.mcgill.ecse.carshop.model.CarShop;
 import ca.mcgill.ecse.carshop.model.ComboItem;
@@ -52,12 +53,9 @@ import io.cucumber.java.en.When;
 public class CucumberStepDefinitions {
 	
 	private CarShop cs;
+	
 	private String error;
 	private int errorCntr;
-	
-
-	// Hongyi
-//	private String error;
 	private int errorCounter;
 
 	private static TOBusiness toBusiness;
@@ -67,9 +65,11 @@ public class CucumberStepDefinitions {
 	private static BusinessHour oldBusinessHour;
 	private static String[] oldBusinessHourInfo;
 	
+	private static Appointment currentAppointment;
 	
 	
-	//testing github
+	
+
 // Sign Up Customer Account Kalvin
     
 
@@ -98,6 +98,11 @@ public class CucumberStepDefinitions {
 			oldBusinessHour = null;
 			oldBusinessHourInfo = null;
 			oldBusinessHourInfo = new String[3];	// create a new businesshour
+		}
+		
+		@BeforeEach
+		public static void resetCurrentAppointment() {
+			currentAppointment = null;
 		}
 
 
@@ -666,7 +671,7 @@ public class CucumberStepDefinitions {
 	    
 	}
 
-	@Given("the business has the following opening hours:")
+	@Given("the business has the following opening hours(:)")
 	public void the_business_has_the_following_opening_hours(io.cucumber.datatable.DataTable table) {
 	    // Write code here that turns the phrase above into concrete actions
 	    // For automatic transformation, change DataTable to one of
@@ -1264,6 +1269,18 @@ public class CucumberStepDefinitions {
 		//Date Start = dateFormat.parse(startTime);
 		//Date End = dateFormat.parse(endTime);
 		List<Garage> garages = cs.getGarages();
+		
+		if(garages.get(garages.size()-1).getBusinessHours().size()==0) {
+			List<BusinessHour> originalBusinessHours = cs.getBusiness().getBusinessHours();
+			for(int i = 0; i < originalBusinessHours.size(); i++) {			
+				BusinessHour businessHourToAdd = cs.getBusiness().getBusinessHour(i);
+				for(Garage g : garages) {
+					g.addBusinessHour(businessHourToAdd);
+				}
+			}
+		}
+
+		// else, if garage list is not empty it will proceed as normal
 		List<Map<String,String>> rows = dataTable.asMaps(String.class,String.class);
 		for (Garage g : garages) {
 			for(int i = g.getBusinessHours().size()-1; i >= 0; i--) {
@@ -1282,6 +1299,9 @@ public class CucumberStepDefinitions {
 				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Wednesday)) toCheck = 2;
 				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Thursday)) toCheck = 3;
 				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Friday)) toCheck = 4;
+				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Saturday)) toCheck = 5;
+				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Sunday)) toCheck = 6;
+
 				// new code
 				// converts from string to time with method in the controller
 				Time start = CarShopController.stringToTime(columns.get("startTime")); //(Time) timeFormat.parse(columns.get("startTime"));
@@ -1293,6 +1313,8 @@ public class CucumberStepDefinitions {
 				//garage.addBusinessHour(new BusinessHour(dayOfWeek, start, end, cs));// create a new object (JUST THIS)
 			}	
 		}
+
+		
 	}
 
 	@Given("the business has the following holidays")
@@ -1325,23 +1347,41 @@ public class CucumberStepDefinitions {
 		String customer = "";// empty string
 		String serviceName = "";// empty string
 		String date = "";// empty string
-		String firstTime1 = "";// empty string
-		String secondTime1 = "";// empty string
+//		String firstTime1 = "";// empty string
+//		String secondTime1 = "";// empty string
 		for (Map<String, String> columns : rows) {
 			customer = columns.get("customer");
 			serviceName = columns.get("serviceName");
 			String optServices = columns.get("optServices");
 			date = (columns.get("date"));
 			String timeSlots = columns.get("timeSlots");
-			Date dates = CarShopController.stringToDate(columns.get("date"));
+//			Date dates = CarShopController.stringToDate(columns.get("date"));
 			String[] ts1 = timeSlots.split(",");
-			String firstTimeSlot = ts1[0];
-			String secondTimeSlot = ts1[1];
-			String[] firstTime = firstTimeSlot.split("-");
-			String[] secondTime = secondTimeSlot.split("-");
-			firstTime1 = firstTime[0];
-			secondTime1 = secondTime[0];
-			CarShopController.CreateAppointmentWithOptServices(customer, serviceName, firstTime1+","+secondTime1 , date, cs, optServices);
+			
+			//store the start times in a string
+			String startTimeString = "";
+			String endTimeString = "";
+			for(int i = 0; i < ts1.length; i++) {
+				String timeSlot = ts1[i];
+				//add colon in front of each item except the first one
+				if (i != 0) {
+					startTimeString += ",";
+					endTimeString += ",";
+				}
+				String[] timeStrings = timeSlot.split("-");
+				startTimeString += timeStrings[0];
+				endTimeString += timeStrings[1];
+			}
+			
+//			String firstTimeSlot = ts1[0];
+//			String secondTimeSlot = ts1[1];
+//			String[] firstTime = firstTimeSlot.split("-");
+//			String[] secondTime = secondTimeSlot.split("-");
+//			firstTime1 = firstTime[0];
+//			secondTime1 = secondTime[0];
+			
+			//can have more than 2 startTimes
+			CarShopController.CreateAppointmentWithOptServices(customer, serviceName, startTimeString , date, cs, optServices, false);
 			numApp++;
 		}
 	}
@@ -1418,7 +1458,7 @@ public class CucumberStepDefinitions {
 	@When("{string} schedules an appointment on {string} for {string} at {string}")
 	public void schedules_an_appointment_on_for_at(String username, String date, String serviceName, String startTime) throws InvalidInputException {
 		try {
-			CarShopController.CreateAppointmentWithOptServices(username,serviceName,startTime,date,cs,"");// uses method in the controller
+			CarShopController.CreateAppointmentWithOptServices(username,serviceName,startTime,date,cs,"", false);// uses method in the controller
 		} catch (Exception e) {
 			error = e.getMessage();
 			errorCntr++;
@@ -1538,7 +1578,7 @@ public class CucumberStepDefinitions {
 	@When("{string} schedules an appointment on {string} for {string} with {string} at {string}")
 	public void schedules_an_appointment_on_for_with_at(String customer, String date, String serviceComboName, String optionalServices, String startTimes) {
 		try {
-			CarShopController.CreateAppointmentWithOptServices(customer, serviceComboName, startTimes, date, cs, optionalServices);
+			CarShopController.CreateAppointmentWithOptServices(customer, serviceComboName, startTimes, date, cs, optionalServices, false);
 		} catch (Exception e) {
 			error = e.getMessage();
 			errorCntr++;
@@ -1553,24 +1593,21 @@ public class CucumberStepDefinitions {
 	
 	//DELIVERABLE 3
 	
-	//TODO
+	// ** appointment management system START **
+	
 	@Given("{string} has {int} no-show records")
-	public void has_no_show_records(String string, Integer int1) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void has_no_show_records(String username, Integer int1) {
+	    Customer customer = (Customer) User.getWithUsername(username);
+	    customer.setNoShowCounter(int1); //set customer's no show number to given int
 	}
 	
 	@When("{string} makes a {string} appointment for the date {string} and time {string} at {string}")
 	public void makes_a_appointment_for_the_date_and_time_at(String customer, String bookableService, String date, String time, String systemInfo) throws InvalidInputException {
- 	    String[] systemTimeAndDate = systemInfo.split("+"); //create string array for the inputed system time and date
-	    Date systemDate = CarShopController.stringToDate(systemTimeAndDate[0]); //first input of array is system date
-	    Time systemTime = CarShopController.stringToTime(systemTimeAndDate[1]); //second input is time
-	    
-	    CarShopApplication.setSystemDate(systemDate); //update system date and time
-	    CarShopApplication.setSystemTime(systemTime);
+ 	    CarShopController.setSystemDateAndTime(systemInfo); 
 	    
 	    try {
-			CarShopController.CreateAppointmentWithOptServices(customer, bookableService, time, date, cs, null); //create appointment with no optional services
+			CarShopController.createAppointmentAt(customer, bookableService, null, date, time, systemInfo); //create appointment with no optional services
+			currentAppointment = cs.getAppointment(cs.getAppointments().size()-1); //most recent appointment
 			numApp++; //increment appointment counter
 		} catch (Exception e) {
 			error = e.getMessage();
@@ -1580,59 +1617,98 @@ public class CucumberStepDefinitions {
 	    
 	}
 
-	//TODO
 	@When("{string} attempts to change the service in the appointment to {string} at {string}")
-	public void attempts_to_change_the_service_in_the_appointment_to_at(String string, String string2, String string3) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void attempts_to_change_the_service_in_the_appointment_to_at(String username, String serviceName, String timeOfChange) {
+		try {
+			CarShopController.changeServiceAt(currentAppointment, username, serviceName, timeOfChange);
+		} catch (Exception e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
+
+	    
 	}
 
 	@Then("the appointment shall be booked")
 	public void the_appointment_shall_be_booked() {
-		assertNotNull(cs.getAppointment(1)); //checks to see if a second appointment exists (first one already created in background)
+//		assertNotNull(cs.getAppointment(1)); //checks to see if a second appointment exists (first one already created in background)
+		assertNotNull(currentAppointment); // JERRYY
+		//check the state of the appointment
+		assertEquals(AppointmentStatus.Booked, currentAppointment.getAppointmentStatus());
 		//we can do this because this @then test is always called after trying to add a second appointment
 	}
 
 	@Then("the service in the appointment shall be {string}")
 	public void the_service_in_the_appointment_shall_be(String string) {
-	    assertEquals(string, cs.getAppointment(1).getBookableService().getName());
+//	    assertEquals(string, cs.getAppointment(1).getBookableService().getName()); // JERRYY
+	    
+	    assertEquals(string, currentAppointment.getBookableService().getName());
 	    //compare the name given by the test to the name of the service for which the appointment is for
 	}
 
 	@Then("the appointment shall be for the date {string} with start time {string} and end time {string}")
-	public void the_appointment_shall_be_for_the_date_with_start_time_and_end_time(String string, String string2, String string3) throws InvalidInputException {
-	    Date expectedDate = CarShopController.stringToDate(string); //convert string date into comparable date format
-	    Time startTime = CarShopController.stringToTime(string2); // convert string time to comparable time format
-	    Time endTime = CarShopController.stringToTime(string3);
+	public void the_appointment_shall_be_for_the_date_with_start_time_and_end_time(String stringDate, String stringStartTimes, String stringEndTimes) throws InvalidInputException {
+	    Date expectedDate = CarShopController.stringToDate(stringDate); //convert string date into comparable date format
+//	    Time startTime = CarShopController.stringToTime(stringStartTimes); // convert string time to comparable time format
+//	    Time endTime = CarShopController.stringToTime(stringEndTimes);
 	    List<ServiceBooking> appointmentServices = cs.getAppointment(1).getServiceBookings(); //get list of all servicebookings in the appointment
 	    //note that all our tests are adding a second appointment and checking its fields therefore we directly retrieve the second appointment from the list
 	    
 	    Date appDate = appointmentServices.get(0).getTimeSlot().getStartDate(); //get appointment start date
-	    Time appStartTime = appointmentServices.get(0).getTimeSlot().getStartTime(); //get appointment Start time by looking at first servicebooking
+//	    Time appStartTime = appointmentServices.get(0).getTimeSlot().getStartTime(); //get appointment Start time by looking at first servicebooking
 	    
-	    ServiceBooking lastServiceBooking = null; //find last servicebooking for appointment to get appointment end time
-	    for (ServiceBooking serviceBooking : appointmentServices) {
-	    	lastServiceBooking = serviceBooking;
-	    }
-	    Time appEndTime = lastServiceBooking.getTimeSlot().getEndTime();
+//	    ServiceBooking lastServiceBooking = null; //find last servicebooking for appointment to get appointment end time
+//	    for (ServiceBooking serviceBooking : appointmentServices) {
+//	    	lastServiceBooking = serviceBooking;
+//	    }
+//	    Time appEndTime = lastServiceBooking.getTimeSlot().getEndTime();
 	    
 		assertEquals(expectedDate, appDate); //compare expected date with date of the appointment
-		assertEquals(startTime, appStartTime);//compare start times 
-		assertEquals(endTime, appEndTime);//compare end times
+//		assertEquals(startTime, appStartTime);//compare start times 
+//		assertEquals(endTime, appEndTime);//compare end times
 		
+		
+		// there can be multiple start times and end times if we are checking for a service combo
+		
+		//parse the start times
+		List<Time> expectedStartTimes = CarShopController.parseComboTimes(stringStartTimes);
+		
+		//parse the end times
+		List<Time> expectedEndTimes = CarShopController.parseComboTimes(stringEndTimes);
+		
+		//get actual start/end times
+		List<Time> actualStartTimes = new ArrayList<>();
+		List<Time> actualEndTimes = new ArrayList<>();
+		for(ServiceBooking serviceBooking: appointmentServices) {
+			actualStartTimes.add(serviceBooking.getTimeSlot().getStartTime());
+			actualEndTimes.add(serviceBooking.getTimeSlot().getEndTime());
+		}
+		
+		//assert list are the same length
+		assertEquals(expectedStartTimes.size(), actualStartTimes.size());
+		assertEquals(expectedEndTimes.size(), actualEndTimes.size());
+		
+		//assert list elements are equal
+		for(int i = 0; i < expectedStartTimes.size(); i++) {
+			assertEquals(expectedStartTimes.get(i), actualStartTimes.get(i));
+		}
+		for(int i = 0; i < expectedEndTimes.size(); i++) {
+			assertEquals(expectedEndTimes.get(i), actualEndTimes.get(i));
+		}
 	}
 
 	@Then("the username associated with the appointment shall be {string}")
 	public void the_username_associated_with_the_appointment_shall_be(String string) {
-	    assertEquals(string, cs.getAppointment(1).getCustomer().getUsername());
+	    assertEquals(string, currentAppointment.getCustomer().getUsername());
 	    //compare customer's username to the expected inputed string
 	}
 
-	//TODO
 	@Then("the user {string} shall have {int} no-show records")
-	public void the_user_shall_have_no_show_records(String string, Integer int1) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void the_user_shall_have_no_show_records(String username, Integer int1) {
+	    Customer customer = (Customer) User.getWithUsername(username); //get customer with username
+	    int noShowNum = customer.getNoShowCounter(); //get no shows
+	    
+	    assertEquals(int1, noShowNum); //compare no show counter to expected
 	}
 
 	@Then("the system shall have {int} appointments")
@@ -1641,45 +1717,58 @@ public class CucumberStepDefinitions {
 	    //get list of all appointments and compare size to expect number of appointments
 	}
 
-	//TODO
 	@When("{string} attempts to update the date to {string} and time to {string} at {string}")
-	public void attempts_to_update_the_date_to_and_time_to_at(String string, String string2, String string3, String string4) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void attempts_to_update_the_date_to_and_time_to_at(String username, String newDate, String newTime, String currentTimeDate) {
+	    try {
+	    	CarShopController.updateDateAndTimeAt(currentAppointment, username, newDate, newTime, currentTimeDate);
+	    } catch (Exception e) {
+	    	error = e.getMessage();
+			errorCntr++;
+	    }
 	}
 
-	//TODO
 	@When("{string} attempts to cancel the appointment at {string}")
-	public void attempts_to_cancel_the_appointment_at(String string, String string2) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void attempts_to_cancel_the_appointment_at(String username, String currentTimeDate) {
+	    try {
+	    	CarShopController.cancelAppointmentAt(currentAppointment, username, currentTimeDate);
+	    } catch (Exception e) {
+	    	error = e.getMessage();
+			errorCntr++;
+	    }
 	}
 
-	//TODO
 	@Then("the system shall have {int} appointment")
 	public void the_system_shall_have_appointment(Integer int1) {
 	    assertEquals(int1, cs.getAppointments().size());
 	    //get list of all appointments and compare size to expect number of appointments
 	}
 
-	//TODO
 	@When("{string} makes a {string} appointment with service {string} for the date {string} and start time {string} at {string}")
-	public void makes_a_appointment_with_service_for_the_date_and_start_time_at(String string, String string2, String string3, String string4, String string5, String string6) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void makes_a_appointment_with_service_for_the_date_and_start_time_at(String username, String service, String optionalService, String date, String StartTime, String currentTimeDate) {
+	    try {
+	    	CarShopController.createAppointmentAt(username, service, optionalService, date, StartTime, currentTimeDate);
+	    	currentAppointment = cs.getAppointment(cs.getAppointments().size()-1); //most recent appointment
+			numApp++; //increment appointment counter
+	    } catch (Exception e) {
+	    	error = e.getMessage();
+			errorCntr++;
+	    }
 	}
 
-	//TODO
 	@When("{string} attempts to add the optional service {string} to the service combo with start time {string} in the appointment at {string}")
-	public void attempts_to_add_the_optional_service_to_the_service_combo_with_start_time_in_the_appointment_at(String string, String string2, String string3, String string4) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void attempts_to_add_the_optional_service_to_the_service_combo_with_start_time_in_the_appointment_at(String username, String optService, String startTime, String currentDateTime) {
+		try {
+	    	CarShopController.addOptServiceAt(currentAppointment, username, optService, startTime, currentDateTime);
+	    } catch (Exception e) {
+	    	error = e.getMessage();
+			errorCntr++;
+	    }
 	}
 
 	@Then("the service combo in the appointment shall be {string}")
 	public void the_service_combo_in_the_appointment_shall_be(String string) {
-	    Appointment appointment = cs.getAppointment(1); //get the second appointment (the one that was added)
-	    BookableService bookableService = appointment.getBookableService(); //get the appointment's bookable service
+	    
+	    BookableService bookableService = currentAppointment.getBookableService(); //get the appointment's bookable service
 	    if (bookableService instanceof Service) fail(); //fail test is the booked service is not a combo
 	    ServiceCombo serviceCombo = (ServiceCombo) bookableService;  //cast the booked service to a combo
 	    
@@ -1690,62 +1779,86 @@ public class CucumberStepDefinitions {
 	public void the_service_combo_shall_have_selected_services(String string) {
 		String[] expectedComboItems = string.split(",");//split expected services into string away with "," as delimiter
 		
-		Appointment appointment = cs.getAppointment(1); //get the second appointment (the one that was added)
-	    BookableService bookableService = appointment.getBookableService(); //get the appointment's bookable service
+		
+	    BookableService bookableService = currentAppointment.getBookableService(); //get the appointment's bookable service
 	    if (bookableService instanceof Service) fail(); //fail test is the booked service is not a combo
-	    ServiceCombo serviceCombo = (ServiceCombo) bookableService;  //cast the booked service to a combo
-	    List<ComboItem> comboItems = serviceCombo.getServices();
+//	    ServiceCombo serviceCombo = (ServiceCombo) bookableService;  //cast the booked service to a combo
+//	    List<ComboItem> comboItems = serviceCombo.getServices();
 	    
+	    //since some of the services in a service combo are not mandatory, the customer doesn't have to book every service on the list
+	    //this get the list of all the services the customer actually booked, not the list of all services in the combo
+	    List<ServiceBooking> serviceBookings = currentAppointment.getServiceBookings();
 	    
 	    int i = 0; //counter variable to get index in comboItems list
 	    for (String expectedService : expectedComboItems) { //this assumes that the services can only have one order
-	    	assertEquals(expectedService, comboItems.get(i).getService().getName()); //compare expected service name to actual service name from the combo item
+	    	assertEquals(expectedService, serviceBookings.get(i).getService().getName()); //compare expected service name to actual service name from the combo item
 	    	i++; //increments the index
 	    }
 	    
 	    
 	}
 
-	//TODO
 	@When("{string} attempts to update the date to {string} and start time to {string} at {string}")
-	public void attempts_to_update_the_date_to_and_start_time_to_at(String string, String string2, String string3, String string4) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void attempts_to_update_the_date_to_and_start_time_to_at(String username, String newDate, String newTime, String currentDateTime) {
+		try {
+	    	CarShopController.updateDateAndTimeAt(currentAppointment, username, newDate, newTime, currentDateTime);
+	    } catch (Exception e) {
+	    	error = e.getMessage();
+			errorCntr++;
+	    }
 	}
 
-	//TODO
 	@When("the owner starts the appointment at {string}")
-	public void the_owner_starts_the_appointment_at(String string) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void the_owner_starts_the_appointment_at(String currentDateTime) {
+		try {
+			String ownerPassword = cs.getOwner().getPassword();
+			CarShopApplication.logIn("owner", ownerPassword);
+			CarShopController.startAppointmentAt(currentAppointment, currentDateTime);
+		} catch (Exception e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
 	}
 
-	//TODO
 	@When("the owner ends the appointment at {string}")
-	public void the_owner_ends_the_appointment_at(String string) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void the_owner_ends_the_appointment_at(String currentDateTime) {
+		try {
+			String ownerPassword = cs.getOwner().getPassword();
+			CarShopApplication.logIn("owner", ownerPassword);
+			CarShopController.endAppointmentAt(currentAppointment, currentDateTime);
+		} catch (Exception e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
 	}
 
-	//TODO
 	@Then("the appointment shall be in progress")
 	public void the_appointment_shall_be_in_progress() {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	    assertEquals(AppointmentStatus.InProgress, currentAppointment.getAppointmentStatus());
 	}
 
-	//TODO
 	@When("the owner attempts to register a no-show for the appointment at {string}")
-	public void the_owner_attempts_to_register_a_no_show_for_the_appointment_at(String string) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void the_owner_attempts_to_register_a_no_show_for_the_appointment_at(String currentDateTime) {
+		try {
+			String ownerPassword = cs.getOwner().getPassword();
+			CarShopApplication.logIn("owner", ownerPassword);
+			CarShopController.updateNoShowAt(currentAppointment, currentDateTime);
+		} catch (Exception e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
 	}
 
-	//TODO
 	@When("the owner attempts to end the appointment at {string}")
-	public void the_owner_attempts_to_end_the_appointment_at(String string) {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new io.cucumber.java.PendingException();
+	public void the_owner_attempts_to_end_the_appointment_at(String currentDateTime) {
+		try {
+			String ownerPassword = cs.getOwner().getPassword();
+			CarShopApplication.logIn("owner", ownerPassword);
+			CarShopController.endAppointmentAt(currentAppointment, currentDateTime);
+		} catch (Exception e) {
+			error = e.getMessage();
+			errorCntr++;
+		}
 	}
 	
 }
