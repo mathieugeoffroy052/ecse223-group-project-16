@@ -215,7 +215,8 @@ public class CarShopController {
 
 		BookableService bookServ = getBookableService(serviceComboName);
 		
-		if(!checkHolidays(date)) throw new InvalidInputException("There are no available slots for " + serviceComboName + " on " + startDate + " at " + startTime);
+		//not needed anymore
+//		if(!checkHolidays(date)) throw new InvalidInputException("There are no available slots for " + serviceComboName + " on " + startDate + " at " + startTime);
 		
 		//create new object of type appointment - can be deleted later as well
 		Appointment appointment = cs.addAppointment(cust, bookServ);
@@ -235,11 +236,21 @@ public class CarShopController {
 
 				appointment.delete();
 				throw new InvalidInputException("There are no available slots for " +  serviceComboName + " on " + startDate + " at " + startTime);
-			}
+			} 
 			if(!checkByGarageServiceBookings(cs, serv, startTime1, endTime, date)) {
 				
 				appointment.delete();
 				throw new InvalidInputException("There are no available slots for " +  serviceComboName + " on " + startDate + " at " + startTime);
+			}
+			
+			//check conflicts with holidays and vacations
+			if (appointmentConflictsWithHolidays(date, startTime1, endTime)) {
+				appointment.delete();
+				throw new InvalidInputException("There are no available slots for " + serviceComboName + " on " + startDate + " at " + startTime);
+			}
+			if (appointmentConflictsWithVacations(date, startTime1, endTime)) {
+				appointment.delete();
+				throw new InvalidInputException("There are no available slots for " + serviceComboName + " on " + startDate + " at " + startTime);
 			}
 
 			TimeSlot timeSlot1 = cs.addTimeSlot(date, startTime1, date, endTime);
@@ -285,6 +296,18 @@ public class CarShopController {
 				
 				//use helper method to find end time
 				Time endTime = findEndTime(servicesToAddList.get(i), startTime1);
+				
+				//perform holiday and vacation checks
+				if (appointmentConflictsWithHolidays(date, startTime1, endTime)) {
+					appointment.delete();
+					throw new InvalidInputException("There are no available slots for " + serviceComboName + " on " + startDate + " at " + startTime);
+				}
+				if (appointmentConflictsWithVacations(date, startTime1, endTime)) {
+					appointment.delete();
+					throw new InvalidInputException("There are no available slots for " + serviceComboName + " on " + startDate + " at " + startTime);
+				}
+				
+				
 				if(!checkInGarageBusinessHours(cs, startTime1, endTime, date, servicesToAddList.get(i).getGarage())) {
 
 					appointment.delete();
@@ -2186,7 +2209,9 @@ public class CarShopController {
 		List<TimeSlot> holidaySlots = CarShopApplication.getCarShop().getBusiness().getHolidays();
 		
 		for(TimeSlot timeSlot : holidaySlots) {
-			if(inDateTimeRange(date, startTime, endTime, timeSlot.getStartDate(), timeSlot.getStartTime(), timeSlot.getEndDate(), timeSlot.getEndTime())) {
+			if(timeSlot.getStartDate().before(date) && timeSlot.getEndDate().after(date)
+					|| (timeSlot.getStartDate().equals(date) && timeSlot.getStartTime().before(endTime))
+					|| (timeSlot.getEndDate().equals(date) && timeSlot.getEndTime().after(startTime))) {
 				return true;
 			}
 		}
@@ -2292,7 +2317,7 @@ public class CarShopController {
 	 * @param date the date
 	 * @param startTimes the start times
 	 * @param endTimes the end times
-	 * @return true if conflics
+	 * @return true if conflicts
 	 */
 	private static boolean comboTimesConflictsWithHolidays(Date date, List<Time> startTimes, List<Time> endTimes) {
 		for(int i = 0; i < startTimes.size(); i++) {
