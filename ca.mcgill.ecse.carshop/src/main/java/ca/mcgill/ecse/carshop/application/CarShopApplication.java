@@ -11,6 +11,7 @@ import ca.mcgill.ecse.carshop.model.Customer;
 import ca.mcgill.ecse.carshop.model.Owner;
 import ca.mcgill.ecse.carshop.model.Technician;
 import ca.mcgill.ecse.carshop.model.User;
+import ca.mcgill.ecse.carshop.persistence.CarShopPersistence;
 
 public class CarShopApplication {
 	private static CarShop carShop = null;	//all applications are associated with the same CarShop carShop
@@ -27,6 +28,7 @@ public class CarShopApplication {
 		public static CarShop getCarShop() {
 			if(carShop == null) {
 				carShop = new CarShop();
+				//carShop = (CarShop) CarShopPersistence.load();	//load previously stored information
 			}
 			return carShop;
 		}
