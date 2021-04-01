@@ -85,10 +85,10 @@ public class CarShopController {
 		garage.getBusinessHour(toCheck).delete();
 		//persistence
 		try {
-				CarShopPersistence.save(cs);
-			}catch(RuntimeException e) {
-				throw new InvalidInputException(e.getMessage());
-			}
+			CarShopPersistence.save(cs);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 
 	}
 	// TODO
@@ -172,6 +172,7 @@ public class CarShopController {
 		}
 
 		garage.getBusinessHour(toCheck).setEndTime(ourEndTime);
+		//persistence
 		try {
 			CarShopPersistence.save(cs);
 		}catch(RuntimeException e) {
@@ -197,12 +198,14 @@ public class CarShopController {
 		Garage garage = technician.getGarage();
 		
 		garage.getBusinessHour(toCheck).setStartTime(ourStartTime);
+		//persistence
 		try {
 			CarShopPersistence.save(cs);
 		}catch(RuntimeException e) {
 			throw new InvalidInputException(e.getMessage());
 		}
 		garage.getBusinessHour(toCheck).setEndTime(ourEndTime);
+		//persistence
 		try {
 			CarShopPersistence.save(cs);
 		}catch(RuntimeException e) {
@@ -239,6 +242,7 @@ public class CarShopController {
 				optServicesToPutIn = optServices.split(",");
 				// puts the optional services in. Requires the service combo name to do so.
 				putOptServicesIn(optServicesToPutIn, serviceComboName, isTrue);
+				//persistence
 				try {
 					CarShopPersistence.save(cs);
 				}catch(RuntimeException e) {
@@ -271,6 +275,7 @@ public class CarShopController {
 			if(!checkInGarageBusinessHours(cs, startTime1, endTime, date, serv.getGarage())) {
 
 				appointment.delete();
+				//persistence
 				try {
 					CarShopPersistence.save(cs);
 				}catch(RuntimeException e) {
@@ -281,6 +286,7 @@ public class CarShopController {
 			if(!checkByGarageServiceBookings(cs, serv, startTime1, endTime, date)) {
 				
 				appointment.delete();
+				//persistence
 				try {
 					CarShopPersistence.save(cs);
 				}catch(RuntimeException e) {
@@ -292,6 +298,7 @@ public class CarShopController {
 			//check conflicts with holidays and vacations
 			if (appointmentConflictsWithHolidays(date, startTime1, endTime)) {
 				appointment.delete();
+				//persistence
 				try {
 					CarShopPersistence.save(cs);
 				}catch(RuntimeException e) {
@@ -301,6 +308,7 @@ public class CarShopController {
 			}
 			if (appointmentConflictsWithVacations(date, startTime1, endTime)) {
 				appointment.delete();
+				//persistence
 				try {
 					CarShopPersistence.save(cs);
 				}catch(RuntimeException e) {
@@ -310,12 +318,14 @@ public class CarShopController {
 			}
 
 			TimeSlot timeSlot1 = cs.addTimeSlot(date, startTime1, date, endTime);
+			//persistence
 			try {
 				CarShopPersistence.save(cs);
 			}catch(RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
 			serv.addServiceBooking(timeSlot1, appointment);
+			//persistence
 			try {
 				CarShopPersistence.save(cs);
 			}catch(RuntimeException e) {
@@ -335,6 +345,7 @@ public class CarShopController {
 			//find main service
 			Service mainService = ((ServiceCombo)bookServ).getMainService().getService();
 			servicesToAddList.add(mainService);
+			//persistence
 			try {
 				CarShopPersistence.save(cs);
 			}catch(RuntimeException e) {
@@ -346,6 +357,7 @@ public class CarShopController {
 				BookableService serviceToAdd = BookableService.getWithName(string); 
 				if (serviceToAdd instanceof Service) {
 					servicesToAddList.add((Service) serviceToAdd);
+					//persistence
 					try {
 						CarShopPersistence.save(cs);
 					}catch(RuntimeException e) {
@@ -377,6 +389,7 @@ public class CarShopController {
 				//perform holiday and vacation checks
 				if (appointmentConflictsWithHolidays(date, startTime1, endTime)) {
 					appointment.delete();
+					//persistence
 					try {
 						CarShopPersistence.save(cs);
 					}catch(RuntimeException e) {
@@ -386,6 +399,7 @@ public class CarShopController {
 				}
 				if (appointmentConflictsWithVacations(date, startTime1, endTime)) {
 					appointment.delete();
+					//persistence
 					try {
 						CarShopPersistence.save(cs);
 					}catch(RuntimeException e) {
@@ -414,6 +428,7 @@ public class CarShopController {
 				if(!checkByGarageServiceBookings(cs, servicesToAddList.get(i), startTime1, endTime, date)) {
 					
 					appointment.delete();
+					//persistence
 					try {
 						CarShopPersistence.save(cs);
 					}catch(RuntimeException e) {
@@ -423,6 +438,7 @@ public class CarShopController {
 				}
 				if(startTimes.length > (i+1) && endTime.after(stringToTime(startTimes[i+1]))) {
 					appointment.delete();
+					//persistence
 					try {
 						CarShopPersistence.save(cs);
 					}catch(RuntimeException e) {

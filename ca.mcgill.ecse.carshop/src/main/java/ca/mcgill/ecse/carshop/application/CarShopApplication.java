@@ -4,15 +4,12 @@
 package ca.mcgill.ecse.carshop.application;
 
 import java.sql.Time;
-import java.util.List;
 import java.sql.Date;
 
-import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 import ca.mcgill.ecse.carshop.model.CarShop;
 import ca.mcgill.ecse.carshop.model.Customer;
 import ca.mcgill.ecse.carshop.model.Owner;
 import ca.mcgill.ecse.carshop.model.Technician;
-import ca.mcgill.ecse.carshop.model.Technician.TechnicianType;
 import ca.mcgill.ecse.carshop.model.User;
 import ca.mcgill.ecse.carshop.persistence.CarShopPersistence;
 
@@ -30,7 +27,8 @@ public class CarShopApplication {
 
 		public static CarShop getCarShop() {
 			if(carShop == null) {
-				carShop = (CarShop) CarShopPersistence.load();	//load previously stored information
+				carShop = new CarShop();
+				//carShop = (CarShop) CarShopPersistence.load();	//load previously stored information
 			}
 			return carShop;
 		}
@@ -153,32 +151,6 @@ public class CarShopApplication {
 		public static boolean getLoggedIn() {
 			return isLoggedIn;
 		}
-		
-		
-		//TESTING ZONE
-		public static void main(String[] args) {
-			//persistence saving seems to work correctly!
-			CarShop cs1 = CarShopPersistence.load();
-//			cs1.addTechnician("tires-technician", "tires-pw123", TechnicianType.Fluids);
-//			CarShopPersistence.save(cs1);
-			List<Technician> technicianList = cs1.getTechnicians();
-			for(int i = 0; i<technicianList.size();i++) {
-				System.out.println(cs1.getTechnician(i));
-
-			}
-		}
-		
-		/**
-		 * 	code to plug in the controller every time there is a change in one of the objects in the car shop: 	
-		 * 
-		//persistence
-		try {
-			CarShopPersistence.save(cs);
-		}catch(RuntimeException e) {
-			throw new InvalidInputException(e.getMessage());
-		}
-		 */
-
 
 }
 
