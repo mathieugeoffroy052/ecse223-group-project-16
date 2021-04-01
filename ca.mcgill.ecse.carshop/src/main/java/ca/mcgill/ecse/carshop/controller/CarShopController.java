@@ -35,6 +35,7 @@ import ca.mcgill.ecse.carshop.model.Technician;
 import ca.mcgill.ecse.carshop.model.Technician.TechnicianType;
 import ca.mcgill.ecse.carshop.model.TimeSlot;
 import ca.mcgill.ecse.carshop.model.User;
+import ca.mcgill.ecse.carshop.persistence.CarShopPersistence;
 
 
 public class CarShopController {
@@ -82,6 +83,13 @@ public class CarShopController {
 		
 		Garage garage = technician.getGarage();
 		garage.getBusinessHour(toCheck).delete();
+		//persistence
+		try {
+			CarShopPersistence.save(cs);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
+
 	}
 	// TODO
 	public static void addBusinessHourIndividually(String day, String startTime, String endTime, String type, CarShop cs) throws InvalidInputException {
@@ -156,7 +164,20 @@ public class CarShopController {
 		
 		
 		garage.getBusinessHour(toCheck).setStartTime(ourStartTime);
+		//persistence
+		try {
+			CarShopPersistence.save(cs);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
+
 		garage.getBusinessHour(toCheck).setEndTime(ourEndTime);
+		//persistence
+		try {
+			CarShopPersistence.save(cs);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 	
 	public static void changeBusinessHour(String day, String startTime, String endTime, String type, CarShop cs) throws InvalidInputException {
@@ -177,7 +198,19 @@ public class CarShopController {
 		Garage garage = technician.getGarage();
 		
 		garage.getBusinessHour(toCheck).setStartTime(ourStartTime);
+		//persistence
+		try {
+			CarShopPersistence.save(cs);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 		garage.getBusinessHour(toCheck).setEndTime(ourEndTime);
+		//persistence
+		try {
+			CarShopPersistence.save(cs);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 	
 	// creating appointment method
@@ -209,6 +242,12 @@ public class CarShopController {
 				optServicesToPutIn = optServices.split(",");
 				// puts the optional services in. Requires the service combo name to do so.
 				putOptServicesIn(optServicesToPutIn, serviceComboName, isTrue);
+				//persistence
+				try {
+					CarShopPersistence.save(cs);
+				}catch(RuntimeException e) {
+					throw new InvalidInputException(e.getMessage());
+				}
 			}
 			
 		}
@@ -236,26 +275,63 @@ public class CarShopController {
 			if(!checkInGarageBusinessHours(cs, startTime1, endTime, date, serv.getGarage())) {
 
 				appointment.delete();
+				//persistence
+				try {
+					CarShopPersistence.save(cs);
+				}catch(RuntimeException e) {
+					throw new InvalidInputException(e.getMessage());
+				}
 				throw new InvalidInputException("There are no available slots for " +  serviceComboName + " on " + startDate + " at " + startTime);
 			} 
 			if(!checkByGarageServiceBookings(cs, serv, startTime1, endTime, date)) {
 				
 				appointment.delete();
+				//persistence
+				try {
+					CarShopPersistence.save(cs);
+				}catch(RuntimeException e) {
+					throw new InvalidInputException(e.getMessage());
+				}
 				throw new InvalidInputException("There are no available slots for " +  serviceComboName + " on " + startDate + " at " + startTime);
 			}
 			
 			//check conflicts with holidays and vacations
 			if (appointmentConflictsWithHolidays(date, startTime1, endTime)) {
 				appointment.delete();
+				//persistence
+				try {
+					CarShopPersistence.save(cs);
+				}catch(RuntimeException e) {
+					throw new InvalidInputException(e.getMessage());
+				}
 				throw new InvalidInputException("There are no available slots for " + serviceComboName + " on " + startDate + " at " + startTime);
 			}
 			if (appointmentConflictsWithVacations(date, startTime1, endTime)) {
 				appointment.delete();
+				//persistence
+				try {
+					CarShopPersistence.save(cs);
+				}catch(RuntimeException e) {
+					throw new InvalidInputException(e.getMessage());
+				}
 				throw new InvalidInputException("There are no available slots for " + serviceComboName + " on " + startDate + " at " + startTime);
 			}
 
 			TimeSlot timeSlot1 = cs.addTimeSlot(date, startTime1, date, endTime);
+			//persistence
+			try {
+				CarShopPersistence.save(cs);
+			}catch(RuntimeException e) {
+				throw new InvalidInputException(e.getMessage());
+			}
 			serv.addServiceBooking(timeSlot1, appointment);
+			//persistence
+			try {
+				CarShopPersistence.save(cs);
+			}catch(RuntimeException e) {
+				throw new InvalidInputException(e.getMessage());
+			}
+			
 			 
 		} else {
 			//if service is service combo
@@ -269,12 +345,24 @@ public class CarShopController {
 			//find main service
 			Service mainService = ((ServiceCombo)bookServ).getMainService().getService();
 			servicesToAddList.add(mainService);
+			//persistence
+			try {
+				CarShopPersistence.save(cs);
+			}catch(RuntimeException e) {
+				throw new InvalidInputException(e.getMessage());
+			}
 			
 			//add optional services
 			for(String string : optServicesToPutIn) {
 				BookableService serviceToAdd = BookableService.getWithName(string); 
 				if (serviceToAdd instanceof Service) {
 					servicesToAddList.add((Service) serviceToAdd);
+					//persistence
+					try {
+						CarShopPersistence.save(cs);
+					}catch(RuntimeException e) {
+						throw new InvalidInputException(e.getMessage());
+					}
 				}
 			}
 			
@@ -301,10 +389,22 @@ public class CarShopController {
 				//perform holiday and vacation checks
 				if (appointmentConflictsWithHolidays(date, startTime1, endTime)) {
 					appointment.delete();
+					//persistence
+					try {
+						CarShopPersistence.save(cs);
+					}catch(RuntimeException e) {
+						throw new InvalidInputException(e.getMessage());
+					}
 					throw new InvalidInputException("There are no available slots for " + serviceComboName + " on " + startDate + " at " + startTime);
 				}
 				if (appointmentConflictsWithVacations(date, startTime1, endTime)) {
 					appointment.delete();
+					//persistence
+					try {
+						CarShopPersistence.save(cs);
+					}catch(RuntimeException e) {
+						throw new InvalidInputException(e.getMessage());
+					}
 					throw new InvalidInputException("There are no available slots for " + serviceComboName + " on " + startDate + " at " + startTime);
 				}
 				
@@ -312,6 +412,11 @@ public class CarShopController {
 				if(!checkInGarageBusinessHours(cs, startTime1, endTime, date, servicesToAddList.get(i).getGarage())) {
 
 					appointment.delete();
+					try {
+						CarShopPersistence.save(cs);
+					}catch(RuntimeException e) {
+						throw new InvalidInputException(e.getMessage());
+					}
 					throw new InvalidInputException("There are no available slots for " +  serviceComboName + " on " + startDate + " at " + startTime);
 				}
 //				if(!checkTimeAvailable(cs, startTime1, endTime, date)) {
@@ -323,15 +428,28 @@ public class CarShopController {
 				if(!checkByGarageServiceBookings(cs, servicesToAddList.get(i), startTime1, endTime, date)) {
 					
 					appointment.delete();
+					//persistence
+					try {
+						CarShopPersistence.save(cs);
+					}catch(RuntimeException e) {
+						throw new InvalidInputException(e.getMessage());
+					}
 					throw new InvalidInputException("There are no available slots for " +  serviceComboName + " on " + startDate + " at " + startTime);
 				}
 				if(startTimes.length > (i+1) && endTime.after(stringToTime(startTimes[i+1]))) {
 					appointment.delete();
+					//persistence
+					try {
+						CarShopPersistence.save(cs);
+					}catch(RuntimeException e) {
+						throw new InvalidInputException(e.getMessage());
+					}
 					throw new InvalidInputException("Time slots for two services are overlapping");
 				}
 				TimeSlot timeSlot1 = cs.addTimeSlot(date, startTime1, date, endTime);
 				// create new service booking
 				new ServiceBooking(servicesToAddList.get(i), timeSlot1, appointment);
+				
 				
 //				comboItems.get(i).getService().addServiceBooking(timeSlot1, appointment);
 			}
@@ -378,7 +496,7 @@ public class CarShopController {
 	}
 
 	@SuppressWarnings("static-access")
-	private static boolean putOptServicesIn(String[] optServicesToPutIn, String serviceComboName, boolean isTrue) {
+	private static boolean putOptServicesIn(String[] optServicesToPutIn, String serviceComboName, boolean isTrue) throws InvalidInputException {
 		// TODO Auto-generated method stub
 		Boolean toReturn = false;
 		CarShop cs = CarShopApplication.getCarShop();
@@ -403,6 +521,11 @@ public class CarShopController {
 					}
 					else {
 						checkIfSame.setMandatory(true);	// newly added code
+						try {
+							CarShopPersistence.save(cs);
+						}catch(RuntimeException e) {
+							throw new InvalidInputException(e.getMessage());
+						}
 						found = true;
 						break; // don't add the optional service (it's already there)
 					}

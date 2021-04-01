@@ -5,7 +5,7 @@ import ca.mcgill.ecse.carshop.persistence.CarShopPersistence;
 import ca.mcgill.ecse.carshop.persistence.PersistenceObjectStream;
 
 public class CarShopPersistence {
-	private static String filename = "data.btms";
+	private static String filename = "data.cs";
 	
 	public static void setFilename(String filename) {
 		CarShopPersistence.filename = filename;
@@ -18,7 +18,7 @@ public class CarShopPersistence {
 	public static CarShop load() {
 	    PersistenceObjectStream.setFilename(filename);
 	    CarShop cs = (CarShop) PersistenceObjectStream.deserialize();
-	    // model cannot be loaded - create empty BTMS
+	    // model cannot be loaded - create empty CarShop
 	    if (cs == null) {
 	        cs = new CarShop();
 	    }
