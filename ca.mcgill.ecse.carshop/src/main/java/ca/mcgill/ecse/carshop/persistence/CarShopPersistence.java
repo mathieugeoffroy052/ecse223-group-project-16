@@ -2,7 +2,6 @@ package ca.mcgill.ecse.carshop.persistence;
 
 import ca.mcgill.ecse.carshop.model.CarShop;
 import ca.mcgill.ecse.carshop.persistence.CarShopPersistence;
-import ca.mcgill.ecse.carshop.persistence.PersistenceObjectStream;
 
 public class CarShopPersistence {
 	private static String filename = "data.cs";
