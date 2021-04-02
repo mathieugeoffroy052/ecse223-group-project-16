@@ -584,7 +584,11 @@ public class CarShopController {
 			appName.getServiceBooking(i).delete();
 		}
 		appName.delete();
-
+		try {
+			CarShopPersistence.save(cs);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 	
 	// stringToDate
@@ -626,6 +630,11 @@ public class CarShopController {
 		} catch (RuntimeException e) {
 			throw new InvalidInputException(e.getMessage());
 		}
+		try {
+			CarShopPersistence.save(carShop);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 	//method that creates hours for business
 	public static void createBusinessHour(String day, String startTime, String endTime) throws InvalidInputException {
@@ -649,6 +658,11 @@ public class CarShopController {
 		} catch (RuntimeException e) {
 			throw new InvalidInputException(e.getMessage());
 		}
+		try {
+			CarShopPersistence.save(carShop);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 
 	//method to create holidays
@@ -665,6 +679,11 @@ public class CarShopController {
 		} catch (RuntimeException e) {
 			throw new InvalidInputException(e.getMessage());
 		}
+		try {
+			CarShopPersistence.save(carShop);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 	//method to create vacations
 	public static void createVacation(String startDate, String startTime, String endDate, String endTime)
@@ -678,6 +697,11 @@ public class CarShopController {
 			carShop.getBusiness().addVacation(new TimeSlot(stringtoDate(startDate), stringToTime(startTime),
 					stringtoDate(endDate), stringToTime(endTime), carShop));
 		} catch (RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
+		try {
+			CarShopPersistence.save(carShop);
+		}catch(RuntimeException e) {
 			throw new InvalidInputException(e.getMessage());
 		}
 	}
@@ -719,6 +743,11 @@ public class CarShopController {
 		} else {
 			throw new InvalidInputException("no such time slot");
 		}
+		try {
+			CarShopPersistence.save(carShop);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 
 	}
 
@@ -750,6 +779,11 @@ public class CarShopController {
 		} catch (Exception e) {
 			throw new InvalidInputException(e.getMessage());
 		}
+		try {
+			CarShopPersistence.save(carShop);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 
 	//method to delete business hours
@@ -771,6 +805,11 @@ public class CarShopController {
 		}
 		if (toDelete != null) {
 			business.removeBusinessHour(toDelete);
+		}
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
 		}
 	}
 
@@ -835,6 +874,11 @@ public class CarShopController {
 		timeSlot.setStartTime(sTime);
 		timeSlot.setEndDate(eDate);
 		timeSlot.setEndTime(eTime);
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 
 	}
 	
@@ -859,6 +903,11 @@ public class CarShopController {
 				business.removeHoliday(timeSlot);
 			}
 		}
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 
 	}
 
@@ -875,6 +924,11 @@ public class CarShopController {
 		if (toDelete != null) {
 			business.removeHoliday(toDelete);
 		}
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 
 	//method delete vacations
@@ -890,11 +944,16 @@ public class CarShopController {
 		if (toDelete != null) {
 			business.removeVacation(toDelete);
 		}
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 
 	}
 
 	//returning the business hours
-	public static List<TOBusinessHour> getBusinessHours() {
+	public static List<TOBusinessHour> getBusinessHours() throws InvalidInputException {
 		Business business = CarShopApplication.getCarShop().getBusiness();
 		List<BusinessHour> businessHours = business.getBusinessHours();
 		List<TOBusinessHour> toBusinessHours = new ArrayList<>();
@@ -903,10 +962,16 @@ public class CarShopController {
 					businessHour.getStartTime(), businessHour.getEndTime());
 			toBusinessHours.add(toBusinessHour);
 		}
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 		return toBusinessHours;
 	}
+	
 	//returning the holidays
-	public static List<TOTimeSlot> getHolidays() {
+	public static List<TOTimeSlot> getHolidays() throws InvalidInputException {
 		Business business = CarShopApplication.getCarShop().getBusiness();
 		List<TimeSlot> holidaySlots = business.getHolidays();
 		List<TOTimeSlot> toHolidays = new ArrayList<>();
@@ -915,11 +980,16 @@ public class CarShopController {
 					holiday.getEndTime());
 			toHolidays.add(toTimeSlot);
 		}
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 		return toHolidays;
 	}
 	
 	//returning the vacations
-	public static List<TOTimeSlot> getVacations() {
+	public static List<TOTimeSlot> getVacations() throws InvalidInputException {
 		Business business = CarShopApplication.getCarShop().getBusiness();
 		List<TimeSlot> vacationSlots = business.getVacations();
 		List<TOTimeSlot> toVacations = new ArrayList<>();
@@ -927,6 +997,11 @@ public class CarShopController {
 			TOTimeSlot toTimeSlot = new TOTimeSlot(vacation.getStartDate(), vacation.getStartTime(),
 					vacation.getEndDate(), vacation.getEndTime());
 			toVacations.add(toTimeSlot);
+		}
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
 		}
 		return toVacations;
 	}
@@ -971,6 +1046,11 @@ public class CarShopController {
 			foundHour.setStartTime(stringToTime(newStart));
 			foundHour.setEndTime(stringToTime(newEnd));
 
+		}
+		try {
+			CarShopPersistence.save(carShop);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
 		}
 	}
 	//making sure that the start time is before the end time
@@ -1189,7 +1269,12 @@ public class CarShopController {
 			}
 			String technicianUsername = technicianType.toString() + "-Technician";
 			user = CarShopApplication.getCarShop().addTechnician(technicianUsername, password, technicianType);
-		}	
+		}
+		try {
+			CarShopPersistence.save(carShop);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 		
 		return user;
 		
@@ -1236,8 +1321,11 @@ public class CarShopController {
 		
 		loggedInUser.setUsername(username);
 		loggedInUser.setPassword(password);
-		
-		
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 		
 	}
 	
@@ -1302,6 +1390,11 @@ public class CarShopController {
 		}else {
 			throw new InvalidInputException("You are not authorized to perform this operation");
 		}
+		try {
+			CarShopPersistence.save(cs);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}	
 	
 	//go through and add business hours!
@@ -1328,7 +1421,11 @@ public class CarShopController {
 		}else {
 			throw new InvalidInputException("You are not authorized to perform this operation");
 		}
-		
+		try {
+			CarShopPersistence.save(cs);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 	
 	// login for a customer
@@ -1341,6 +1438,11 @@ public class CarShopController {
 		}else {
 			throw new InvalidInputException("Username/password not found");
 		}
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 	
 	// loging for a technician
@@ -1352,6 +1454,11 @@ public class CarShopController {
 			CarShopApplication.setLoggedIn(true);
 		}else {
 			throw new InvalidInputException("Username/password not found");
+		}
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
 		}
 	}
 	
@@ -1370,6 +1477,11 @@ public class CarShopController {
 		}else {
 			throw new InvalidInputException("Username/password not found");
 		}
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 	
 	//decides which login method (see above methods) to use based on username
@@ -1380,6 +1492,11 @@ public class CarShopController {
 			technicianLogin(username, password);
 		}else {
 			customerLogin(username, password);
+		}
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
 		}
 	}
 	
@@ -1443,7 +1560,7 @@ public class CarShopController {
 	}
 	
 	//makes a new account for technician and owners
-	public static void newAccount(String username, String password, CarShop cs) {
+	public static void newAccount(String username, String password, CarShop cs) throws InvalidInputException {
 		@SuppressWarnings("unused")
 		Owner owner = null;
 		@SuppressWarnings("unused")
@@ -1466,11 +1583,21 @@ public class CarShopController {
 		else if(username.equals("Fluids-Technician") && password.equals("Fluids-Technician")) {
 			technician = new Technician(username, password, TechnicianType.Fluids, cs);
 		}
+		try {
+			CarShopPersistence.save(cs);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 	
 	//sets a technician's garage
-	public static void setGarage(Technician t, CarShop cs) {
+	public static void setGarage(Technician t, CarShop cs) throws InvalidInputException {
 		t.setGarage(new Garage(cs, t));
+		try {
+			CarShopPersistence.save(cs);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 	
 	//returns DayOfWeek object
@@ -1536,6 +1663,11 @@ public class CarShopController {
 		} catch (Exception e) {
 			throw new InvalidInputException(e.getMessage());
 		}
+		try {
+			CarShopPersistence.save(cs);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 
 
@@ -1587,6 +1719,11 @@ public class CarShopController {
 			} else throw new InvalidInputException("You are not authorized to perform this operation");
 
 		} catch (Exception e) {
+			throw new InvalidInputException(e.getMessage());
+		}
+		try {
+			CarShopPersistence.save(cs);
+		}catch(RuntimeException e) {
 			throw new InvalidInputException(e.getMessage());
 		}
 	}
@@ -1681,6 +1818,11 @@ public class CarShopController {
 			}
 			else throw new InvalidInputException("You are not authorized to perform this operation");
 		} catch (Exception e) {
+			throw new InvalidInputException(e.getMessage());
+		}
+		try {
+			CarShopPersistence.save(cs);
+		}catch(RuntimeException e) {
 			throw new InvalidInputException(e.getMessage());
 		}
 		
@@ -1791,6 +1933,11 @@ public class CarShopController {
 	} catch (Exception e) {
 		throw new InvalidInputException(e.getMessage());
 	}
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 
 	}
 	
@@ -1813,6 +1960,11 @@ public class CarShopController {
 	public static void createAppointmentAt(String customerName, String serviceName, String optionalService, String date, String startTime, String currentTime) throws Exception {
 		setSystemDateAndTime(currentTime);
 		CreateAppointmentWithOptServices(customerName, serviceName, startTime, date, CarShopApplication.getCarShop(), optionalService, true);
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 	
 	/**
@@ -1875,6 +2027,11 @@ public class CarShopController {
 		}
 		
 		appointment.changeAppointmentService((Service) service);
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 		
 	}
 
@@ -1959,6 +2116,11 @@ public class CarShopController {
 			
 			appointment.changeStartDateAndTime(date, startTimes);
 		}
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 		
 	}
 	
@@ -1984,6 +2146,11 @@ public class CarShopController {
 			throw new InvalidInputException("A customer can only cancel their own appointments");
 		}
 		appointment.cancelBooking();
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 	
 		
@@ -2048,6 +2215,11 @@ public class CarShopController {
 		}
 		
 		appointment.addOptServiceToCombo(service, sTime);
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 	
 	/**
@@ -2065,6 +2237,11 @@ public class CarShopController {
 		}
 		setSystemDateAndTime(currentTime);
 		appointment.startAppointment();
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 	
 	/**
@@ -2082,6 +2259,11 @@ public class CarShopController {
 		}
 		setSystemDateAndTime(currentTime);
 		appointment.endAppointment();
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 	
 	/**
@@ -2099,6 +2281,11 @@ public class CarShopController {
 		}
 		setSystemDateAndTime(currentTime);
 		appointment.noShow();
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 	
 	/**
@@ -2123,6 +2310,11 @@ public class CarShopController {
 		}
 		CarShopApplication.setSystemDate(newDate);
 		CarShopApplication.setSystemTime(newTime);
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 	
 	/**
