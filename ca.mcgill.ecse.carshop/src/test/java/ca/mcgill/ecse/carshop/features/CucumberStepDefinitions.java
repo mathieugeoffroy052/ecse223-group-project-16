@@ -296,7 +296,11 @@ public class CucumberStepDefinitions {
 	@Given("a Carshop system exists")
 	public void a_carshop_system_exists() {
 		// Write code here that turns the phrase above into concrete actions
-		cs = CarShopApplication.getCarShop();// CarShopApplication used
+//		cs = CarShopApplication.getCarShop();// CarShopApplication used
+		if(cs == null) {
+			cs = new CarShop();
+			CarShopApplication.setCarShop(cs);
+		}
 		error = "";
 		errorCntr = 0;
 	}
