@@ -76,32 +76,6 @@ public class CucumberStepDefinitions {
 	User user = null;
 	private int numberOfChanges;
 
-	@Before
-	public static void setUp() {
-		// sets up the fields in the application
-		numberOfBusinessHours = 0;
-		numberOfHolidays = 0;
-		numberOfVacations = 0;
-		toBusiness = null;
-		oldBusinessHour = null;
-		oldBusinessHourInfo = null;
-		oldBusinessHourInfo = new String[3];	// create a new businesshour
-	}
-
-	@BeforeEach
-	public static void resetCurrentAppointment() {
-		currentAppointment = null;
-	}
-
-	@BeforeEach
-	public void init() {
-		numApp = 0;
-	}
-
-	@After
-	public void tearDown() {
-		cs.delete();
-	}
 
 	@After
 	public void teardown() {
@@ -114,6 +88,15 @@ public class CucumberStepDefinitions {
 			curPassword = null;// set to null
 			curUsername = null;// set to null
 		}
+		numApp = 0;
+		numberOfBusinessHours = 0;
+		numberOfHolidays = 0;
+		numberOfVacations = 0;
+		toBusiness = null;
+		oldBusinessHour = null;
+		oldBusinessHourInfo = null;
+		oldBusinessHourInfo = new String[3];	// create a new businesshour
+		currentAppointment = null;
 		CarShopApplication.restart();// CarShopApplication used
 	}
 
@@ -313,7 +296,11 @@ public class CucumberStepDefinitions {
 	@Given("a Carshop system exists")
 	public void a_carshop_system_exists() {
 		// Write code here that turns the phrase above into concrete actions
-		cs = CarShopApplication.getCarShop();// CarShopApplication used
+//		cs = CarShopApplication.getCarShop();// CarShopApplication used
+		if(cs == null) {
+			cs = new CarShop();
+			CarShopApplication.setCarShop(cs);
+		}
 		error = "";
 		errorCntr = 0;
 	}

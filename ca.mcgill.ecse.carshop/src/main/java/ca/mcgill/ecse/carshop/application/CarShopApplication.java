@@ -10,6 +10,7 @@ import ca.mcgill.ecse.carshop.model.CarShop;
 import ca.mcgill.ecse.carshop.model.Customer;
 import ca.mcgill.ecse.carshop.model.Owner;
 import ca.mcgill.ecse.carshop.model.Technician;
+import ca.mcgill.ecse.carshop.model.Technician.TechnicianType;
 import ca.mcgill.ecse.carshop.model.User;
 import ca.mcgill.ecse.carshop.persistence.CarShopPersistence;
 
@@ -27,10 +28,14 @@ public class CarShopApplication {
 
 		public static CarShop getCarShop() {
 			if(carShop == null) {
-				carShop = new CarShop();
-				//carShop = (CarShop) CarShopPersistence.load();	//load previously stored information
+				//carShop = new CarShop();
+				carShop = (CarShop) CarShopPersistence.load();	//load previously stored information
 			}
 			return carShop;
+		}
+		
+		public static void setCarShop(CarShop cs) {
+			carShop = cs;
 		}
 
 		public static void restart() {
@@ -150,6 +155,22 @@ public class CarShopApplication {
 
 		public static boolean getLoggedIn() {
 			return isLoggedIn;
+		}
+		
+		public static void main(String[] args) {
+			// getting the carshop loads it
+			CarShop cs = getCarShop();
+			// action to be performed
+			cs.addTechnician(new Technician("tires", "password", TechnicianType.Electronics, cs));
+			
+			// saves into the file
+			CarShopPersistence.save(cs);
+			
+			// to see in the console
+			for(int i=0; i<cs.getTechnicians().size();i++){
+				System.out.println(cs.getTechnician(i));
+			}
+			
 		}
 
 }
