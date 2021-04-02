@@ -1065,10 +1065,7 @@ public class CarShopController {
 		// check if conflicts with vacations
 		for (TimeSlot t : business.getVacations()) {
 			if (timeSlot != t && exception != t
-					&& strictlyOverlap(timeSlot.getStartDate(), timeSlot.getEndDate(), t.getStartDate(), t.getEndDate())
-					|| isDateAndTimeOverLap(timeSlot.getStartDate(), timeSlot.getEndDate(), t.getStartDate(),
-							t.getEndDate(), timeSlot.getStartTime(), timeSlot.getEndTime(), t.getStartTime(),
-							t.getEndTime())) {
+					&& inDateTimeRange(timeSlot.getStartDate(), timeSlot.getStartTime(), timeSlot.getEndDate(), timeSlot.getEndTime(), t.getStartDate(), t.getStartTime(), t.getEndDate(), t.getEndTime())) {
 				if (type.equalsIgnoreCase("vacation")) {
 					throw new InvalidInputException("Vacation times cannot overlap");
 				} else if (type.equalsIgnoreCase("holiday")) {
@@ -1082,10 +1079,7 @@ public class CarShopController {
 		// check if conflicts with holidays
 		for (TimeSlot t : business.getHolidays()) {
 			if (timeSlot != t && exception != t
-					&& strictlyOverlap(timeSlot.getStartDate(), timeSlot.getEndDate(), t.getStartDate(), t.getEndDate())
-					|| isDateAndTimeOverLap(timeSlot.getStartDate(), timeSlot.getEndDate(), t.getStartDate(),
-							t.getEndDate(), timeSlot.getStartTime(), timeSlot.getEndTime(), t.getStartTime(),
-							t.getEndTime())) {
+					&& inDateTimeRange(timeSlot.getStartDate(), timeSlot.getStartTime(), timeSlot.getEndDate(), timeSlot.getEndTime(), t.getStartDate(), t.getStartTime(), t.getEndDate(), t.getEndTime())) {
 				if (type.equalsIgnoreCase("Holiday")) {
 					throw new InvalidInputException("Holiday times cannot overlap");
 				} else if (type.equalsIgnoreCase("Vacation")) {
@@ -1137,30 +1131,7 @@ public class CarShopController {
 		}
 		return foundSlot;
 	}
-	//check if date and time is overlapping
-	private static boolean isDateAndTimeOverLap(Date startDate1, Date endDate1, Date startDate2, Date endDate2,
-			Time start1, Time end1, Time start2, Time end2) {
-		return startDate1.compareTo(startDate2) == 0 && (isTimeOverlap(start1, end1, start2, end2))
-				|| endDate1.compareTo(endDate2) == 0 && (isTimeOverlap(start1, end1, start2, end2))
-				|| (startDate1.compareTo(endDate2) == 0 && start1.before(end2))
-				|| (startDate2.compareTo(endDate1) == 0 && start2.before(end1));
-	}
 
-	// overlap by more than a day
-	private static boolean strictlyOverlap(Date startDate1, Date endDate1, Date startDate2, Date endDate2) {
-		return (startDate1.before(endDate2) && startDate2.before(endDate1));
-	}
-
-	private static boolean barelyOverlap(Date startDate1, Date endDate1, Date startDate2, Date endDate2) {
-		return (startDate1.compareTo(startDate2) == 0 || endDate1.compareTo(endDate2) == 0
-				|| startDate1.compareTo(endDate2) == 0 || startDate2.compareTo(endDate1) == 0);
-	}
-
-	private static boolean isDateOverlap(Date startDate1, Date endDate1, Date startDate2, Date endDate2) {
-		return (startDate1.before(endDate2) && startDate2.before(endDate1))
-				|| (startDate1.compareTo(startDate2) == 0 || (endDate1.compareTo(endDate2) == 0
-						|| startDate1.compareTo(endDate2) == 0 || startDate2.compareTo(endDate1) == 0));
-	}
 
 	private static boolean isTimeOverlap(Time start1, Time end1, Time start2, Time end2) {
 		return (start1.before(end2) && start2.before(end1));
@@ -2398,7 +2369,7 @@ public class CarShopController {
 	 * @param date the date
 	 * @param startTimes the start times
 	 * @param endTimes the end times
-	 * @return true if conflics
+	 * @return true if conflicts
 	 */
 	private static boolean comboTimesIsOutsideBusinessHours(List<Service> services, Date date, List<Time> startTimes, List<Time> endTimes) {
 		for (int i = 0; i < services.size(); i++) {
@@ -2420,7 +2391,7 @@ public class CarShopController {
 	 * @param date the date
 	 * @param startTimes the start times
 	 * @param endTimes the end times
-	 * @return true if conflics
+	 * @return true if conflicts
 	 */
 	private static boolean comboTimesConflictsWithVacations(Date date, List<Time> startTimes, List<Time> endTimes) {
 		for(int i = 0; i < startTimes.size(); i++) {
@@ -2450,6 +2421,7 @@ public class CarShopController {
 	
 	/**
 	 * Method compares input date inclusively to date range denoted by start date and end date, inputs cannot be null
+	 * uses the other method
 	 * @param inputDate
 	 * @param inputStartTime 
 	 * @param inputEndTime
@@ -2460,11 +2432,27 @@ public class CarShopController {
 	 * @return
 	 */
 	private static boolean inDateTimeRange(Date inputDate, Time inputStartTime, Time inputEndTime, Date startDate, Time startTime, Date endDate, Time endTime){
+		return inDateTimeRange(inputDate, inputStartTime, inputDate, inputEndTime, startDate, startTime, endDate, endTime);
+	}
+	
+	/**
+	 * Method compares input date inclusively to date range denoted by start date and end date, inputs cannot be null
+	 * @param inputDate
+	 * @param inputStartTime 
+	 * @param inputEndTime
+	 * @param startDate
+	 * @param startTime - time that range starts at on start day
+	 * @param endDate
+	 * @param endTime - time that range ends on end day
+	 * @return
+	 */
+	private static boolean inDateTimeRange(Date inputStartDate, Time inputStartTime, Date inputEndDate,Time inputEndTime, Date startDate, Time startTime, Date endDate, Time endTime){
 		LocalTime inputStartTimeLocal = inputStartTime.toLocalTime();
 		LocalTime inputEndTimeLocal = inputEndTime.toLocalTime();
-		LocalDate inputDateLocal = inputDate.toLocalDate();
-		LocalDateTime inputStartDateTime = LocalDateTime.of(inputDateLocal, inputStartTimeLocal);
-		LocalDateTime inputEndDateTime = LocalDateTime.of(inputDateLocal, inputEndTimeLocal);
+		LocalDate inputStartDateLocal = inputStartDate.toLocalDate();
+		LocalDate inputEndDateLocal = inputStartDate.toLocalDate();
+		LocalDateTime inputStartDateTime = LocalDateTime.of(inputStartDateLocal, inputStartTimeLocal);
+		LocalDateTime inputEndDateTime = LocalDateTime.of(inputEndDateLocal, inputEndTimeLocal);
 		
 		LocalTime startTimeLocal = startTime.toLocalTime();
 		LocalTime endTimeLocal = endTime.toLocalTime();
@@ -2483,6 +2471,7 @@ public class CarShopController {
 		}
 		return false;
 	}
+	
 	
 	/** ** END APPOINTMENT MANAGEMENT ** **/
 }
