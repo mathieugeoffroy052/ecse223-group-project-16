@@ -962,11 +962,6 @@ public class CarShopController {
 					businessHour.getStartTime(), businessHour.getEndTime());
 			toBusinessHours.add(toBusinessHour);
 		}
-		try {
-			CarShopPersistence.save(CarShopApplication.getCarShop());
-		}catch(RuntimeException e) {
-			throw new InvalidInputException(e.getMessage());
-		}
 		return toBusinessHours;
 	}
 	
@@ -980,11 +975,6 @@ public class CarShopController {
 					holiday.getEndTime());
 			toHolidays.add(toTimeSlot);
 		}
-		try {
-			CarShopPersistence.save(CarShopApplication.getCarShop());
-		}catch(RuntimeException e) {
-			throw new InvalidInputException(e.getMessage());
-		}
 		return toHolidays;
 	}
 	
@@ -997,11 +987,6 @@ public class CarShopController {
 			TOTimeSlot toTimeSlot = new TOTimeSlot(vacation.getStartDate(), vacation.getStartTime(),
 					vacation.getEndDate(), vacation.getEndTime());
 			toVacations.add(toTimeSlot);
-		}
-		try {
-			CarShopPersistence.save(CarShopApplication.getCarShop());
-		}catch(RuntimeException e) {
-			throw new InvalidInputException(e.getMessage());
 		}
 		return toVacations;
 	}
@@ -1438,11 +1423,6 @@ public class CarShopController {
 		}else {
 			throw new InvalidInputException("Username/password not found");
 		}
-		try {
-			CarShopPersistence.save(CarShopApplication.getCarShop());
-		}catch(RuntimeException e) {
-			throw new InvalidInputException(e.getMessage());
-		}
 	}
 	
 	// loging for a technician
@@ -1455,11 +1435,6 @@ public class CarShopController {
 		}else {
 			throw new InvalidInputException("Username/password not found");
 		}
-		try {
-			CarShopPersistence.save(CarShopApplication.getCarShop());
-		}catch(RuntimeException e) {
-			throw new InvalidInputException(e.getMessage());
-		}
 	}
 	
 	//login for the owner
@@ -1468,6 +1443,12 @@ public class CarShopController {
 			Owner newOwner = new Owner(username, password, CarShopApplication.getCarShop());
 			CarShopApplication.getCarShop().setOwner(newOwner);
 			CarShopApplication.setUser(newOwner);
+			
+			try {
+				CarShopPersistence.save(CarShopApplication.getCarShop());
+			}catch(RuntimeException e) {
+				throw new InvalidInputException(e.getMessage());
+			}
 		}
 		else if(User.getWithUsername(username) != null && 
 				User.getWithUsername(username).getPassword().equals(password)) {
@@ -1476,11 +1457,6 @@ public class CarShopController {
 			CarShopApplication.setLoggedIn(true);
 		}else {
 			throw new InvalidInputException("Username/password not found");
-		}
-		try {
-			CarShopPersistence.save(CarShopApplication.getCarShop());
-		}catch(RuntimeException e) {
-			throw new InvalidInputException(e.getMessage());
 		}
 	}
 	
@@ -1492,11 +1468,6 @@ public class CarShopController {
 			technicianLogin(username, password);
 		}else {
 			customerLogin(username, password);
-		}
-		try {
-			CarShopPersistence.save(CarShopApplication.getCarShop());
-		}catch(RuntimeException e) {
-			throw new InvalidInputException(e.getMessage());
 		}
 	}
 	

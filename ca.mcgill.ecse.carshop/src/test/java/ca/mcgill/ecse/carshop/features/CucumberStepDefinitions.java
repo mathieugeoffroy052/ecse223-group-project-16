@@ -1181,11 +1181,11 @@ public class CucumberStepDefinitions {
 	@Then("a new account shall be created")
 	public void a_new_account_shall_be_created() {
 		try {
-			CarShopController.newAccount(curUsername, curPassword, cs);
-		} catch (InvalidInputException e) {
-			error = e.getMessage();
-			errorCntr++;
-		}
+ 			CarShopController.newAccount(curUsername, curPassword, cs);
+ 		} catch (InvalidInputException e) {
+ 			error = e.getMessage();
+ 			errorCntr++;
+ 		}
 		assertEquals(curUsername, User.getWithUsername(curUsername).getUsername());
 		assertEquals(curPassword, User.getWithUsername(curUsername).getPassword());
 	}
@@ -1213,11 +1213,11 @@ public class CucumberStepDefinitions {
 		// get technician type
 		Technician techGuy = cs.getTechnician(CarShopController.getTechnician(curUsername, cs));
 		try {
-			CarShopController.setGarage(techGuy, cs);
-		} catch (InvalidInputException e) {
-			error = e.getMessage();
-			errorCntr++;
-		}
+ 			CarShopController.setGarage(techGuy, cs);
+ 		} catch (InvalidInputException e) {
+ 			error = e.getMessage();
+ 			errorCntr++;
+ 		}
 		assertTrue(techGuy.hasGarage()); // asserts true
 	}
 
