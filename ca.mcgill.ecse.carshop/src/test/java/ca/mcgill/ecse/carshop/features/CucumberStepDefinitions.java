@@ -733,7 +733,6 @@ public class CucumberStepDefinitions {
 	public void attempts_to_cancel_their_appointment_on_at(String string, String string2, String string3, String string4) throws InvalidInputException {
 		try {
 			CarShopController.CancelAppointment(string, string2, string3, string4, cs);// uses method in the controller
-			numApp--;// uses method in the controller
 		} catch (Exception e) {
 			error = e.getMessage();
 			errorCntr++;
@@ -745,7 +744,6 @@ public class CucumberStepDefinitions {
 	public void attempts_to_cancel_s_appointment_on_at(String string, String string2, String string3, String string4, String string5) {
 		try {
 			CarShopController.CancelAppointment(string, string3, string4, string5, cs);// uses method in the controller
-			numApp--;// uses method in the controller
 		} catch (Exception e) {
 			error = e.getMessage();
 			errorCntr++;
@@ -1289,7 +1287,7 @@ public class CucumberStepDefinitions {
 	
 	@Then("there shall be {int} less appointment in the system")
 	public void there_shall_be_less_appointment_in_the_system(Integer int1) {
-		assertEquals(numApp,cs.numberOfAppointments());
+		assertEquals(int1, numApp - cs.numberOfAppointments());
 	}
 
 	@Then("the system shall report {string}")
@@ -1415,7 +1413,6 @@ public class CucumberStepDefinitions {
 		try {
 			CarShopController.createAppointmentAt(customer, bookableService, null, date, time, systemInfo); //create appointment with no optional services
 			currentAppointment = cs.getAppointment(cs.getAppointments().size()-1); //most recent appointment
-			numApp++; //increment appointment counter
 		} catch (Exception e) {
 			error = e.getMessage();
 			errorCntr++;
@@ -1457,7 +1454,6 @@ public class CucumberStepDefinitions {
 		try {
 			CarShopController.createAppointmentAt(username, service, optionalService, date, StartTime, currentTimeDate);
 			currentAppointment = cs.getAppointment(cs.getAppointments().size()-1); //most recent appointment
-			numApp++; //increment appointment counter
 		} catch (Exception e) {
 			error = e.getMessage();
 			errorCntr++;
