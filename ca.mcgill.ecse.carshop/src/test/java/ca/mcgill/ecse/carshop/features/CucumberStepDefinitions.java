@@ -375,7 +375,6 @@ public class CucumberStepDefinitions {
 		CarShopApplication.logIn(string, password);// CarShopApplication used
 	}
 
-	@SuppressWarnings("static-access")
 	@Given("the following service combos exist in the system:")
 	public void the_following_service_combos_exist_in_the_system(io.cucumber.datatable.DataTable dataTable) {
 		List<List<String>> rows = dataTable.asLists();
@@ -1065,10 +1064,9 @@ public class CucumberStepDefinitions {
 		assertTrue(errorCntr>0);	// asserts true
 	}
 
-	@SuppressWarnings("static-access")
 	@Then("the service combo {string} shall exist in the system")
 	public void the_service_combo_shall_exist_in_the_system(String string) {
-		assertEquals(string, cs.getBookableService(0).getWithName(string).getName());// gets the first bookableservice
+		assertEquals(string, BookableService.getWithName(string).getName());// gets the first bookableservice
 	}
 
 	@Then("the service combo {string} shall contain the services {string} with mandatory setting {string}")
@@ -1077,8 +1075,7 @@ public class CucumberStepDefinitions {
 		int index = cs.getBookableServices().size()-1;
 		// go through the loop
 		for(int i = 0; i < mandatoryList.length; i++) {
-			@SuppressWarnings("static-access")
-			BookableService check = cs.getBookableService(index).getWithName(string);
+			BookableService check = BookableService.getWithName(string);
 			boolean b = check.getMainService().getServiceCombo().getService(i).getMandatory();
 			assertEquals(mandatoryList[i], b);
 		}
@@ -1119,22 +1116,19 @@ public class CucumberStepDefinitions {
 		assertEquals(false, cs.getBookableService(0).hasWithName(string));
 	}
 
-	@SuppressWarnings("static-access")
 	@Then("the service combo {string} shall preserve the following properties:")
 	public void the_service_combo_shall_preserve_the_following_properties(String string, io.cucumber.datatable.DataTable dataTable) {
-		assertEquals(string, cs.getBookableService(0).getWithName(string).getName());
+		assertEquals(string, BookableService.getWithName(string).getName());
 	}
 
-	@SuppressWarnings("static-access")
 	@Then("the service combo {string} shall be updated to name {string}")
 	public void the_service_combo_shall_be_updated_to_name(String string, String string2) {
-		assertEquals(string2, cs.getBookableService(0).getWithName(string2).getName());
+		assertEquals(string2, BookableService.getWithName(string2).getName());
 	}
 
-	@SuppressWarnings("static-access")
 	@Then("the service {string} shall exist in the system")
 	public void the_service_shall_exist_in_the_system(String string) {
-		assertEquals(string, cs.getBookableService(0).getWithName(string).getName());
+		assertEquals(string, BookableService.getWithName(string).getName());
 	}
 
 	@Then("the service {string} shall belong to the garage of {string} technician")
