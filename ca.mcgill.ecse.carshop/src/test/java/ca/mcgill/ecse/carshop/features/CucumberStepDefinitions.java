@@ -385,17 +385,18 @@ public class CucumberStepDefinitions {
 				ServiceCombo sc = new ServiceCombo(columns.get(0), cs);
 				cs.addBookableService(sc);
 				// gets the main service
-				Service ms = (Service) cs.getBookableService(0).getWithName(columns.get(1));
+				Service ms = (Service) BookableService.getWithName(columns.get(1));
 				sc.setMainService(new ComboItem(true, ms, sc));// create a new object
 				List<String> services = Arrays.asList(columns.get(2).split(","));
 				List<String> bools = Arrays.asList(columns.get(3).split(","));
-				int i = 0;
-				for(String s : services) { 		// go through the loop
-					Service toAdd = (Service) cs.getBookableService(0).getWithName(s);
+				for(int i = 0; i < services.size(); i++) { 		// go through the loop
+					String serviceString = services.get(i);
+					Service toAdd = (Service) BookableService.getWithName(serviceString);
 					boolean toAdd1 = Boolean.parseBoolean(bools.get(i));
-					if(toAdd.getName().equals(ms.getName())) { i++; continue; }
-					cs.getBookableService(cs.getBookableServices().size()-1).getMainService().getServiceCombo().addService(toAdd1, toAdd);
-					i++;
+					if(toAdd.getName().equals(ms.getName())) {
+						continue; 
+					}
+					sc.addService(toAdd1, toAdd);
 				}
 			}
 		}
