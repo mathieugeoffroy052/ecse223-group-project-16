@@ -205,32 +205,7 @@ public class CucumberStepDefinitions {
 		}
 		else if (string.contains("Technician"))
 		{
-			TechnicianType technicianType;
-			switch (string) {
-			case "Tire-Technician": {
-				technicianType = TechnicianType.Tire;
-				break;
-			}
-			case "Engine-Technician": {
-				technicianType = TechnicianType.Engine;
-				break;
-			}
-			case "Transmission-Technician": {
-				technicianType = TechnicianType.Transmission;
-				break;
-			}
-			case "Electronics-Technician": {
-				technicianType = TechnicianType.Electronics;
-				break;
-			}
-			case "Fluids-Technician": {
-				technicianType = TechnicianType.Fluids;
-				break;
-			}
-			default:
-				throw new IllegalArgumentException("Unexpected value: " + string);
-			}
-			user = cs.addTechnician(string, string, technicianType);
+			user = cs.addTechnician(string, string, TechnicianType.Tire);
 		}
 
 		else
