@@ -245,6 +245,26 @@ public class CarShopPage extends JFrame {
         pack();
     }
     
+    //initialize the JTabbedPane
+    private void initComponentsOwnerView() {
+		
+	}
+    
+    //initialize business info
+    private void initComponentsOwnerViewBusinessInfo() {
+		
+	}
+    
+    //initialize services
+    private void initComponentsOwnerViewServices() {
+		
+	}
+    
+    //initialize appointments
+    private void initComponentsOwnerViewAppointments() {
+		
+	}
+    
 //    public static void main(String args[]) {
 //
 //        try {
