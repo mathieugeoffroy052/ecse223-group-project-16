@@ -17,9 +17,9 @@ public class OwnerView extends JPanel {
 		super(new GridLayout(1, 1));
 		
 		JTabbedPane tabbedPane = new JTabbedPane();
-		
+		JPanel businessInfo = new OwnerViewBusinessInfo();
 		// adding the business info tab
-		tabbedPane.addTab("Business Info", getComponentPopupMenu());
+		tabbedPane.addTab("Business Information", businessInfo);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 		
 		//adding the services tab
