@@ -114,6 +114,7 @@ public class CarShopPage extends JFrame {
     private JTextField textUsername;		//username text box
     private JLabel errorMessage;			//error popup label
     private String error;
+    private OwnerView ownerView;			//the owner view
     //TODO
     //need to add the error message to the display, and send a confirmation that the user is logged in if it's successful.
     
@@ -159,6 +160,17 @@ public class CarShopPage extends JFrame {
             	//inputted in the textUsername and textPassword text fields
             	//if user is logged in correctly, transition to a new window 
             	//(either customer or owner perspective)  
+            	
+            	if (username.equals("owner")) {
+					System.out.println("logging in as owner...");
+					
+					// init owner view
+					initComponentsOwnerView();
+					
+					//set the content pane to owner view
+					setContentPane(ownerView);
+					
+				}
             }
         });
     }
@@ -245,9 +257,10 @@ public class CarShopPage extends JFrame {
         pack();
     }
     
-    //initialize the JTabbedPane
+    //initialize the owner panel
     private void initComponentsOwnerView() {
-		
+    	//initialize the owner view
+		ownerView = new OwnerView();
 	}
     
     //initialize business info
