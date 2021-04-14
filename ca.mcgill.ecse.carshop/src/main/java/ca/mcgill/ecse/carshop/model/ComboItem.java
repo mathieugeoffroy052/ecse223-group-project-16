@@ -5,7 +5,7 @@ package ca.mcgill.ecse.carshop.model;
 import java.io.Serializable;
 
 // line 51 "../../../../../CarShopPersistence.ump"
-// line 144 "../../../../../carshop.ump"
+// line 145 "../../../../../carshop.ump"
 public class ComboItem implements Serializable
 {
 
@@ -117,7 +117,7 @@ public class ComboItem implements Serializable
     }
   }
 
-  // line 148 "../../../../../carshop.ump"
+  // line 149 "../../../../../carshop.ump"
    public String isMandatory(){
     if(this.mandatory == true) return "mandatory";
   else return "";

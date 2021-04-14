@@ -91,8 +91,31 @@
  */
 package ca.mcgill.ecse.carshop.view;
 
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.*;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Properties;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+
+
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+
 
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
@@ -102,7 +125,6 @@ import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 public class CarShopPage extends JFrame {
 	
 	private static final long serialVersionUID = -4426310869335015542L;
-
 	
     // Variables declaration
     private JButton buttonLogin; 			//login button
@@ -114,6 +136,9 @@ public class CarShopPage extends JFrame {
     private JTextField textUsername;		//username text box
     private JLabel errorMessage;			//error popup label
     private String error;
+    private OwnerView ownerView;			//the owner view
+    private CustomerView customerView;		//the customer view
+    private TechnicianView technicianView;	//the technician view
     //TODO
     //need to add the error message to the display, and send a confirmation that the user is logged in if it's successful.
     
@@ -121,20 +146,6 @@ public class CarShopPage extends JFrame {
 
     public CarShopPage() {
         initComponents();
-     
-        //found this code on the internet, but don't see a use for it...?
-//        try {
-//            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-//        } catch (ClassNotFoundException ex) {
-//            Logger.getLogger(CarShopPage.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            Logger.getLogger(CarShopPage.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            Logger.getLogger(CarShopPage.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (UnsupportedLookAndFeelException ex) {
-//            Logger.getLogger(CarShopPage.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-       
         
         setTitle("Car Shop Login Form");
         
@@ -159,6 +170,28 @@ public class CarShopPage extends JFrame {
             	//inputted in the textUsername and textPassword text fields
             	//if user is logged in correctly, transition to a new window 
             	//(either customer or owner perspective)  
+            	
+            	if (username.equals("owner")) {
+					System.out.println("logging in as owner...");
+					
+					// init owner view
+					initComponentsOwnerView();
+					
+				}
+            	
+            	if (username.equals("c")) {
+            		System.out.println("Logging in as customer...");
+            		
+            		// init customer view
+            		initComponentsCustomerView();
+            	}
+            	
+            	if (username.toLowerCase().contains("technician")) {
+            		System.out.println("Logging in as technician...");
+            		
+            		// init customer view
+            		initComponentsTechnicianView();
+            	}
             }
         });
     }
@@ -242,35 +275,63 @@ public class CarShopPage extends JFrame {
                 .addComponent(buttonLogin)
                 .addContainerGap(66, Short.MAX_VALUE))
         );
-        pack();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setSize(screenSize.width, screenSize.height);
     }
     
-    public static void main(String args[]) {
+    //initialize the owner panel
+    private void initComponentsOwnerView() {
+    	//initialize the owner view
+		ownerView = new OwnerView();
 
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(CarShopPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(CarShopPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(CarShopPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(CarShopPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+		//set the content pane to owner view
+		setContentPane(ownerView);
+		
+		revalidate();
+		repaint();
+	}
+    
+    //initialize the customer panel
+    private void initComponentsCustomerView() {
+    	//initialize the customer view
+		customerView = new CustomerView();
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new CarShopPage().setVisible(true);
-            }
-        });
-    }
+		//set the content pane to customer view
+		setContentPane(customerView);
+//		this.getContentPane().setLayout(null);
+				
+		// new code
+		revalidate();
+		repaint();
+	}
+    
+    private void initComponentsTechnicianView() {
+    	// initialize the technician view
+    	technicianView = new TechnicianView();
+    	
+    	// set the content pane to technician view
+    	setContentPane(technicianView);
+    	
+    	// new code
+		revalidate();
+		repaint();    
+	}
+  
+    
+    //initialize business info
+    private void initComponentsOwnerViewBusinessInfo() {
+		
+	}
+    
+    //initialize services
+    private void initComponentsOwnerViewServices() {
+		
+	}
+    
+    //initialize appointments
+    private void initComponentsOwnerViewAppointments() {
+		
+	}
 
 
 }

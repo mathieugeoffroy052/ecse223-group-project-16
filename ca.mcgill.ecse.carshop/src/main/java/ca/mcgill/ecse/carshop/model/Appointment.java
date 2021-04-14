@@ -12,7 +12,7 @@ import java.util.*;
 
 // line 1 "../../../../../CarShopStates.ump"
 // line 3 "../../../../../CarShopPersistence.ump"
-// line 154 "../../../../../carshop.ump"
+// line 155 "../../../../../carshop.ump"
 public class Appointment implements Serializable
 {
 

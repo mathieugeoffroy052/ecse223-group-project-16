@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.*;
 
 // line 115 "../../../../../CarShopPersistence.ump"
-// line 35 "../../../../../carshop.ump"
+// line 36 "../../../../../carshop.ump"
 public abstract class User implements Serializable
 {
 
@@ -93,7 +93,7 @@ public abstract class User implements Serializable
     usersByUsername.remove(getUsername());
   }
 
-  // line 45 "../../../../../carshop.ump"
+  // line 46 "../../../../../carshop.ump"
    public static  void setUsersByUsername(Map<String,User> usersByUsername){
     User.usersByUsername = usersByUsername;
   }
@@ -109,7 +109,7 @@ public abstract class User implements Serializable
   // DEVELOPER CODE - PROVIDED AS-IS
   //------------------------
   
-  // line 40 "../../../../../carshop.ump"
+  // line 41 "../../../../../carshop.ump"
   public static Map<String, User> getUsersByUsername () 
   {
     return usersByUsername;

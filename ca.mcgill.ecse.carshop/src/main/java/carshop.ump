@@ -2,6 +2,7 @@ namespace ca.mcgill.ecse.carshop.model;
 
 use CarShopStates.ump;
 use CarShopPersistence.ump;
+use CarShopTransferObjects.ump;
 
 class CarShop  {
   1 <@>- 0..1 Business business;
