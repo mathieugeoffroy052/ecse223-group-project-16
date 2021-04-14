@@ -1749,14 +1749,14 @@ public class CarShopController {
     }
 
     // converts a sql.Date to a string
-    private static String dateToString(Date date) {
+    public static String dateToString(Date date) {
         String pattern = "yyyy-MM-dd";
         SimpleDateFormat formatter = new SimpleDateFormat(pattern);
         return formatter.format(date);
     }
 
     // converts a sql.Time to a string
-    private static String timeToString(Time time) {
+    public static String timeToString(Time time) {
         String pattern = "HH:mm";
         SimpleDateFormat formatter = new SimpleDateFormat(pattern);
         return formatter.format(time);
@@ -2593,6 +2593,28 @@ public class CarShopController {
 			return true;
 		}
 		return false;
+	}
+	
+	// method that finds an appointment given the TO appointment
+	public static Appointment findAppointment(TOAppointment toAppointment) throws InvalidInputException{
+		List<Appointment> appointments = CarShopApplication.getCarShop().getAppointments();
+		Appointment appointment = null;
+		for(Appointment appt: appointments) {
+			if (appt.getCustomer().getUsername().equals(toAppointment.getCustomerName())
+					&& appt.getBookableService().getName().equals(toAppointment.getServiceName())
+					&& appt.getServiceBooking(0).getTimeSlot().getStartDate().equals(toAppointment.getDate())
+					&& appt.getServiceBooking(0).getTimeSlot().getStartTime().equals(toAppointment.getStartTime())) {
+				appointment = appt;
+				break;
+			}
+			
+		}
+		if (appointment == null) {
+			throw new InvalidInputException("Can't find appointment");
+		}
+		
+		return appointment;
+		
 	}
 	
 	
