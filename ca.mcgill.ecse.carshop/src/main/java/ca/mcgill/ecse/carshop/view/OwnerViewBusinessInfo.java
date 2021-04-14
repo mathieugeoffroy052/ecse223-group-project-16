@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -27,7 +28,7 @@ import ca.mcgill.ecse.carshop.controller.TOTimeSlot;
 
 public class OwnerViewBusinessInfo extends JPanel {
 	
-	private String errorMessage = "";
+	private static String errorMessage = "";
 	private JLabel errorLabel;
 	
 	private JLabel businessInfoTitle;
@@ -44,12 +45,14 @@ public class OwnerViewBusinessInfo extends JPanel {
     private JLabel businessHoursTitle;
     private JList weeklySchedule; //list to hold weekly schedule (no scrolling)
     private TOBusinessHour[] weeklyHours = new TOBusinessHour[1]; //transfer object for business hours TODO
+    private static List<TOBusinessHour> TOBusinessHoursCS;
     private JButton addWeeklyHours;
     private JButton updateWeeklyHours;
     //holidays
     private JLabel holidayTitle;
     private JList upcomingHolidays; //list to show all the upcoming holidays
     private TOTimeSlot[] carshopHolidays = new TOTimeSlot[0]; //TO for holidays TODO
+    private static List<TOTimeSlot> TOHolidaysCS;
     private JScrollPane holidayScroller;
     private JButton addHoliday;
     private JButton updateHoliday;
@@ -57,6 +60,7 @@ public class OwnerViewBusinessInfo extends JPanel {
     private JLabel vacationTitle;
     private JList upcomingVacations; //list to show all upcoming vacations
     private TOTimeSlot[] carshopVacations = new TOTimeSlot[0]; //TO for vacations TODO
+    private static List<TOTimeSlot> TOVacationsCS;
     private JScrollPane vacationScroller;
     private JButton addVacation;
     private JButton updateVacation;
@@ -223,6 +227,16 @@ public class OwnerViewBusinessInfo extends JPanel {
         int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
         int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
         frame.setLocation(x, y);
+    }
+    
+    public static void getSystemInfo() {
+    	try {
+    		TOBusinessHoursCS = CarShopController.getBusinessHours();
+    		TOHolidaysCS = CarShopController.getHolidays();
+    		TOVacationsCS = CarShopController.getVacations();
+    	} catch (Exception e) {
+    		errorMessage += e.getMessage();
+    	}
     }
     
     //action methods
