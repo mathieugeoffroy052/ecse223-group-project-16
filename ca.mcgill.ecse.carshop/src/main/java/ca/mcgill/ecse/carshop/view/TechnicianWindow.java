@@ -1,21 +1,9 @@
 package ca.mcgill.ecse.carshop.view;
 
-import java.awt.EventQueue;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import java.awt.BorderLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import javax.swing.JSeparator;
-import javax.swing.JTable;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class TechnicianWindow {
 
@@ -27,6 +15,7 @@ public class TechnicianWindow {
 
 	/**
 	 * Launch the application.
+	 * remove this later when the constructor gets called from elsewhere upon a technician successfully logging in.
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -45,15 +34,15 @@ public class TechnicianWindow {
 	 * Create the application.
 	 */
 	public TechnicianWindow() {
-		initialize();
+		initializeTechnicianView();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initializeTechnicianView() {
 		frame = new JFrame();
-		frame.setBounds(400, 400, 750, 600);
+		frame.setBounds(400, 400, 700, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
