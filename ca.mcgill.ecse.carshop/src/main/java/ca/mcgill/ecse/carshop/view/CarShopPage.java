@@ -138,6 +138,7 @@ public class CarShopPage extends JFrame {
     private String error;
     private OwnerView ownerView;			//the owner view
     private CustomerView customerView;		//the customer view
+    private TechnicianView technicianView;	//the technician view
     //TODO
     //need to add the error message to the display, and send a confirmation that the user is logged in if it's successful.
     
@@ -145,20 +146,6 @@ public class CarShopPage extends JFrame {
 
     public CarShopPage() {
         initComponents();
-     
-        //found this code on the internet, but don't see a use for it...?
-//        try {
-//            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-//        } catch (ClassNotFoundException ex) {
-//            Logger.getLogger(CarShopPage.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            Logger.getLogger(CarShopPage.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            Logger.getLogger(CarShopPage.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (UnsupportedLookAndFeelException ex) {
-//            Logger.getLogger(CarShopPage.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-       
         
         setTitle("Car Shop Login Form");
         
@@ -197,6 +184,13 @@ public class CarShopPage extends JFrame {
             		
             		// init customer view
             		initComponentsCustomerView();
+            	}
+            	
+            	if (username.toLowerCase().contains("technician")) {
+            		System.out.println("Logging in as technician...");
+            		
+            		// init customer view
+            		initComponentsTechnicianView();
             	}
             }
         });
@@ -310,6 +304,18 @@ public class CarShopPage extends JFrame {
 		revalidate();
 		repaint();
 	}
+    
+    private void initComponentsTechnicianView() {
+    	// initialize the technician view
+    	technicianView = new TechnicianView();
+    	
+    	// set the content pane to technician view
+    	setContentPane(technicianView);
+    	
+    	// new code
+		revalidate();
+		repaint();    
+	}
   
     
     //initialize business info
@@ -326,33 +332,6 @@ public class CarShopPage extends JFrame {
     private void initComponentsOwnerViewAppointments() {
 		
 	}
-    
-//    public static void main(String args[]) {
-//
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(CarShopPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(CarShopPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(CarShopPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(CarShopPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-//
-//        /* Create and display the form */
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                new CarShopPage().setVisible(true);
-//            }
-//        });
-//    }
 
 
 }
