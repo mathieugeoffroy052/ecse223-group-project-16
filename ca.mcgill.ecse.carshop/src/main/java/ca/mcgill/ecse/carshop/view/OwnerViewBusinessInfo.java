@@ -179,7 +179,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 						.addComponent(vacationScroller)
 						.addComponent(horizontalLineBottom)
 				);
-				
+		
     }
 
 }
