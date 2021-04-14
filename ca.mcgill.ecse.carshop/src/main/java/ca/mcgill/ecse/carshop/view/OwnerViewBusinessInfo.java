@@ -1,5 +1,6 @@
 package ca.mcgill.ecse.carshop.view;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -19,10 +20,15 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
+import ca.mcgill.ecse.carshop.controller.CarShopController;
+import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 import ca.mcgill.ecse.carshop.controller.TOBusinessHour;
 import ca.mcgill.ecse.carshop.controller.TOTimeSlot;
 
 public class OwnerViewBusinessInfo extends JPanel {
+	
+	private String errorMessage = "";
+	private JLabel errorLabel;
 	
 	private JLabel businessInfoTitle;
 	private JLabel businessName;
@@ -59,6 +65,9 @@ public class OwnerViewBusinessInfo extends JPanel {
     	
 		
 		//set up components
+    	errorLabel = new JLabel(errorMessage);
+    	errorLabel.setForeground(Color.RED);
+    	
     	businessInfoTitle = new JLabel("Business Information");
     	businessInfoTitle.setFont(new Font("Arial", Font.BOLD, 22));
 		businessName = new JLabel(carshopName);
@@ -140,6 +149,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 		//horizontal Group
 		layout.setHorizontalGroup(
 				layout.createParallelGroup()
+					.addComponent(errorLabel)
 					.addComponent(horizontalLineTop)
 					.addGroup(layout.createSequentialGroup()
 							.addGroup(layout.createParallelGroup()
@@ -173,6 +183,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 		//vertical group
 		layout.setVerticalGroup(
 				layout.createSequentialGroup()
+						.addComponent(errorLabel)
 						.addComponent(horizontalLineTop)
 						.addGroup(layout.createParallelGroup()
 								.addGroup(layout.createSequentialGroup()
@@ -287,5 +298,26 @@ public class OwnerViewBusinessInfo extends JPanel {
 		centerWindow(updateBusinessInfo);
 		updateBusinessInfo.setVisible(true);
 		
+		updateInfo.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				String newName = nameText.getText();
+				String newEmail = emailText.getText();
+				String newAddress = addressText.getText();
+				String newPhoneNum = phoneNumText.getText();
+				updateInfoActionPerformed(evt, newName, newPhoneNum, newEmail, newAddress);
+			}
+		});
+		
 	}
+    
+    private void updateInfoActionPerformed(ActionEvent evt, String name, String phoneNum, String email, String address) {
+		try {
+			CarShopController.updateBusinessInfo(name, address, phoneNum, email);
+			errorMessage = "";
+		} catch (InvalidInputException e) {
+			errorMessage += e.getMessage();
+		}
+		
+	}
+    
 }
