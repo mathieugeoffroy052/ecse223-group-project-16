@@ -5,7 +5,7 @@ package ca.mcgill.ecse.carshop.model;
 import java.io.Serializable;
 
 // line 89 "../../../../../CarShopPersistence.ump"
-// line 160 "../../../../../carshop.ump"
+// line 161 "../../../../../carshop.ump"
 public class ServiceBooking implements Serializable
 {
 

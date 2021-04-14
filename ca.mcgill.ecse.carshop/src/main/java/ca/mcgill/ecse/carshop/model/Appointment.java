@@ -12,7 +12,7 @@ import java.util.*;
 
 // line 1 "../../../../../CarShopStates.ump"
 // line 3 "../../../../../CarShopPersistence.ump"
-// line 154 "../../../../../carshop.ump"
+// line 155 "../../../../../carshop.ump"
 public class Appointment implements Serializable
 {
 
@@ -324,7 +324,7 @@ public class Appointment implements Serializable
     return wasEventProcessed;
   }
 
-  private boolean __autotransition7__()
+  private boolean __autotransition3__()
   {
     boolean wasEventProcessed = false;
     
@@ -353,7 +353,7 @@ public class Appointment implements Serializable
         delete();
         break;
       case HasEnded:
-        __autotransition7__();
+        __autotransition3__();
         break;
     }
   }

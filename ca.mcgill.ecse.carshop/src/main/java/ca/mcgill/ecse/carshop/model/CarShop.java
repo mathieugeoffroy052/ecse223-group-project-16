@@ -8,7 +8,7 @@ import java.sql.Time;
 import java.sql.Date;
 
 // line 39 "../../../../../CarShopPersistence.ump"
-// line 6 "../../../../../carshop.ump"
+// line 7 "../../../../../carshop.ump"
 public class CarShop implements Serializable
 {
 
@@ -944,7 +944,7 @@ public class CarShop implements Serializable
 	    Customer.reinitializeUniqueUsernames(this.getCustomers());
   }
 
-  // line 18 "../../../../../carshop.ump"
+  // line 19 "../../../../../carshop.ump"
    public int getTechnicianWithString(String str){
     int iend = str.indexOf("-");
 		String subString = null;

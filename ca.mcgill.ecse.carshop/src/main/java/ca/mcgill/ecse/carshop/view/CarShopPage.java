@@ -91,8 +91,19 @@
  */
 package ca.mcgill.ecse.carshop.view;
 
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
@@ -114,6 +125,7 @@ public class CarShopPage extends JFrame {
     private JTextField textUsername;		//username text box
     private JLabel errorMessage;			//error popup label
     private String error;
+    private OwnerView ownerView;			//the owner view
     //TODO
     //need to add the error message to the display, and send a confirmation that the user is logged in if it's successful.
     
@@ -159,6 +171,14 @@ public class CarShopPage extends JFrame {
             	//inputted in the textUsername and textPassword text fields
             	//if user is logged in correctly, transition to a new window 
             	//(either customer or owner perspective)  
+            	
+            	if (username.equals("owner")) {
+					System.out.println("logging in as owner...");
+					
+					// init owner view
+					initComponentsOwnerView();
+					
+				}
             }
         });
     }
@@ -242,8 +262,36 @@ public class CarShopPage extends JFrame {
                 .addComponent(buttonLogin)
                 .addContainerGap(66, Short.MAX_VALUE))
         );
-        pack();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setSize(screenSize.width, screenSize.height);
     }
+    
+    //initialize the owner panel
+    private void initComponentsOwnerView() {
+    	//initialize the owner view
+		ownerView = new OwnerView();
+
+		//set the content pane to owner view
+		setContentPane(ownerView);
+		
+		revalidate();
+		repaint();
+	}
+    
+    //initialize business info
+    private void initComponentsOwnerViewBusinessInfo() {
+		
+	}
+    
+    //initialize services
+    private void initComponentsOwnerViewServices() {
+		
+	}
+    
+    //initialize appointments
+    private void initComponentsOwnerViewAppointments() {
+		
+	}
     
 //    public static void main(String args[]) {
 //

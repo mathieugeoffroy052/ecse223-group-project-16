@@ -2,8 +2,11 @@
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
 
 package ca.mcgill.ecse.carshop.controller;
+import java.util.List;
+import java.sql.Date;
+import java.sql.Time;
 
-// line 79 "../../../../../CarShopTransferObjects.ump"
+// line 80 "../../../../../CarShopTransferObjects.ump"
 public class TOAppointment
 {
 
@@ -12,32 +15,92 @@ public class TOAppointment
   //------------------------
 
   //TOAppointment Attributes
-  private String name;
+  private String customerName;
+  private String serviceName;
+  private Date date;
+  private Time startTime;
+  private List<TOServiceBooking> serviceBookings;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public TOAppointment(String aName)
+  public TOAppointment(String aCustomerName, String aServiceName, Date aDate, Time aStartTime, List<TOServiceBooking> aServiceBookings)
   {
-    name = aName;
+    customerName = aCustomerName;
+    serviceName = aServiceName;
+    date = aDate;
+    startTime = aStartTime;
+    serviceBookings = aServiceBookings;
   }
 
   //------------------------
   // INTERFACE
   //------------------------
 
-  public boolean setName(String aName)
+  public boolean setCustomerName(String aCustomerName)
   {
     boolean wasSet = false;
-    name = aName;
+    customerName = aCustomerName;
     wasSet = true;
     return wasSet;
   }
 
-  public String getName()
+  public boolean setServiceName(String aServiceName)
   {
-    return name;
+    boolean wasSet = false;
+    serviceName = aServiceName;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setDate(Date aDate)
+  {
+    boolean wasSet = false;
+    date = aDate;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setStartTime(Time aStartTime)
+  {
+    boolean wasSet = false;
+    startTime = aStartTime;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setServiceBookings(List<TOServiceBooking> aServiceBookings)
+  {
+    boolean wasSet = false;
+    serviceBookings = aServiceBookings;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public String getCustomerName()
+  {
+    return customerName;
+  }
+
+  public String getServiceName()
+  {
+    return serviceName;
+  }
+
+  public Date getDate()
+  {
+    return date;
+  }
+
+  public Time getStartTime()
+  {
+    return startTime;
+  }
+
+  public List<TOServiceBooking> getServiceBookings()
+  {
+    return serviceBookings;
   }
 
   public void delete()
@@ -47,6 +110,10 @@ public class TOAppointment
   public String toString()
   {
     return super.toString() + "["+
-            "name" + ":" + getName()+ "]";
+            "customerName" + ":" + getCustomerName()+ "," +
+            "serviceName" + ":" + getServiceName()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "date" + "=" + (getDate() != null ? !getDate().equals(this)  ? getDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "  " + "startTime" + "=" + (getStartTime() != null ? !getStartTime().equals(this)  ? getStartTime().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "  " + "serviceBookings" + "=" + (getServiceBookings() != null ? !getServiceBookings().equals(this)  ? getServiceBookings().toString().replaceAll("  ","    ") : "this" : "null");
   }
 }

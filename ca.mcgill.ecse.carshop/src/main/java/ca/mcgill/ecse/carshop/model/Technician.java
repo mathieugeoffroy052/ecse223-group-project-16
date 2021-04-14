@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.*;
 
 // line 103 "../../../../../CarShopPersistence.ump"
-// line 58 "../../../../../carshop.ump"
+// line 59 "../../../../../carshop.ump"
 public class Technician extends User implements Serializable
 {
 
@@ -150,7 +150,7 @@ public class Technician extends User implements Serializable
     super.delete();
   }
 
-  // line 68 "../../../../../carshop.ump"
+  // line 69 "../../../../../carshop.ump"
    public TechnicianType getTechnicianType(String string){
     string = string.toLowerCase();
 	  int toCheck = carShop.getTechnicianWithString(string);
