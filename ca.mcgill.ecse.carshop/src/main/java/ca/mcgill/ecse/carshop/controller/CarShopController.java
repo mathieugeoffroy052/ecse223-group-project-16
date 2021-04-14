@@ -2570,4 +2570,46 @@ public class CarShopController {
 	
 	
 	/** ** END APPOINTMENT MANAGEMENT ** **/
+	
+	// get appointments for owner view
+	public static List<TOAppointment> getAppointmentsOwner() {
+		CarShop carShop = CarShopApplication.getCarShop();
+		List<Appointment> appointments = carShop.getAppointments();
+		List<TOAppointment> toAppointments = new ArrayList<>();
+		
+		for (Appointment appointment : appointments) {
+			String customerName = appointment.getCustomer().getUsername();
+			String serviceName = appointment.getBookableService().getName();
+			Date date = appointment.getServiceBooking(0).getTimeSlot().getStartDate();
+			Time time = appointment.getServiceBooking(0).getTimeSlot().getStartTime();
+			
+			List<ServiceBooking> serviceBookings = appointment.getServiceBookings();
+			List<TOServiceBooking> toServiceBookings = new ArrayList<>();
+			
+			for (ServiceBooking serviceBooking : serviceBookings) {
+				String name = serviceBooking.getService().getName();
+				int duration = serviceBooking.getService().getDuration();
+				String garage = serviceBooking.getService().getGarage().getTechnician().getType().name();
+				
+				TOGarage toGarage = new TOGarage(garage);
+				TOService toService = new TOService(name, duration, toGarage);
+				
+				Date startDate = serviceBooking.getTimeSlot().getStartDate();
+				Date endDate = serviceBooking.getTimeSlot().getEndDate();
+				Time startTime = serviceBooking.getTimeSlot().getStartTime();
+				Time endTime = serviceBooking.getTimeSlot().getEndTime();
+				
+				TOTimeSlot toTimeSlot = new TOTimeSlot(startDate, startTime, endDate, endTime);
+				
+				TOServiceBooking toServiceBooking = new TOServiceBooking(toService, toTimeSlot);
+				toServiceBookings.add(toServiceBooking);
+			}
+			String status = appointment.getAppointmentStatusFullName();
+			
+			TOAppointment toAppointment = new TOAppointment(customerName, serviceName, date, time, status, toServiceBookings);
+			toAppointments.add(toAppointment);
+		}
+		
+		return toAppointments;
+	}
 }

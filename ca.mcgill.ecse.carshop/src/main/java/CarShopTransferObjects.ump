@@ -60,9 +60,9 @@ class TOBookableService {
 }
 
 class TOService {
+  name;
   int duration;
   TOGarage garage;
-  name;
 }
 
 class TOServiceCombo {
@@ -83,10 +83,11 @@ class TOAppointment {
 	serviceName;
 	Date date;
 	Time startTime;
+	status;
 	List<TOServiceBooking> serviceBookings;
 }
 
 class TOServiceBooking {
-	TOService;
+	TOService service;
 	TOTimeSlot timeSlot;
 }

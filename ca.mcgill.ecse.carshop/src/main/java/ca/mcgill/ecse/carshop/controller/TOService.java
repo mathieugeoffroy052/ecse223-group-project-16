@@ -12,24 +12,32 @@ public class TOService
   //------------------------
 
   //TOService Attributes
+  private String name;
   private int duration;
   private TOGarage garage;
-  private String name;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public TOService(int aDuration, TOGarage aGarage, String aName)
+  public TOService(String aName, int aDuration, TOGarage aGarage)
   {
+    name = aName;
     duration = aDuration;
     garage = aGarage;
-    name = aName;
   }
 
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setName(String aName)
+  {
+    boolean wasSet = false;
+    name = aName;
+    wasSet = true;
+    return wasSet;
+  }
 
   public boolean setDuration(int aDuration)
   {
@@ -47,12 +55,9 @@ public class TOService
     return wasSet;
   }
 
-  public boolean setName(String aName)
+  public String getName()
   {
-    boolean wasSet = false;
-    name = aName;
-    wasSet = true;
-    return wasSet;
+    return name;
   }
 
   public int getDuration()
@@ -65,11 +70,6 @@ public class TOService
     return garage;
   }
 
-  public String getName()
-  {
-    return name;
-  }
-
   public void delete()
   {}
 
@@ -77,8 +77,8 @@ public class TOService
   public String toString()
   {
     return super.toString() + "["+
-            "duration" + ":" + getDuration()+ "," +
-            "name" + ":" + getName()+ "]" + System.getProperties().getProperty("line.separator") +
+            "name" + ":" + getName()+ "," +
+            "duration" + ":" + getDuration()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "garage" + "=" + (getGarage() != null ? !getGarage().equals(this)  ? getGarage().toString().replaceAll("  ","    ") : "this" : "null");
   }
 }

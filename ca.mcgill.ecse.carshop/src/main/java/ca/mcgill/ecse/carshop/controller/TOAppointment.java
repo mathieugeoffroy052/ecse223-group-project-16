@@ -19,18 +19,20 @@ public class TOAppointment
   private String serviceName;
   private Date date;
   private Time startTime;
+  private String status;
   private List<TOServiceBooking> serviceBookings;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public TOAppointment(String aCustomerName, String aServiceName, Date aDate, Time aStartTime, List<TOServiceBooking> aServiceBookings)
+  public TOAppointment(String aCustomerName, String aServiceName, Date aDate, Time aStartTime, String aStatus, List<TOServiceBooking> aServiceBookings)
   {
     customerName = aCustomerName;
     serviceName = aServiceName;
     date = aDate;
     startTime = aStartTime;
+    status = aStatus;
     serviceBookings = aServiceBookings;
   }
 
@@ -70,6 +72,14 @@ public class TOAppointment
     return wasSet;
   }
 
+  public boolean setStatus(String aStatus)
+  {
+    boolean wasSet = false;
+    status = aStatus;
+    wasSet = true;
+    return wasSet;
+  }
+
   public boolean setServiceBookings(List<TOServiceBooking> aServiceBookings)
   {
     boolean wasSet = false;
@@ -98,6 +108,11 @@ public class TOAppointment
     return startTime;
   }
 
+  public String getStatus()
+  {
+    return status;
+  }
+
   public List<TOServiceBooking> getServiceBookings()
   {
     return serviceBookings;
@@ -111,7 +126,8 @@ public class TOAppointment
   {
     return super.toString() + "["+
             "customerName" + ":" + getCustomerName()+ "," +
-            "serviceName" + ":" + getServiceName()+ "]" + System.getProperties().getProperty("line.separator") +
+            "serviceName" + ":" + getServiceName()+ "," +
+            "status" + ":" + getStatus()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "date" + "=" + (getDate() != null ? !getDate().equals(this)  ? getDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "startTime" + "=" + (getStartTime() != null ? !getStartTime().equals(this)  ? getStartTime().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "serviceBookings" + "=" + (getServiceBookings() != null ? !getServiceBookings().equals(this)  ? getServiceBookings().toString().replaceAll("  ","    ") : "this" : "null");
