@@ -56,7 +56,7 @@ public class CarShopController {
 				List<TOAppointment> temp = new ArrayList<>();
 				for(int i = 0; i < size; i++) {
 					String nameOfService = c.getAppointment(i).getServiceBooking(0).getService().getName();
-					temp.add(new TOAppointment(nameOfService));
+					//temp.add(new TOAppointment(nameOfService)); TODO
 					
 				}
 				return temp;
