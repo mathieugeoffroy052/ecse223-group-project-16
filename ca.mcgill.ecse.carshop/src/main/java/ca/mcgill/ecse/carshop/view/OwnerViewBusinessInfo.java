@@ -11,9 +11,7 @@ import javax.swing.ListSelectionModel;
 import ca.mcgill.ecse.carshop.controller.TOBusinessHour;
 import ca.mcgill.ecse.carshop.controller.TOTimeSlot;
 
-public class OwnerViewBusinessInfo {
-	
-	private JPanel businessInfoPanel;
+public class OwnerViewBusinessInfo extends JPanel {
 	
 	private JLabel businessName;
     private String carshopName;
@@ -44,7 +42,7 @@ public class OwnerViewBusinessInfo {
     private JButton updateVacation;
     
     public OwnerViewBusinessInfo() {
-    	businessInfoPanel = new JPanel();
+    	
 		
 		//set up components
 		businessName = new JLabel(carshopName);
@@ -78,31 +76,31 @@ public class OwnerViewBusinessInfo {
 	    addVacation = new JButton("Add");
 	    updateVacation = new JButton("Update");
 	    
-	    businessInfoPanel.add(businessName);
-	    businessInfoPanel.add(phoneNum);
-	    businessInfoPanel.add(email);
-	    businessInfoPanel.add(updateBusinessInfo);
+	    this.add(businessName);
+	    this.add(phoneNum);
+	    this.add(email);
+	    this.add(updateBusinessInfo);
 	    
-	    businessInfoPanel.add(businessHoursTitle);
-	    businessInfoPanel.add(weeklySchedule);
-	    businessInfoPanel.add(addWeeklyHours);
-	    businessInfoPanel.add(updateWeeklyHours);
+	    this.add(businessHoursTitle);
+	    this.add(weeklySchedule);
+	    this.add(addWeeklyHours);
+	    this.add(updateWeeklyHours);
 	    
-	    businessInfoPanel.add(holidayTitle);
-	    businessInfoPanel.add(upcomingHolidays);
-	    businessInfoPanel.add(holidayScroller);
-	    businessInfoPanel.add(addHoliday);
-	    businessInfoPanel.add(updateHoliday);
+	    this.add(holidayTitle);
+	    this.add(upcomingHolidays);
+	    this.add(holidayScroller);
+	    this.add(addHoliday);
+	    this.add(updateHoliday);
 	    
-	    businessInfoPanel.add(vacationTitle);
-	    businessInfoPanel.add(upcomingVacations);
-	    businessInfoPanel.add(vacationScroller);
-	    businessInfoPanel.add(addVacation);
-	    businessInfoPanel.add(updateVacation);
+	    this.add(vacationTitle);
+	    this.add(upcomingVacations);
+	    this.add(vacationScroller);
+	    this.add(addVacation);
+	    this.add(updateVacation);
 	    
 		//layout
-		GroupLayout layout = new GroupLayout(businessInfoPanel);
-		businessInfoPanel.setLayout(layout);
+		GroupLayout layout = new GroupLayout(this);
+		this.setLayout(layout);
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 		//horizontal Group
