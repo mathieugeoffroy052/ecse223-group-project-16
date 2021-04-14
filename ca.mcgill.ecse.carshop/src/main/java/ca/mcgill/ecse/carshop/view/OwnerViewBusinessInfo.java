@@ -225,7 +225,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 						.addComponent(horizontalLineBottom)
 				);
 		
-
+		refreshData();
     }
     
     //helper methods

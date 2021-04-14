@@ -44,7 +44,7 @@ public class OwnerViewAppointments extends JPanel {
 			String status = appt.getStatus();
 			List<TOServiceBooking> serviceBookings = appt.getServiceBookings();
 			
-			appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings));
+		appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings));
 		}
 		
 		titleJLabel = new JLabel("Appointments");
