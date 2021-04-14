@@ -1,12 +1,21 @@
 package ca.mcgill.ecse.carshop.view;
 
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
@@ -15,6 +24,7 @@ import ca.mcgill.ecse.carshop.controller.TOTimeSlot;
 
 public class OwnerViewBusinessInfo extends JPanel {
 	
+	private JLabel businessInfoTitle;
 	private JLabel businessName;
     private String carshopName = "name";
     private JLabel phoneNum;
@@ -49,6 +59,8 @@ public class OwnerViewBusinessInfo extends JPanel {
     	
 		
 		//set up components
+    	businessInfoTitle = new JLabel("Business Information");
+    	businessInfoTitle.setFont(new Font("Arial", Font.BOLD, 22));
 		businessName = new JLabel(carshopName);
 	    phoneNum = new JLabel(carshopPhoneNum);
 	    email = new JLabel(carshopEmail);
@@ -56,6 +68,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 	    updateBusinessInfo = new JButton("Update");
 	    
 	    businessHoursTitle = new JLabel("Weekly Business Hours");
+	    businessHoursTitle.setFont(new Font("Arial", Font.BOLD, 22));
 	    weeklySchedule = new JList(weeklyHours);
 	    weeklySchedule.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 	    weeklySchedule.setLayoutOrientation(JList.VERTICAL);
@@ -64,6 +77,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 	    updateWeeklyHours = new JButton("Update");
 	    
 	    holidayTitle = new JLabel("Holidays");
+	    holidayTitle.setFont(new Font("Arial", Font.BOLD, 22));
 	    upcomingHolidays = new JList(carshopHolidays); 
 	    upcomingHolidays.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 	    upcomingHolidays.setLayoutOrientation(JList.VERTICAL);
@@ -73,6 +87,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 	    updateHoliday = new JButton("Update");
 	    
 	    vacationTitle = new JLabel("Vacations");
+	    vacationTitle.setFont(new Font("Arial", Font.BOLD, 22));
 	    upcomingVacations = new JList(carshopVacations); 
 	    upcomingVacations.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 	    upcomingVacations.setLayoutOrientation(JList.VERTICAL);
@@ -87,7 +102,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 		JSeparator horizontalLineBottom = new JSeparator();
 		JSeparator verticalLineLine = new JSeparator(SwingConstants.VERTICAL);
 
-	    
+	    this.add(businessInfoTitle);
 	    this.add(businessName);
 	    this.add(phoneNum);
 	    this.add(email);
@@ -110,6 +125,13 @@ public class OwnerViewBusinessInfo extends JPanel {
 	    this.add(addVacation);
 	    this.add(updateVacation);
 	    
+	    //action listeners
+	    updateBusinessInfo.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				updateBusinessInfoActionPerformed(evt);
+			}
+		});
+	    
 		//layout
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
@@ -118,34 +140,35 @@ public class OwnerViewBusinessInfo extends JPanel {
 		//horizontal Group
 		layout.setHorizontalGroup(
 				layout.createParallelGroup()
-				.addComponent(horizontalLineTop)
-				.addGroup(layout.createSequentialGroup()
-						.addGroup(layout.createParallelGroup()
-								.addComponent(businessName)
-								.addComponent(phoneNum)
-								.addComponent(email)
-								.addComponent(address)
-								.addComponent(updateBusinessInfo))
-						.addComponent(verticalLineLine)
-						.addGroup(layout.createParallelGroup()
-								.addGroup(layout.createSequentialGroup()
-										.addComponent(businessHoursTitle)
-										.addComponent(updateWeeklyHours)
-										.addComponent(addWeeklyHours))
-								.addComponent(weeklySchedule)))
-				.addComponent(horizontalLineMiddle1)
-				.addGroup(layout.createSequentialGroup()
-						.addComponent(holidayTitle)
-						.addComponent(updateHoliday)
-						.addComponent(addHoliday))
-				.addComponent(holidayScroller)
-				.addComponent(horizontalLineMiddle2)
-				.addGroup(layout.createSequentialGroup()
-						.addComponent(vacationTitle)
-						.addComponent(updateVacation)
-						.addComponent(addVacation))
-				.addComponent(vacationScroller)
-				.addComponent(horizontalLineBottom));
+					.addComponent(horizontalLineTop)
+					.addGroup(layout.createSequentialGroup()
+							.addGroup(layout.createParallelGroup()
+									.addComponent(businessInfoTitle)
+									.addComponent(businessName)
+									.addComponent(phoneNum)
+									.addComponent(email)
+									.addComponent(address)
+									.addComponent(updateBusinessInfo))
+							.addComponent(verticalLineLine)
+							.addGroup(layout.createParallelGroup()
+									.addGroup(layout.createSequentialGroup()
+											.addComponent(businessHoursTitle)
+											.addComponent(updateWeeklyHours)
+											.addComponent(addWeeklyHours))
+									.addComponent(weeklySchedule)))
+					.addComponent(horizontalLineMiddle1)
+					.addGroup(layout.createSequentialGroup()
+							.addComponent(holidayTitle)
+							.addComponent(updateHoliday)
+							.addComponent(addHoliday))
+					.addComponent(holidayScroller)
+					.addComponent(horizontalLineMiddle2)
+					.addGroup(layout.createSequentialGroup()
+							.addComponent(vacationTitle)
+							.addComponent(updateVacation)
+							.addComponent(addVacation))
+					.addComponent(vacationScroller)
+					.addComponent(horizontalLineBottom));
 		
 		//vertical group
 		layout.setVerticalGroup(
@@ -153,6 +176,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 						.addComponent(horizontalLineTop)
 						.addGroup(layout.createParallelGroup()
 								.addGroup(layout.createSequentialGroup()
+										.addComponent(businessInfoTitle)
 										.addComponent(businessName)
 										.addComponent(phoneNum)
 										.addComponent(email)
@@ -181,5 +205,87 @@ public class OwnerViewBusinessInfo extends JPanel {
 				);
 		
     }
+    
+    //helper methods
+    public static void centerWindow(Window frame) {
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
+        int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
+        frame.setLocation(x, y);
+    }
+    
+    //action methods
+    private void updateBusinessInfoActionPerformed(ActionEvent evt) {
+		JFrame updateBusinessInfo = new JFrame();
+		JLabel updateTitle = new JLabel("Update Business Information");
+		updateTitle.setFont(new Font("Arial", Font.BOLD, 22));
+		JLabel name = new JLabel("Name:");
+		JTextField nameText = new JTextField(carshopName);
+		JLabel address = new JLabel("Address:");
+		JTextField addressText = new JTextField(carshopAddress);
+		JLabel phoneNum = new JLabel("Phone Number:");
+		JFormattedTextField phoneNumText = new JFormattedTextField(carshopPhoneNum);
+		JLabel email = new JLabel("Email:");
+		JTextField emailText = new JTextField(carshopEmail);
+		JButton updateInfo = new JButton("Update");
+		
+		updateBusinessInfo.add(updateTitle);
+		updateBusinessInfo.add(name);
+		updateBusinessInfo.add(address);
+		updateBusinessInfo.add(phoneNum);
+		updateBusinessInfo.add(email);
+		updateBusinessInfo.add(nameText);
+		updateBusinessInfo.add(addressText);
+		updateBusinessInfo.add(phoneNumText);
+		updateBusinessInfo.add(emailText);
+		updateBusinessInfo.add(updateInfo);
+		
+		GroupLayout layout = new GroupLayout(updateBusinessInfo.getContentPane());
+		updateBusinessInfo.getContentPane().setLayout(layout);
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+		
+		//horizontal
+		layout.setHorizontalGroup(
+				layout.createParallelGroup()
+					.addComponent(updateTitle)
+					.addGroup(layout.createSequentialGroup()
+							.addGroup(layout.createParallelGroup()
+									.addComponent(name)
+									.addComponent(phoneNum)
+									.addComponent(email)
+									.addComponent(address))
+							.addGroup(layout.createParallelGroup()
+									.addComponent(nameText)
+									.addComponent(phoneNumText)
+									.addComponent(emailText)
+									.addComponent(addressText)
+									))
+					.addComponent(updateInfo));
+		
 
+		
+		//vertical 
+		layout.setVerticalGroup(
+				layout.createSequentialGroup()
+					.addComponent(updateTitle)
+					.addGroup(layout.createParallelGroup()
+							.addComponent(name)
+							.addComponent(nameText))
+					.addGroup(layout.createParallelGroup()
+							.addComponent(phoneNum)
+							.addComponent(phoneNumText))
+					.addGroup(layout.createParallelGroup()
+							.addComponent(email)
+							.addComponent(emailText))
+					.addGroup(layout.createParallelGroup()
+							.addComponent(address)
+							.addComponent(addressText))
+					.addComponent(updateInfo));
+				
+		updateBusinessInfo.pack();
+		centerWindow(updateBusinessInfo);
+		updateBusinessInfo.setVisible(true);
+		
+	}
 }
