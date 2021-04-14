@@ -38,6 +38,33 @@ public class CarShopController {
 	}
 	
 	
+	public static List<TOBookableService> getCarShopBookableServices() {
+		CarShop cs = CarShopApplication.getCarShop();
+		List<TOBookableService> toReturn = new ArrayList<TOBookableService>();
+		List<BookableService> bs = cs.getBookableServices();
+		for(BookableService b : bs) {
+			TOBookableService toAdd = new TOBookableService(b.getName());
+			toReturn.add(toAdd);
+		}
+		return toReturn;
+	}
+	
+	public static List<TOAppointment> getCustomerAppointments(String username) {
+		for(Customer c : CarShopApplication.getCarShop().getCustomers()) {
+			if(c.getUsername().equals(username)) {
+				int size = c.getAppointments().size();
+				List<TOAppointment> temp = new ArrayList<>();
+				for(int i = 0; i < size; i++) {
+					String nameOfService = c.getAppointment(i).getServiceBooking(0).getService().getName();
+					//temp.add(new TOAppointment(nameOfService)); TODO
+					
+				}
+				return temp;
+			}
+		}
+		return null;
+	}
+	
 	public static void removeBusinessHourIndividually(String day, String startTime, String endTime, String type, CarShop cs) throws InvalidInputException {
 		if(CarShopApplication.getCurrentUser()!=null) {
 			TechnicianType technicianType = getTechnicianType(CarShopApplication.getCurrentUser());
@@ -2570,4 +2597,46 @@ public class CarShopController {
 	
 	
 	/** ** END APPOINTMENT MANAGEMENT ** **/
+	
+	// get appointments for owner view
+	public static List<TOAppointment> getAppointmentsOwner() {
+		CarShop carShop = CarShopApplication.getCarShop();
+		List<Appointment> appointments = carShop.getAppointments();
+		List<TOAppointment> toAppointments = new ArrayList<>();
+		
+		for (Appointment appointment : appointments) {
+			String customerName = appointment.getCustomer().getUsername();
+			String serviceName = appointment.getBookableService().getName();
+			Date date = appointment.getServiceBooking(0).getTimeSlot().getStartDate();
+			Time time = appointment.getServiceBooking(0).getTimeSlot().getStartTime();
+			
+			List<ServiceBooking> serviceBookings = appointment.getServiceBookings();
+			List<TOServiceBooking> toServiceBookings = new ArrayList<>();
+			
+			for (ServiceBooking serviceBooking : serviceBookings) {
+				String name = serviceBooking.getService().getName();
+				int duration = serviceBooking.getService().getDuration();
+				String garage = serviceBooking.getService().getGarage().getTechnician().getType().name();
+				
+				TOGarage toGarage = new TOGarage(garage);
+				TOService toService = new TOService(name, duration, toGarage);
+				
+				Date startDate = serviceBooking.getTimeSlot().getStartDate();
+				Date endDate = serviceBooking.getTimeSlot().getEndDate();
+				Time startTime = serviceBooking.getTimeSlot().getStartTime();
+				Time endTime = serviceBooking.getTimeSlot().getEndTime();
+				
+				TOTimeSlot toTimeSlot = new TOTimeSlot(startDate, startTime, endDate, endTime);
+				
+				TOServiceBooking toServiceBooking = new TOServiceBooking(toService, toTimeSlot);
+				toServiceBookings.add(toServiceBooking);
+			}
+			String status = appointment.getAppointmentStatusFullName();
+			
+			TOAppointment toAppointment = new TOAppointment(customerName, serviceName, date, time, status, toServiceBookings);
+			toAppointments.add(toAppointment);
+		}
+		
+		return toAppointments;
+	}
 }
