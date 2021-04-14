@@ -2568,6 +2568,28 @@ public class CarShopController {
 		return false;
 	}
 	
+	// method that finds an appointment given the TO appointment
+	public static Appointment findAppointment(TOAppointment toAppointment) throws InvalidInputException{
+		List<Appointment> appointments = CarShopApplication.getCarShop().getAppointments();
+		Appointment appointment = null;
+		for(Appointment appt: appointments) {
+			if (appt.getCustomer().getUsername().equals(toAppointment.getCustomerName())
+					&& appt.getBookableService().getName().equals(toAppointment.getServiceName())
+					&& appt.getServiceBooking(0).getTimeSlot().getStartDate().equals(toAppointment.getDate())
+					&& appt.getServiceBooking(0).getTimeSlot().getStartTime().equals(toAppointment.getStartTime())) {
+				appointment = appt;
+				break;
+			}
+			
+		}
+		if (appointment == null) {
+			throw new InvalidInputException("Can't find appointment");
+		}
+		
+		return appointment;
+		
+	}
+	
 	
 	/** ** END APPOINTMENT MANAGEMENT ** **/
 	
