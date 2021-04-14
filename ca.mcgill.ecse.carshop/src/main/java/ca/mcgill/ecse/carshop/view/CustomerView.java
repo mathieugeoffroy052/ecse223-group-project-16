@@ -1,8 +1,10 @@
 package ca.mcgill.ecse.carshop.view;
 
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -29,15 +31,23 @@ public class CustomerView extends JPanel {
 	private JTextField updateApptEnterNewTimeTextField;
 	private JTextField newUsernameTextField;
 	private JTextField newPasswordTextField;
+	private JLabel errorMessage;
 	
-	private String error;
+	private String error = "";
 	
+	// lists
+	private HashMap<Integer, TOAppointment> appointments;
+		
 	public CustomerView() {
 		initialize();
 	}
 
 	private void initialize() {
 
+		errorMessage = new JLabel();
+		errorMessage.setForeground(Color.RED);
+		errorMessage.setBounds(6, 648, 97, 16);
+		add(errorMessage);
 		
 		JLabel bookanApptText = new JLabel("Book an Appointment");
 		bookanApptText.setBounds(16, 16, 136, 18);
@@ -47,7 +57,7 @@ public class CustomerView extends JPanel {
 		chooseServiceText.setBounds(16, 45, 208, 18);
 		add(chooseServiceText);
 		
-		JComboBox<TOBookableService> createApptChooseServiceComboBox = new JComboBox<TOBookableService>();
+		JComboBox<String> createApptChooseServiceComboBox = new JComboBox<String>(new String[0]);
 		createApptChooseServiceComboBox.setBounds(13, 64, 216, 38);
 		add(createApptChooseServiceComboBox);
 		
@@ -73,7 +83,7 @@ public class CustomerView extends JPanel {
 		createApptSelectOptServicesText.setBounds(16, 114, 339, 18);
 		add(createApptSelectOptServicesText);
 		
-		JList<String> createApptSelectOptServicesList = new JList<String>();
+		JList<String> createApptSelectOptServicesList = new JList<String>(new String[0]);
 		createApptSelectOptServicesList.setBounds(18, 144, 208, 70);
 		add(createApptSelectOptServicesList);
 		
@@ -97,7 +107,7 @@ public class CustomerView extends JPanel {
 		updateAppointmentAndServicesText.setBounds(16, 313, 239, 18);
 		add(updateAppointmentAndServicesText);
 		
-		JComboBox<String> updateApptUpdateOptServicesList = new JComboBox<String>();
+		JComboBox<String> updateApptUpdateOptServicesList = new JComboBox<String>(new String[0]);
 		updateApptUpdateOptServicesList.setBounds(13, 332, 216, 38);
 		add(updateApptUpdateOptServicesList);
 		
@@ -123,7 +133,7 @@ public class CustomerView extends JPanel {
 		updateApptEnterNewOptServicesText.setBounds(16, 413, 339, 18);
 		add(updateApptEnterNewOptServicesText);
 		
-		JList<String> updateApptEnterNewOptServicesList = new JList<String>();
+		JList<String> updateApptEnterNewOptServicesList = new JList<String>(new String[0]);
 		updateApptEnterNewOptServicesList.setBounds(18, 443, 208, 70);
 		add(updateApptEnterNewOptServicesList);
 		
@@ -131,7 +141,7 @@ public class CustomerView extends JPanel {
 		updateApptButton.setBounds(526, 490, 117, 29);
 		add(updateApptButton);
 		
-		JComboBox<String> updateApptNewServiceSelected = new JComboBox<String>();
+		JComboBox<String> updateApptNewServiceSelected = new JComboBox<String>(new String[0]);
 		updateApptNewServiceSelected.setBounds(13, 361, 216, 38);
 		add(updateApptNewServiceSelected);
 		
@@ -144,7 +154,7 @@ public class CustomerView extends JPanel {
 		lblCancelAnAppointment.setBounds(16, 573, 149, 16);
 		add(lblCancelAnAppointment);
 		
-		JComboBox<String> cancelApptSelectApptBox = new JComboBox<String>();
+		JComboBox<String> cancelApptSelectApptBox = new JComboBox<String>(new String[0]);
 		cancelApptSelectApptBox.setBounds(13, 590, 216, 38);
 		add(cancelApptSelectApptBox);
 		
@@ -192,7 +202,7 @@ public class CustomerView extends JPanel {
 
 			private void createApptConfirmButtonActionPerformed(ActionEvent evt) {
 				// TODO Auto-generated method stub
-				error = null;
+				error = "";
 				
 				// call the controller
 //				try {
@@ -209,6 +219,103 @@ public class CustomerView extends JPanel {
 	}
 	
 	private void refreshData() {
+		errorMessage.setText(error);
+		if (error == null || error.length() == 0) {
+			// populate page with data
+			// text fields
+			createApptEnterStartDateTextField.setText("");
+			createApptEnterStartTimeTextField.setText("");
+			updateApptEnterNewDateTextField.setText("");
+			updateApptEnterNewTimeTextField.setText("");
+			// username
+			newUsernameTextField.setText("");
+			newPasswordTextField.setText("");
+
+			// toggle sick status
+			appointments = new HashMap<Integer, TOAppointment>();
+			driverToggleList.removeAllItems();
+			Integer index = 0;
+			for (TODriver driver : BtmsController.getDrivers()) {
+				drivers.put(index, driver.getId());
+				driverToggleList.addItem("#" + driver.getId() + " " + driver.getName());
+				index++;
+			};
+			driverToggleList.setSelectedIndex(-1);
+
+			// toggle repair status
+			buses = new HashMap<Integer, String>();
+			busToggleList.removeAllItems();
+			index = 0;
+			for (TOBusVehicle bus : BtmsController.getBuses()) {
+				buses.put(index, bus.getLicencePlate());
+				busToggleList.addItem(bus.getLicencePlate());
+				index++;
+			};
+			busToggleList.setSelectedIndex(-1);
+		
+			// bus assignment - bus
+			availableBuses = new HashMap<Integer, String>();
+			busList.removeAllItems();
+			index = 0;
+			for (TOBusVehicle bus : BtmsController.getAvailableBuses()) {
+				availableBuses.put(index, bus.getLicencePlate());
+				busList.addItem(bus.getLicencePlate());
+				index++;
+			};
+			busList.setSelectedIndex(-1);
+			// bus assignment - route (also combo box for bus route visualization)
+			routes = new HashMap<Integer, TORoute>();
+			routeList.removeAllItems();
+			routeList2.removeAllItems();
+			routeList2.addItem("no Route selected");
+			index = 0;
+			for (TORoute route : BtmsController.getRoutes()) {
+				routes.put(index, route);
+				routeList.addItem("#" + route.getNumber());
+				routeList2.addItem("#" + route.getNumber());
+				index++;
+			};
+			routeList.setSelectedIndex(-1);
+			// bus assignment - date
+			assignmentDatePicker.getModel().setValue(null);
+			
+			// schedule driver - driver
+			availableDrivers = new HashMap<Integer, Integer>();
+			driverList.removeAllItems();
+			index = 0;
+			for (TODriver driver : BtmsController.getAvailableDrivers()) {
+				availableDrivers.put(index, driver.getId());
+				driverList.addItem("#" + driver.getId() + " " + driver.getName());
+				index++;
+			};
+			driverList.setSelectedIndex(-1);
+			// schedule driver - assignment
+			assignments = new HashMap<Integer, TORouteAssignment>();
+			assignmentList.removeAllItems();
+			index = 0;
+			for (TORouteAssignment assignment : BtmsController.getAssignments()) {
+				assignments.put(index, assignment);
+				assignmentList.addItem(assignment.getDate() + ": Route #" + assignment.getNumber() + ", Bus " + assignment.getLicencePlate());
+				index++;
+			};
+			assignmentList.setSelectedIndex(-1);
+			// schedule driver - shift
+			shifts = new HashMap<Integer, String>();
+			shiftList.removeAllItems();
+			index = 0;
+			for (String shift : BtmsController.getShiftValues()) {
+				shifts.put(index, shift);
+				shiftList.addItem(shift);
+				index++;
+			};
+			// selectedIndex of shiftList defaults to 0 - does not need to be set
+		}
+		
+		// daily overview
+		refreshDailyOverview();
+
+		// this is needed because the size of the window changes depending on whether an error message is shown or not
+		
 	}
 
 }
