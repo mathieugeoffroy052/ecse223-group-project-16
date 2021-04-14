@@ -1722,14 +1722,14 @@ public class CarShopController {
     }
 
     // converts a sql.Date to a string
-    private static String dateToString(Date date) {
+    public static String dateToString(Date date) {
         String pattern = "yyyy-MM-dd";
         SimpleDateFormat formatter = new SimpleDateFormat(pattern);
         return formatter.format(date);
     }
 
     // converts a sql.Time to a string
-    private static String timeToString(Time time) {
+    public static String timeToString(Time time) {
         String pattern = "HH:mm";
         SimpleDateFormat formatter = new SimpleDateFormat(pattern);
         return formatter.format(time);
