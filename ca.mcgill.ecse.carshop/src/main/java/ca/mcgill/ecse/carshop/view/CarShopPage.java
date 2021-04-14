@@ -91,19 +91,31 @@
  */
 package ca.mcgill.ecse.carshop.view;
 
+
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.event.*;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Properties;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+
+
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+
 
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
@@ -113,7 +125,6 @@ import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 public class CarShopPage extends JFrame {
 	
 	private static final long serialVersionUID = -4426310869335015542L;
-
 	
     // Variables declaration
     private JButton buttonLogin; 			//login button
@@ -126,6 +137,7 @@ public class CarShopPage extends JFrame {
     private JLabel errorMessage;			//error popup label
     private String error;
     private OwnerView ownerView;			//the owner view
+    private CustomerView customerView;		//the customer view
     //TODO
     //need to add the error message to the display, and send a confirmation that the user is logged in if it's successful.
     
@@ -179,6 +191,13 @@ public class CarShopPage extends JFrame {
 					initComponentsOwnerView();
 					
 				}
+            	
+            	if (username.equals("c")) {
+            		System.out.println("Logging in as customer...");
+            		
+            		// init customer view
+            		initComponentsCustomerView();
+            	}
             }
         });
     }
@@ -277,6 +296,21 @@ public class CarShopPage extends JFrame {
 		revalidate();
 		repaint();
 	}
+    
+    //initialize the customer panel
+    private void initComponentsCustomerView() {
+    	//initialize the customer view
+		customerView = new CustomerView();
+
+		//set the content pane to customer view
+		setContentPane(customerView);
+//		this.getContentPane().setLayout(null);
+				
+		// new code
+		revalidate();
+		repaint();
+	}
+  
     
     //initialize business info
     private void initComponentsOwnerViewBusinessInfo() {
