@@ -2,24 +2,31 @@ package ca.mcgill.ecse.carshop.view;
 
 import java.awt.Component;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+
+import ca.mcgill.ecse.carshop.controller.CarShopController;
+import ca.mcgill.ecse.carshop.controller.TOAppointment;
 
 public class OwnerViewAppointments extends JPanel {
 	
 	//UI elements
-	private ArrayList<OwnerViewAppointmentNode> appointments;
+	private ArrayList<OwnerViewAppointmentNode> appointmentNodes;
 	private JLabel titleJLabel;
+	
+	private List<TOAppointment> appointments;
 	
 	public OwnerViewAppointments() {
 		
+		initAppointments();
+		
 		titleJLabel = new JLabel("Appointments");
-		appointments = new ArrayList<>();
+		appointmentNodes = new ArrayList<>();
 		
 		GroupLayout groupLayout = new GroupLayout(this);
 		this.setLayout(groupLayout);
@@ -32,9 +39,9 @@ public class OwnerViewAppointments extends JPanel {
 		parallelGroup.addComponent(titleJLabel);
 		sequentialGroup.addComponent(titleJLabel);
 		
-		for(int i = 0; i < appointments.size(); i++) {
-			parallelGroup.addComponent(appointments.get(i));
-			sequentialGroup.addComponent(appointments.get(i));
+		for(int i = 0; i < appointmentNodes.size(); i++) {
+			parallelGroup.addComponent(appointmentNodes.get(i));
+			sequentialGroup.addComponent(appointmentNodes.get(i));
 		}
 		
 		groupLayout.setHorizontalGroup(parallelGroup);
@@ -43,11 +50,15 @@ public class OwnerViewAppointments extends JPanel {
 		
 		
 		//create appointment components
-		Component[] components = new Component[appointments.size()];
+		Component[] components = new Component[appointmentNodes.size()];
 		for (int i = 0; i < components.length; i++) {
-			components[i] = appointments.get(i);
+			components[i] = appointmentNodes.get(i);
 		}
 		
+	}
+	
+	public void initAppointments() {
+		appointments = CarShopController.getAppointmentsOwner();
 	}
 	
 }
