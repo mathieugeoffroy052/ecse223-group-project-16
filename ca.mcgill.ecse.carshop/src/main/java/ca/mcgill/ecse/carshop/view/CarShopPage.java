@@ -167,11 +167,6 @@ public class CarShopPage extends JFrame {
 					// init owner view
 					initComponentsOwnerView();
 					
-					//set the content pane to owner view
-					setContentPane(ownerView);
-					
-					revalidate();
-					repaint();
 				}
             }
         });
@@ -263,6 +258,12 @@ public class CarShopPage extends JFrame {
     private void initComponentsOwnerView() {
     	//initialize the owner view
 		ownerView = new OwnerView();
+
+		//set the content pane to owner view
+		setContentPane(ownerView);
+		
+		revalidate();
+		repaint();
 	}
     
     //initialize business info
