@@ -1,6 +1,8 @@
 package ca.mcgill.ecse.carshop.view;
 
 import java.awt.Component;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.ArrayList;
@@ -28,6 +30,23 @@ public class OwnerViewAppointments extends JPanel {
 		
 		initAppointments();
 		
+		
+		
+	}
+	
+	public void initAppointments() {
+		appointments = CarShopController.getAppointmentsOwner();
+		for (TOAppointment appt : appointments) {
+			String customer = appt.getCustomerName();
+			String service = appt.getServiceName();
+			Date date = appt.getDate();
+			Time startTime = appt.getStartTime();
+			String status = appt.getStatus();
+			List<TOServiceBooking> serviceBookings = appt.getServiceBookings();
+			
+			appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings));
+		}
+		
 		titleJLabel = new JLabel("Appointments");
 		appointmentNodes = new ArrayList<>();
 		
@@ -52,26 +71,33 @@ public class OwnerViewAppointments extends JPanel {
 		groupLayout.setVerticalGroup(sequentialGroup);
 		
 		
+		//add propertyChangeListener
+		for (int i = 0; i < appointmentNodes.size(); i++) {
+			appointmentNodes.get(i).addPropertyChangeListener(new PropertyChangeListener() {
+				
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) {
+					refreshData();
+					
+				}
+			});
+		}
+		
 		//create appointment components
 		Component[] components = new Component[appointmentNodes.size()];
 		for (int i = 0; i < components.length; i++) {
 			components[i] = appointmentNodes.get(i);
 		}
-		
 	}
 	
-	public void initAppointments() {
-		appointments = CarShopController.getAppointmentsOwner();
-		for (TOAppointment appt : appointments) {
-			String customer = appt.getCustomerName();
-			String service = appt.getServiceName();
-			Date date = appt.getDate();
-			Time startTime = appt.getStartTime();
-			String status = appt.getStatus();
-			List<TOServiceBooking> serviceBookings = appt.getServiceBookings();
-			
-			appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings));
-		}
+	public void refreshData() {
+		appointments = null;
+		appointmentNodes.clear();
+		
+		removeAll();
+		initAppointments();
+		revalidate();
+		repaint();
 	}
 	
 }

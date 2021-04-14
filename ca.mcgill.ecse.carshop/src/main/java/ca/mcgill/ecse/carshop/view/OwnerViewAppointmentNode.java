@@ -99,21 +99,23 @@ public class OwnerViewAppointmentNode extends JPanel {
 		groupLayout.setAutoCreateContainerGaps(true);
 
 		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup()
-				.addGroup(groupLayout.createSequentialGroup()
+			.addComponent(errorMessage)
+			.addGroup(groupLayout.createSequentialGroup()
 				.addGroup(groupLayout.createParallelGroup()
-						.addComponent(txtCustomerName)
-						.addComponent(txtServiceName)
-						.addComponent(txtDate)
-						.addComponent(txtTime)
-						.addComponent(txtStatus))
+					.addComponent(txtCustomerName)
+					.addComponent(txtServiceName)
+					.addComponent(txtDate)
+					.addComponent(txtTime)
+					.addComponent(txtStatus))
 				.addComponent(btnStartButton)
 				.addComponent(btnEndButton)
 				.addComponent(btnNoShowButton))
-				.addComponent(scrollPane));
+			.addComponent(scrollPane));
 
 		groupLayout.setHorizontalGroup(groupLayout.createSequentialGroup()
+			.addComponent(errorMessage)
 				.addGroup(groupLayout.createParallelGroup()
-				.addGroup(groupLayout.createSequentialGroup()
+					.addGroup(groupLayout.createSequentialGroup()
 						.addComponent(txtCustomerName)
 						.addComponent(txtServiceName)
 						.addComponent(txtDate)
@@ -122,7 +124,7 @@ public class OwnerViewAppointmentNode extends JPanel {
 				.addComponent(btnStartButton)
 				.addComponent(btnEndButton)
 				.addComponent(btnNoShowButton))
-				.addComponent(scrollPane));
+			.addComponent(scrollPane));
 
 		// link elements
 		groupLayout.linkSize(SwingConstants.HORIZONTAL,
@@ -145,6 +147,7 @@ public class OwnerViewAppointmentNode extends JPanel {
 		}
 		
 		refreshServiceList();
+		firePropertyChange("Start button pressed", false, true);
 	}
 	
 	private void endButtonActionPerformed(ActionEvent event) {
@@ -158,6 +161,7 @@ public class OwnerViewAppointmentNode extends JPanel {
 		}
 		
 		refreshServiceList();
+		firePropertyChange("End button pressed", false, true);
 	}
 	
 	
@@ -170,13 +174,15 @@ public class OwnerViewAppointmentNode extends JPanel {
 		} catch (InvalidInputException e) {
 			error = e.getMessage();
 		}
-		
 		refreshServiceList();
+		firePropertyChange("No Show button pressed", false, true);
 	}
 	
 	
 
 	private void refreshServiceList() {
+		errorMessage.setText(error);
+		
 		tableModel = new DefaultTableModel(0, 0);
 		tableModel.setColumnIdentifiers(overviewColumnNames);
 		tableServices.setModel(tableModel);
