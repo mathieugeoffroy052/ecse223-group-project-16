@@ -13,15 +13,17 @@ public class TOService
 
   //TOService Attributes
   private int duration;
+  private TOGarage garage;
   private String name;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public TOService(int aDuration, String aName)
+  public TOService(int aDuration, TOGarage aGarage, String aName)
   {
     duration = aDuration;
+    garage = aGarage;
     name = aName;
   }
 
@@ -33,6 +35,14 @@ public class TOService
   {
     boolean wasSet = false;
     duration = aDuration;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setGarage(TOGarage aGarage)
+  {
+    boolean wasSet = false;
+    garage = aGarage;
     wasSet = true;
     return wasSet;
   }
@@ -50,6 +60,11 @@ public class TOService
     return duration;
   }
 
+  public TOGarage getGarage()
+  {
+    return garage;
+  }
+
   public String getName()
   {
     return name;
@@ -63,6 +78,7 @@ public class TOService
   {
     return super.toString() + "["+
             "duration" + ":" + getDuration()+ "," +
-            "name" + ":" + getName()+ "]";
+            "name" + ":" + getName()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "garage" + "=" + (getGarage() != null ? !getGarage().equals(this)  ? getGarage().toString().replaceAll("  ","    ") : "this" : "null");
   }
 }

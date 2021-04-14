@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.*;
 
 // line 10 "../../../../../CarShopPersistence.ump"
-// line 114 "../../../../../carshop.ump"
+// line 115 "../../../../../carshop.ump"
 public abstract class BookableService implements Serializable
 {
 
@@ -237,12 +237,12 @@ public abstract class BookableService implements Serializable
 	    }
   }
 
-  // line 120 "../../../../../carshop.ump"
+  // line 121 "../../../../../carshop.ump"
    public ComboItem getMainService(){
     return null;
   }
 
-  // line 124 "../../../../../carshop.ump"
+  // line 125 "../../../../../carshop.ump"
    public int getDuration(){
     if(this instanceof Service) {
 		  return this.getDuration();

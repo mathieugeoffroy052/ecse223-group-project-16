@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.*;
 
 // line 83 "../../../../../CarShopPersistence.ump"
-// line 131 "../../../../../carshop.ump"
+// line 132 "../../../../../carshop.ump"
 public class Service extends BookableService implements Serializable
 {
 

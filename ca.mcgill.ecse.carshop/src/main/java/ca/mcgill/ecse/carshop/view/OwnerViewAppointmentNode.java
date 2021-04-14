@@ -1,6 +1,7 @@
 package ca.mcgill.ecse.carshop.view;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -8,6 +9,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+
+import ca.mcgill.ecse.carshop.controller.CarShopController;
+import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 
 public class OwnerViewAppointmentNode extends JPanel {
 
@@ -25,6 +29,8 @@ public class OwnerViewAppointmentNode extends JPanel {
 	private JButton btnStartButton;
 	private JButton btnEndButton;
 	private JButton btnNoShowButton;
+	
+	private String error;
 
 	public OwnerViewAppointmentNode() {
 		// elements for error message
@@ -89,5 +95,18 @@ public class OwnerViewAppointmentNode extends JPanel {
 			});
 		
 	}
+	
+	private void startButtonActionPerformed(ActionEvent event) {
+		// clear error message and basic input validation
+		error = "";
+		
+		try {
+			CarShopController.startAppointmentAt(null, error);
+		} catch (InvalidInputException e) {
+			error = e.getMessage();
+		}
+		
+	}
+	
 
 }

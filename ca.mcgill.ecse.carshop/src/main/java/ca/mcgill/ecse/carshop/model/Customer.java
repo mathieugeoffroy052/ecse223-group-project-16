@@ -7,7 +7,7 @@ import java.util.*;
 
 // line 246 "../../../../../CarShopStates.ump"
 // line 58 "../../../../../CarShopPersistence.ump"
-// line 54 "../../../../../carshop.ump"
+// line 55 "../../../../../carshop.ump"
 public class Customer extends User implements Serializable
 {
 

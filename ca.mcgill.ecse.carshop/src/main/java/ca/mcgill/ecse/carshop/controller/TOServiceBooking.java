@@ -3,7 +3,7 @@
 
 package ca.mcgill.ecse.carshop.controller;
 
-// line 84 "../../../../../CarShopTransferObjects.ump"
+// line 89 "../../../../../CarShopTransferObjects.ump"
 public class TOServiceBooking
 {
 
@@ -12,32 +12,47 @@ public class TOServiceBooking
   //------------------------
 
   //TOServiceBooking Attributes
-  private String name;
+  private String TOService;
+  private TOTimeSlot timeSlot;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public TOServiceBooking(String aName)
+  public TOServiceBooking(String aTOService, TOTimeSlot aTimeSlot)
   {
-    name = aName;
+    TOService = aTOService;
+    timeSlot = aTimeSlot;
   }
 
   //------------------------
   // INTERFACE
   //------------------------
 
-  public boolean setName(String aName)
+  public boolean setTOService(String aTOService)
   {
     boolean wasSet = false;
-    name = aName;
+    TOService = aTOService;
     wasSet = true;
     return wasSet;
   }
 
-  public String getName()
+  public boolean setTimeSlot(TOTimeSlot aTimeSlot)
   {
-    return name;
+    boolean wasSet = false;
+    timeSlot = aTimeSlot;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public String getTOService()
+  {
+    return TOService;
+  }
+
+  public TOTimeSlot getTimeSlot()
+  {
+    return timeSlot;
   }
 
   public void delete()
@@ -47,6 +62,7 @@ public class TOServiceBooking
   public String toString()
   {
     return super.toString() + "["+
-            "name" + ":" + getName()+ "]";
+            "TOService" + ":" + getTOService()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "timeSlot" + "=" + (getTimeSlot() != null ? !getTimeSlot().equals(this)  ? getTimeSlot().toString().replaceAll("  ","    ") : "this" : "null");
   }
 }
