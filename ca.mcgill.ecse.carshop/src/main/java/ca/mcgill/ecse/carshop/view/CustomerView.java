@@ -128,13 +128,12 @@ public class CustomerView extends JPanel {
 		add(updateApptEnterNewOptServicesList);
 		
 		JButton updateApptButton = new JButton("Update");
-		updateApptButton.setBounds(526, 484, 117, 29);
+		updateApptButton.setBounds(526, 490, 117, 29);
 		add(updateApptButton);
 		
 		JComboBox<String> updateApptNewServiceSelected = new JComboBox<String>();
 		updateApptNewServiceSelected.setBounds(13, 361, 216, 38);
 		add(updateApptNewServiceSelected);
-		
 		
 		GroupLayout layout = new GroupLayout(this);	// sets a layout
 		this.setLayout(layout);

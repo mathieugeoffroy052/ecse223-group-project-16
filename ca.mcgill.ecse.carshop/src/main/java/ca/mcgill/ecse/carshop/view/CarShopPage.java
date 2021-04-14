@@ -1,94 +1,3 @@
-//package ca.mcgill.ecse.carshop.view;
-//
-//import java.awt.Color;
-//
-//import javax.swing.*;
-//
-//public class CarShopPage extends JFrame{
-//	
-//	private static final long serialVersionUID = -4426310869335015542L;
-//
-//		
-//	//UI elements
-//	private JLabel errorMessage;
-//	private JLabel username;
-//	private JLabel password;
-//	private JTextField usernameBox;
-//	private JPasswordField passwordBox;
-//	private JButton loginButton;
-//	
-//	
-//	private void initComponents() {
-//		
-//		//LOGIN WINDOW
-//		errorMessage = new JLabel();
-//		errorMessage.setForeground(Color.RED);
-//		
-//		username = new JLabel("Username");
-//		password = new JLabel("Password");
-//		
-//		usernameBox = new JTextField();
-//		passwordBox = new JPasswordField();
-//		
-//		loginButton = new JButton("Login");
-//		
-//		//button listeners
-//		loginButton.addActionListener(new java.awt.event.ActionListener(){
-//			public void actionPerformed(java.awt.event.ActionEvent evt) {
-//				loginButtonActionPerformed(evt);
-//			}
-//		});
-//		
-//		
-//		//layout
-//		//for some reason I get an exception, even if I feel
-//		//I followed what Percy did, but on a dumbed down scale
-//		GroupLayout layout = new GroupLayout(getContentPane());
-//		getContentPane().setLayout(layout);
-//		layout.setAutoCreateGaps(true);
-//		layout.setAutoCreateContainerGaps(true);
-//		layout.setHorizontalGroup(
-//				layout.createSequentialGroup()
-//				.addGroup(layout.createParallelGroup())
-////					.addComponent(errorMessage)
-//					.addComponent(username)
-//					.addComponent(password)
-//					.addComponent(usernameBox)
-//					.addComponent(passwordBox)
-//					.addComponent(loginButton)
-//				);
-//		
-//		layout.setHorizontalGroup(
-//				layout.createParallelGroup()
-//				.addGroup(layout.createSequentialGroup()
-//						.addComponent(errorMessage)
-//						)
-//				);
-//		pack();
-//	}
-//	
-//	private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {
-//		//TODO
-//	}
-//	
-//	private void refreshData() {
-//		//TODO
-//	}
-//	
-//	
-//	//initializes the display (gets called in the Application)
-//	public CarShopPage() {
-//		initComponents();
-//		refreshData();
-//	}
-//
-//}
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ca.mcgill.ecse.carshop.view;
 
 
@@ -128,6 +37,7 @@ public class CarShopPage extends JFrame {
 	
     // Variables declaration
     private JButton buttonLogin; 			//login button
+    private JButton signUpButton;			//sign up button
     private JLabel labelWindow;				
     private JLabel labelUsername;			//username label
     private JLabel labelPassword;			//password label
@@ -193,6 +103,19 @@ public class CarShopPage extends JFrame {
             		initComponentsTechnicianView();
             	}
             }
+        });
+        
+        signUpButton.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent evt) {
+        		System.out.println("Directing to sign up page...");
+        		
+        		//TODO 
+            	String username = textUsername.getText();
+            	String password = textPassword.getText();
+        	}
+
+
         });
     }
 
@@ -275,6 +198,11 @@ public class CarShopPage extends JFrame {
                 .addComponent(buttonLogin)
                 .addContainerGap(66, Short.MAX_VALUE))
         );
+        
+		signUpButton = new JButton("Sign up");
+		signUpButton.setBounds(526, 490, 117, 29);	// TODO
+		add(signUpButton);
+		
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.setSize(screenSize.width, screenSize.height);
     }
@@ -298,9 +226,7 @@ public class CarShopPage extends JFrame {
 
 		//set the content pane to customer view
 		setContentPane(customerView);
-//		this.getContentPane().setLayout(null);
 				
-		// new code
 		revalidate();
 		repaint();
 	}
@@ -312,7 +238,6 @@ public class CarShopPage extends JFrame {
     	// set the content pane to technician view
     	setContentPane(technicianView);
     	
-    	// new code
 		revalidate();
 		repaint();    
 	}
