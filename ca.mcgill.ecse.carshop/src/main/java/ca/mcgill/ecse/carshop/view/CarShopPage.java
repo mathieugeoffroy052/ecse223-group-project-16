@@ -158,16 +158,17 @@ public class CarShopPage extends JFrame {
             	//login or create a new account using the username and password 
             	//inputted in the textUsername and textPassword text fields
             	//if user is logged in correctly, transition to a new window 
-            	//(either customer or owner perspective)
-                
+            	//(either customer or owner perspective)  
             }
         });
-
     }
 
 
+
+    
     private void initComponents() {
 
+    	//initialize Jthings
         panelName = new JPanel();
         labelWindow = new JLabel();
         labelUsername = new JLabel();
@@ -179,6 +180,8 @@ public class CarShopPage extends JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        
+        //layout
         labelWindow.setText("Car Shop Login");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(panelName);
@@ -239,7 +242,6 @@ public class CarShopPage extends JFrame {
                 .addComponent(buttonLogin)
                 .addContainerGap(66, Short.MAX_VALUE))
         );
-
         pack();
     }
     
