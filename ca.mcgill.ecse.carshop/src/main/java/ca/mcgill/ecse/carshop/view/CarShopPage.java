@@ -170,6 +170,8 @@ public class CarShopPage extends JFrame {
 					//set the content pane to owner view
 					setContentPane(ownerView);
 					
+					revalidate();
+					repaint();
 				}
             }
         });
