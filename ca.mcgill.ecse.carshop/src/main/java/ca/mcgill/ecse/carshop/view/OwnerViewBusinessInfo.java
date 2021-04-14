@@ -1,10 +1,12 @@
 package ca.mcgill.ecse.carshop.view;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -19,10 +21,15 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
+import ca.mcgill.ecse.carshop.controller.CarShopController;
+import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 import ca.mcgill.ecse.carshop.controller.TOBusinessHour;
 import ca.mcgill.ecse.carshop.controller.TOTimeSlot;
 
 public class OwnerViewBusinessInfo extends JPanel {
+	
+	private static String errorMessage = "";
+	private JLabel errorLabel;
 	
 	private JLabel businessInfoTitle;
 	private JLabel businessName;
@@ -38,12 +45,14 @@ public class OwnerViewBusinessInfo extends JPanel {
     private JLabel businessHoursTitle;
     private JList weeklySchedule; //list to hold weekly schedule (no scrolling)
     private TOBusinessHour[] weeklyHours = new TOBusinessHour[1]; //transfer object for business hours TODO
+    private static List<TOBusinessHour> TOBusinessHoursCS;
     private JButton addWeeklyHours;
     private JButton updateWeeklyHours;
     //holidays
     private JLabel holidayTitle;
     private JList upcomingHolidays; //list to show all the upcoming holidays
     private TOTimeSlot[] carshopHolidays = new TOTimeSlot[0]; //TO for holidays TODO
+    private static List<TOTimeSlot> TOHolidaysCS;
     private JScrollPane holidayScroller;
     private JButton addHoliday;
     private JButton updateHoliday;
@@ -51,6 +60,7 @@ public class OwnerViewBusinessInfo extends JPanel {
     private JLabel vacationTitle;
     private JList upcomingVacations; //list to show all upcoming vacations
     private TOTimeSlot[] carshopVacations = new TOTimeSlot[0]; //TO for vacations TODO
+    private static List<TOTimeSlot> TOVacationsCS;
     private JScrollPane vacationScroller;
     private JButton addVacation;
     private JButton updateVacation;
@@ -59,6 +69,9 @@ public class OwnerViewBusinessInfo extends JPanel {
     	
 		
 		//set up components
+    	errorLabel = new JLabel(errorMessage);
+    	errorLabel.setForeground(Color.RED);
+    	
     	businessInfoTitle = new JLabel("Business Information");
     	businessInfoTitle.setFont(new Font("Arial", Font.BOLD, 22));
 		businessName = new JLabel(carshopName);
@@ -140,6 +153,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 		//horizontal Group
 		layout.setHorizontalGroup(
 				layout.createParallelGroup()
+					.addComponent(errorLabel)
 					.addComponent(horizontalLineTop)
 					.addGroup(layout.createSequentialGroup()
 							.addGroup(layout.createParallelGroup()
@@ -173,6 +187,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 		//vertical group
 		layout.setVerticalGroup(
 				layout.createSequentialGroup()
+						.addComponent(errorLabel)
 						.addComponent(horizontalLineTop)
 						.addGroup(layout.createParallelGroup()
 								.addGroup(layout.createSequentialGroup()
@@ -212,6 +227,16 @@ public class OwnerViewBusinessInfo extends JPanel {
         int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
         int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
         frame.setLocation(x, y);
+    }
+    
+    public static void getSystemInfo() {
+    	try {
+    		TOBusinessHoursCS = CarShopController.getBusinessHours();
+    		TOHolidaysCS = CarShopController.getHolidays();
+    		TOVacationsCS = CarShopController.getVacations();
+    	} catch (Exception e) {
+    		errorMessage += e.getMessage();
+    	}
     }
     
     //action methods
@@ -287,5 +312,26 @@ public class OwnerViewBusinessInfo extends JPanel {
 		centerWindow(updateBusinessInfo);
 		updateBusinessInfo.setVisible(true);
 		
+		updateInfo.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				String newName = nameText.getText();
+				String newEmail = emailText.getText();
+				String newAddress = addressText.getText();
+				String newPhoneNum = phoneNumText.getText();
+				updateInfoActionPerformed(evt, newName, newPhoneNum, newEmail, newAddress);
+			}
+		});
+		
 	}
+    
+    private void updateInfoActionPerformed(ActionEvent evt, String name, String phoneNum, String email, String address) {
+		try {
+			CarShopController.updateBusinessInfo(name, address, phoneNum, email);
+			errorMessage = "";
+		} catch (InvalidInputException e) {
+			errorMessage += e.getMessage();
+		}
+		
+	}
+    
 }
