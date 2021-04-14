@@ -3,6 +3,7 @@ package ca.mcgill.ecse.carshop.view;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.lang.ModuleLayer.Controller;
 import java.sql.Date;
 import java.sql.Time;
@@ -18,6 +19,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
+import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 import ca.mcgill.ecse.carshop.controller.TOServiceBooking;
@@ -70,6 +72,27 @@ public class OwnerViewAppointmentNode extends JPanel {
 		btnEndButton = new JButton("End");
 		btnNoShowButton = new JButton("No Show");
 
+		btnStartButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				startButtonActionPerformed(e);
+			}
+		});
+		
+		btnEndButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				endButtonActionPerformed(e);
+			}
+		});
+		
+		btnNoShowButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				noShowButtonActionPerformed(e);
+			}
+		});
+		
 		GroupLayout groupLayout = new GroupLayout(this);
 		this.setLayout(groupLayout);
 		groupLayout.setAutoCreateGaps(true);
@@ -116,12 +139,42 @@ public class OwnerViewAppointmentNode extends JPanel {
 		error = "";
 
 		try {
-			CarShopController.startAppointmentAt(null, error);
+			CarShopController.startAppointmentAt(null, CarShopApplication.getSystemDateTime());
 		} catch (InvalidInputException e) {
 			error = e.getMessage();
 		}
-
+		
+		refreshServiceList();
 	}
+	
+	private void endButtonActionPerformed(ActionEvent event) {
+		// clear error message and basic input validation
+		error = "";
+
+		try {
+			CarShopController.startAppointmentAt(null, CarShopApplication.getSystemDateTime());
+		} catch (InvalidInputException e) {
+			error = e.getMessage();
+		}
+		
+		refreshServiceList();
+	}
+	
+	
+	private void noShowButtonActionPerformed(ActionEvent event) {
+		// clear error message and basic input validation
+		error = "";
+
+		try {
+			CarShopController.startAppointmentAt(null, CarShopApplication.getSystemDateTime());
+		} catch (InvalidInputException e) {
+			error = e.getMessage();
+		}
+		
+		refreshServiceList();
+	}
+	
+	
 
 	private void refreshServiceList() {
 		tableModel = new DefaultTableModel(0, 0);

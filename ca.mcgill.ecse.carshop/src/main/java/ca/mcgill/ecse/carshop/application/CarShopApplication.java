@@ -6,6 +6,7 @@ package ca.mcgill.ecse.carshop.application;
 import java.sql.Time;
 import java.sql.Date;
 
+import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.model.CarShop;
 import ca.mcgill.ecse.carshop.model.Technician;
 import ca.mcgill.ecse.carshop.model.Technician.TechnicianType;
@@ -163,6 +164,10 @@ public class CarShopApplication {
 					new CarShopPage().setVisible(true);
 				}
 			});
+		}
+		
+		public static String getSystemDateTime() {
+			return CarShopController.dateToString(systemDate) + "+" + CarShopController.timeToString(systemTime);
 		}
 
 }
