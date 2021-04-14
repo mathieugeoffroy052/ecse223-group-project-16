@@ -17,6 +17,7 @@ import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.TOAppointment;
 import ca.mcgill.ecse.carshop.controller.TOBookableService;
+import ca.mcgill.ecse.carshop.model.CarShop;
 
 public class CustomerView extends JPanel {
 
@@ -30,7 +31,7 @@ public class CustomerView extends JPanel {
 	private JTextField newPasswordTextField;
 	
 	private String error;
-
+	
 	public CustomerView() {
 		initialize();
 	}
@@ -46,7 +47,7 @@ public class CustomerView extends JPanel {
 		chooseServiceText.setBounds(16, 45, 208, 18);
 		add(chooseServiceText);
 		
-		JComboBox<TOBookableService> createApptChooseServiceComboBox = new JComboBox<TOBookableService>((TOBookableService[]) CarShopController.getCarShopBookableServices().toArray());
+		JComboBox<TOBookableService> createApptChooseServiceComboBox = new JComboBox<TOBookableService>();
 		createApptChooseServiceComboBox.setBounds(13, 64, 216, 38);
 		add(createApptChooseServiceComboBox);
 		
