@@ -39,36 +39,7 @@ public class OwnerViewBusinessInfo extends JPanel {
     private static JLabel address;
     private static JButton updateBusinessInfo;
     //weekly business hours
-<<<<<<< Updated upstream
-    private JLabel businessHoursTitle;
-    private JList weeklySchedule; //list to hold weekly schedule (no scrolling)
-    private TOBusinessHour[] weeklyHours = new TOBusinessHour[1]; //transfer object for business hours TODO
 
-    private static List<TOBusinessHour> TOBusinessHoursCS;
-
-    private JButton addWeeklyHours;
-    private JButton updateWeeklyHours;
-    //holidays
-    private JLabel holidayTitle;
-    private JList upcomingHolidays; //list to show all the upcoming holidays
-    private TOTimeSlot[] carshopHolidays = new TOTimeSlot[0]; //TO for holidays TODO
-
-    private static List<TOTimeSlot> TOHolidaysCS;
-
-    private JScrollPane holidayScroller;
-    private JButton addHoliday;
-    private JButton updateHoliday;
-    //vacations
-    private JLabel vacationTitle;
-    private JList upcomingVacations; //list to show all upcoming vacations
-    private TOTimeSlot[] carshopVacations = new TOTimeSlot[0]; //TO for vacations TODO
-
-    private static List<TOTimeSlot> TOVacationsCS;
-
-    private JScrollPane vacationScroller;
-    private JButton addVacation;
-    private JButton updateVacation;
-=======
     private static JLabel businessHoursTitle;
     private static JList weeklySchedule; //list to hold weekly schedule (no scrolling)
     private static TOBusinessHour[] weeklyHours = new TOBusinessHour[1]; //transfer object for business hours TODO
@@ -94,7 +65,7 @@ public class OwnerViewBusinessInfo extends JPanel {
     private static JScrollPane vacationScroller;
     private static JButton addVacation;
     private static JButton updateVacation;
->>>>>>> Stashed changes
+
     
     public OwnerViewBusinessInfo() {
     	
