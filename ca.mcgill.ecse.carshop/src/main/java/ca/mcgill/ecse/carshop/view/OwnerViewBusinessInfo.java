@@ -31,47 +31,41 @@ import ca.mcgill.ecse.carshop.controller.TOTimeSlot;
 public class OwnerViewBusinessInfo extends JPanel {
 	
 	private static String errorMessage = "";
-	private JLabel errorLabel;
-	
-	private JLabel businessInfoTitle;
-	private JLabel businessName;
-    private String carshopName = "name";
-    private JLabel phoneNum;
-    private String carshopPhoneNum = "###";
-    private JLabel email;
-    private String carshopEmail = "a@a";
-    private JLabel address;
-    private String carshopAddress = "3333";
-    private JButton updateBusinessInfo;
+	private static JLabel errorLabel;
+	private static JLabel businessInfoTitle;
+	private static JLabel businessName;
+    private static JLabel phoneNum;
+    private static JLabel email;
+    private static JLabel address;
+    private static JButton updateBusinessInfo;
     //weekly business hours
-    private JLabel businessHoursTitle;
-    private JList weeklySchedule; //list to hold weekly schedule (no scrolling)
-    private TOBusinessHour[] weeklyHours = new TOBusinessHour[1]; //transfer object for business hours TODO
 
+    private static JLabel businessHoursTitle;
+    private static JList weeklySchedule; //list to hold weekly schedule (no scrolling)
+    private static TOBusinessHour[] weeklyHours = new TOBusinessHour[1]; //transfer object for business hours TODO
     private static List<TOBusinessHour> TOBusinessHoursCS;
-
-    private JButton addWeeklyHours;
-    private JButton updateWeeklyHours;
+    private static String[] stringBusinessHours;
+    private static JButton addWeeklyHours;
+    private static JButton updateWeeklyHours;
     //holidays
-    private JLabel holidayTitle;
-    private JList upcomingHolidays; //list to show all the upcoming holidays
-    private TOTimeSlot[] carshopHolidays = new TOTimeSlot[0]; //TO for holidays TODO
-
+    private static JLabel holidayTitle;
+    private static JList upcomingHolidays; //list to show all the upcoming holidays
+    private static TOTimeSlot[] carshopHolidays = new TOTimeSlot[0]; //TO for holidays TODO
     private static List<TOTimeSlot> TOHolidaysCS;
-
-    private JScrollPane holidayScroller;
-    private JButton addHoliday;
-    private JButton updateHoliday;
+    private static String[] stringHolidays;
+    private static JScrollPane holidayScroller;
+    private static JButton addHoliday;
+    private static JButton updateHoliday;
     //vacations
-    private JLabel vacationTitle;
-    private JList upcomingVacations; //list to show all upcoming vacations
-    private TOTimeSlot[] carshopVacations = new TOTimeSlot[0]; //TO for vacations TODO
-
+    private static JLabel vacationTitle;
+    private static JList upcomingVacations; //list to show all upcoming vacations
+    private static TOTimeSlot[] carshopVacations = new TOTimeSlot[0]; //TO for vacations TODO
     private static List<TOTimeSlot> TOVacationsCS;
+    private static String[] stringVacations;
+    private static JScrollPane vacationScroller;
+    private static JButton addVacation;
+    private static JButton updateVacation;
 
-    private JScrollPane vacationScroller;
-    private JButton addVacation;
-    private JButton updateVacation;
     
     public OwnerViewBusinessInfo() {
     	
@@ -82,10 +76,10 @@ public class OwnerViewBusinessInfo extends JPanel {
     	
     	businessInfoTitle = new JLabel("Business Information");
     	businessInfoTitle.setFont(new Font("Arial", Font.BOLD, 22));
-		businessName = new JLabel(carshopName);
-	    phoneNum = new JLabel(carshopPhoneNum);
-	    email = new JLabel(carshopEmail);
-	    address = new JLabel(carshopAddress);
+		businessName = new JLabel();
+	    phoneNum = new JLabel();
+	    email = new JLabel();
+	    address = new JLabel();
 	    updateBusinessInfo = new JButton("Update");
 	    
 	    businessHoursTitle = new JLabel("Weekly Business Hours");
@@ -243,11 +237,55 @@ public class OwnerViewBusinessInfo extends JPanel {
 
     }
     
-    public static void getSystemInfo() {
+    public static String[] listBHToString(List<TOBusinessHour> list) {
+    	String[] newStringArray = new String[list.size()];
+    	int index = 0;
+    	if (list.get(0) == null) return null;
+    	for (Object bh : list) {
+    		TOBusinessHour BH = (TOBusinessHour) bh;
+    		String info = BH.getDayOfWeek() 
+    				+ ": " + CarShopController.timeToString(BH.getStartTime()) 
+    				+ " - " + CarShopController.timeToString(BH.getEndTime());
+    		newStringArray[index++] = info;
+    	}		    	
+    	return newStringArray;
+    }
+
+    public static String[] listTSToString(List<TOTimeSlot> list) {
+    	String[] newStringArray = new String[list.size()];
+    	int index = 0;
+    	if (list.get(0) == null) return null;	
+    	for (Object ts : list) {
+    		TOTimeSlot TS = (TOTimeSlot) ts;
+    		String info = "From " + CarShopController.dateToString(TS.getStartDate()) 
+	    		+ " at " + CarShopController.timeToString(TS.getStartTime()) 
+	    		+ " to " + CarShopController.dateToString(TS.getEndDate()) 
+	    		+ " at " + CarShopController.timeToString(TS.getEndTime());
+    		newStringArray[index++] = info;
+    	}
+    	return newStringArray;
+
+    }
+    
+    public static void refreshData() {
     	try {
+    		
+    		businessName.setText(CarShopController.getBusinessName());
+    		email.setText(CarShopController.getBusinessEmail());
+    		phoneNum.setText(CarShopController.getBusinessPhone());
+    		address.setText(CarShopController.getBusinessAddress());
+    		
     		TOBusinessHoursCS = CarShopController.getBusinessHours();
+    		stringBusinessHours = listBHToString(TOBusinessHoursCS);
     		TOHolidaysCS = CarShopController.getHolidays();
+    		stringHolidays = listTSToString(TOHolidaysCS);
     		TOVacationsCS = CarShopController.getVacations();
+    		stringVacations = listTSToString(TOVacationsCS);
+    		
+    		weeklySchedule.setListData(stringBusinessHours);
+    		upcomingHolidays.setListData(stringHolidays);
+    		upcomingVacations.setListData(stringVacations);
+    		
     	} catch (Exception e) {
     		errorMessage += e.getMessage();
     	}
@@ -259,13 +297,13 @@ public class OwnerViewBusinessInfo extends JPanel {
 		JLabel updateTitle = new JLabel("Update Business Information");
 		updateTitle.setFont(new Font("Arial", Font.BOLD, 22));
 		JLabel name = new JLabel("Name:");
-		JTextField nameText = new JTextField(carshopName);
+		JTextField nameText = new JTextField();
 		JLabel address = new JLabel("Address:");
-		JTextField addressText = new JTextField(carshopAddress);
+		JTextField addressText = new JTextField();
 		JLabel phoneNum = new JLabel("Phone Number:");
-		JFormattedTextField phoneNumText = new JFormattedTextField(carshopPhoneNum);
+		JFormattedTextField phoneNumText = new JFormattedTextField();
 		JLabel email = new JLabel("Email:");
-		JTextField emailText = new JTextField(carshopEmail);
+		JTextField emailText = new JTextField();
 		JButton updateInfo = new JButton("Update");
 		
 		updateBusinessInfo.add(updateTitle);
@@ -341,6 +379,7 @@ public class OwnerViewBusinessInfo extends JPanel {
     private void updateInfoActionPerformed(ActionEvent evt, String name, String phoneNum, String email, String address) {
 		try {
 			CarShopController.updateBusinessInfo(name, address, phoneNum, email);
+			refreshData();
 			errorMessage = "";
 		} catch (InvalidInputException e) {
 			errorMessage += e.getMessage();
