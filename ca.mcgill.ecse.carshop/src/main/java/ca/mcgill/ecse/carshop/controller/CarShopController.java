@@ -2661,4 +2661,26 @@ public class CarShopController {
 		
 		return toAppointments;
 	}
+	
+	public static String getBusinessName() {
+		String name = CarShopApplication.getCarShop().getBusiness().getName();
+		return name;
+	}
+	
+	public static String getBusinessEmail() {
+		String email = CarShopApplication.getCarShop().getBusiness().getEmail();
+		return email;
+	}
+	
+	public static String getBusinessPhone() {
+		String phone = CarShopApplication.getCarShop().getBusiness().getPhoneNumber();
+		return phone;
+	}
+	
+	public static String getBusinessAddress() {
+		String address = CarShopApplication.getCarShop().getBusiness().getAddress();
+		return address;
+	}
+	
+	
 }
