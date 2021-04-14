@@ -38,6 +38,33 @@ public class CarShopController {
 	}
 	
 	
+	public static List<TOBookableService> getCarShopBookableServices() {
+		CarShop cs = CarShopApplication.getCarShop();
+		List<TOBookableService> toReturn = new ArrayList<TOBookableService>();
+		List<BookableService> bs = cs.getBookableServices();
+		for(BookableService b : bs) {
+			TOBookableService toAdd = new TOBookableService(b.getName());
+			toReturn.add(toAdd);
+		}
+		return toReturn;
+	}
+	
+	public static List<TOAppointment> getCustomerAppointments(String username) {
+		for(Customer c : CarShopApplication.getCarShop().getCustomers()) {
+			if(c.getUsername().equals(username)) {
+				int size = c.getAppointments().size();
+				List<TOAppointment> temp = new ArrayList<>();
+				for(int i = 0; i < size; i++) {
+					String nameOfService = c.getAppointment(i).getServiceBooking(0).getService().getName();
+					//temp.add(new TOAppointment(nameOfService)); TODO
+					
+				}
+				return temp;
+			}
+		}
+		return null;
+	}
+	
 	public static void removeBusinessHourIndividually(String day, String startTime, String endTime, String type, CarShop cs) throws InvalidInputException {
 		if(CarShopApplication.getCurrentUser()!=null) {
 			TechnicianType technicianType = getTechnicianType(CarShopApplication.getCurrentUser());
