@@ -61,6 +61,7 @@ class TOBookableService {
 
 class TOService {
   int duration;
+  TOGarage garage;
   name;
 }
 
@@ -77,10 +78,15 @@ class TOComboItem {
 
 
 class TOAppointment {
-	name;
-
+	depend java.util.List;
+	customerName;
+	serviceName;
+	Date date;
+	Time startTime;
+	List<TOServiceBooking> serviceBookings;
 }
 
 class TOServiceBooking {
-	name;
+	TOService;
+	TOTimeSlot timeSlot;
 }

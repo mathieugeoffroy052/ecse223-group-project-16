@@ -91,6 +91,7 @@
  */
 package ca.mcgill.ecse.carshop.view;
 
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -104,6 +105,17 @@ import java.util.Properties;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+
+
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+
 
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;

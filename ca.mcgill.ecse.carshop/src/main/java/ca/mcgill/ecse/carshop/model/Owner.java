@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.*;
 
 // line 77 "../../../../../CarShopPersistence.ump"
-// line 50 "../../../../../carshop.ump"
+// line 51 "../../../../../carshop.ump"
 public class Owner extends User implements Serializable
 {
 
