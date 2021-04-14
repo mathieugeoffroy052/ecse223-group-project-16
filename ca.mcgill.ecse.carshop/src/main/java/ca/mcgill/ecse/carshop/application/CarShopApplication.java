@@ -11,6 +11,7 @@ import ca.mcgill.ecse.carshop.model.Technician;
 import ca.mcgill.ecse.carshop.model.Technician.TechnicianType;
 import ca.mcgill.ecse.carshop.model.User;
 import ca.mcgill.ecse.carshop.persistence.CarShopPersistence;
+import ca.mcgill.ecse.carshop.view.CarShopPage;
 
 public class CarShopApplication {
 	private static CarShop carShop = null;	//all applications are associated with the same CarShop carShop
@@ -156,19 +157,12 @@ public class CarShopApplication {
 		}
 		
 		public static void main(String[] args) {
-			// getting the carshop loads it
-			CarShop cs = getCarShop();
-			// action to be performed
-			cs.addTechnician(new Technician("tires", "password", TechnicianType.Electronics, cs));
-			
-			// saves into the file
-			CarShopPersistence.save(cs);
-			
-			// to see in the console
-			for(int i=0; i<cs.getTechnicians().size();i++){
-				System.out.println(cs.getTechnician(i));
-			}
-			
+			//start UI
+			java.awt.EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					new CarShopPage().setVisible(true);
+				}
+			});
 		}
 
 }
