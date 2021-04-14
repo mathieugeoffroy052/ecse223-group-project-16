@@ -272,6 +272,7 @@ public class CarShopPage extends JFrame {
         labelInstructions2.setBounds(761, 458, 273, 16);
         add(labelInstructions2);
         
+        //error messages will pop up here. Initialized with a bogus message temporarily
         labelError = new JLabel("error-area-remove-later-just-for-show----");
         labelError.setBounds(761, 548, 273, 16);
         add(labelError);
