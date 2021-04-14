@@ -12,6 +12,7 @@ import ca.mcgill.ecse.carshop.model.Technician.TechnicianType;
 import ca.mcgill.ecse.carshop.model.User;
 import ca.mcgill.ecse.carshop.persistence.CarShopPersistence;
 import ca.mcgill.ecse.carshop.view.CarShopPage;
+import ca.mcgill.ecse.carshop.view.CustomerPage;
 
 public class CarShopApplication {
 	private static CarShop carShop = null;	//all applications are associated with the same CarShop carShop
@@ -160,7 +161,7 @@ public class CarShopApplication {
 			//start UI
 			java.awt.EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					new CarShopPage().setVisible(true);
+					new CustomerPage().setVisible(true);
 				}
 			});
 		}
