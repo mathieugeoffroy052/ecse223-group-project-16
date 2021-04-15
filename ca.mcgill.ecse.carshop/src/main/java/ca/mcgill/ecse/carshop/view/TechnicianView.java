@@ -13,6 +13,8 @@ public class TechnicianView extends JPanel {
 	private JTextField txtSetNewOpening;
 	private JTextField txtNewClosingTime;
 	private JTextField txtNewPassword;
+	private String error;
+	private JLabel errorMessage;
 
 	/**
 	 * Launch the application.
@@ -43,9 +45,9 @@ public class TechnicianView extends JPanel {
 	 */
 	private void initializeTechnicianView() {
 //		frame = new JFrame();
-//		frame.setBounds(400, 400, 700, 600);
+//		frame.setBounds(400, 400, 1000, 1000);
 //		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		frame.getContentPane().setLayout(null);
+//		setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("My Garage");
 		lblNewLabel.setBounds(60, 39, 65, 16);
@@ -89,11 +91,11 @@ public class TechnicianView extends JPanel {
 		add(btnNewButton);
 		
 		JLabel lblNewLabel_3 = new JLabel("Modify Account");
-		lblNewLabel_3.setBounds(60, 438, 130, 16);
+		lblNewLabel_3.setBounds(60, 725, 130, 16);
 		add(lblNewLabel_3);
 		
 		txtNewPassword = new JTextField();
-		txtNewPassword.setBounds(204, 466, 130, 26);
+		txtNewPassword.setBounds(204, 750, 130, 26);
 		add(txtNewPassword);
 		txtNewPassword.setColumns(10);
 		
@@ -102,7 +104,7 @@ public class TechnicianView extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnNewButton_1.setBounds(379, 466, 130, 29);
+		btnNewButton_1.setBounds(379, 750, 130, 29);
 		add(btnNewButton_1);
 		
 		JSeparator separator = new JSeparator();
@@ -130,8 +132,35 @@ public class TechnicianView extends JPanel {
 		add(lblNewLabel_6);
 		
 		JLabel lblNewLabel_7 = new JLabel("New Password");
-		lblNewLabel_7.setBounds(60, 471, 97, 16);
+		lblNewLabel_7.setBounds(60, 750, 97, 16);
 		add(lblNewLabel_7);
+		
+//		String[] appointmentColumnNames = {"", "", "", ""};
+//		String[][] dataAppointment = {{"Appointment name", "Booked customer", "Start time", "End time"}};
+		
+		//this is for testing purposes, and fails the tests miserably.
+		String[] appointmentColumnNames = {"", "", "", ""};
+		String[][] dataAppointment = {{"Appointment name", "Booked customer", "Start time", "End time"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"}, {"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"}};
+
+		
+		JTable overviewTable = new JTable(dataAppointment, appointmentColumnNames);
+		overviewTable.setBounds(60, 460 ,572, 240);
+		JScrollPane overviewScrollPane = new JScrollPane(overviewTable);
+		overviewScrollPane.setBounds(622, 460, 10, 240);
+		//the scroll pane shows up but does not work yet.... time for some GOOGLING
+		add(overviewScrollPane);
+		Dimension d = overviewTable.getPreferredSize();
+		overviewScrollPane.setPreferredSize(new Dimension(d.width, 572));
+		overviewScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		add(overviewTable);
+
+//		DefaultTableModel overviewDtm = new DefaultTableModel(0, 0);
+//		overviewTable.setModel(overviewDtm);
+		
+		errorMessage = new JLabel("error messages will appear here!");
+		errorMessage.setForeground(Color.RED);
+		errorMessage.setBounds(60, 250, 572, 29 );
+		add(errorMessage);
 		
 		GroupLayout layout = new GroupLayout(this);	// sets a layout
 		this.setLayout(layout);
