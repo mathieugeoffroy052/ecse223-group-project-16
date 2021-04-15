@@ -371,8 +371,7 @@ public class CustomerView extends JPanel {
 			}
 		});
 
-	}
-	
+}
 	
 	
 	private void refreshData() {
