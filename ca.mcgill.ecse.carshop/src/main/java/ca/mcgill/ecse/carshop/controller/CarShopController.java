@@ -1233,6 +1233,7 @@ public class CarShopController {
 			}
 			
 		}
+		
 		//adding the users
 		CarShop carShop = CarShopApplication.getCarShop();
 		
@@ -1470,7 +1471,6 @@ public class CarShopController {
 			Owner newOwner = new Owner(username, password, CarShopApplication.getCarShop());
 			CarShopApplication.getCarShop().setOwner(newOwner);
 			CarShopApplication.setUser(newOwner);
-			
 			try {
 				CarShopPersistence.save(CarShopApplication.getCarShop());
 			}catch(RuntimeException e) {
