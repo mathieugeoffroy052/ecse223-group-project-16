@@ -106,7 +106,6 @@ public class CarShopPage extends JFrame {
             	
             	if (CarShopApplication.getCurrentUser() != null && CarShopApplication.getUser().getUsername().toLowerCase().contains("technician")) {
             		System.out.println("Logging in as technician...");
-            		CarShop carshop = CarShopApplication.getCarShop();
             		// init customer view
             		initComponentsTechnicianView();
             	}
