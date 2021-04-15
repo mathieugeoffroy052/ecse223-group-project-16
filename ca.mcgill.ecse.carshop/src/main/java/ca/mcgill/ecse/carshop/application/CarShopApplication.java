@@ -173,11 +173,10 @@ public class CarShopApplication {
 		}
 		
 		public static void main(String[] args) {
-			try {
-				carShop = setUp();
-				
-			} catch (Exception e) {
-			}
+//			try {
+//				carShop = setUp();
+//				
+//			} catch (Exception e) {}
 			//start UI
 			java.awt.EventQueue.invokeLater(new Runnable() {
 				public void run() {
