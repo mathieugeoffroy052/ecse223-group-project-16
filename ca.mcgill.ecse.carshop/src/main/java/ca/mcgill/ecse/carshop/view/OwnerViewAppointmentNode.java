@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.ModuleLayer.Controller;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.List;
@@ -112,7 +111,7 @@ public class OwnerViewAppointmentNode extends JPanel {
 				.addComponent(btnNoShowButton))
 			.addComponent(scrollPane));
 
-		groupLayout.setHorizontalGroup(groupLayout.createSequentialGroup()
+		groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
 			.addComponent(errorMessage)
 				.addGroup(groupLayout.createParallelGroup()
 					.addGroup(groupLayout.createSequentialGroup()
@@ -147,7 +146,7 @@ public class OwnerViewAppointmentNode extends JPanel {
 		}
 		
 		refreshServiceList();
-		firePropertyChange("Start button pressed", false, true);
+//		firePropertyChange("Start button pressed", false, true);
 	}
 	
 	private void endButtonActionPerformed(ActionEvent event) {
@@ -161,7 +160,7 @@ public class OwnerViewAppointmentNode extends JPanel {
 		}
 		
 		refreshServiceList();
-		firePropertyChange("End button pressed", false, true);
+//		firePropertyChange("End button pressed", false, true);
 	}
 	
 	
@@ -175,7 +174,7 @@ public class OwnerViewAppointmentNode extends JPanel {
 			error = e.getMessage();
 		}
 		refreshServiceList();
-		firePropertyChange("No Show button pressed", false, true);
+//		firePropertyChange("No Show button pressed", false, true);
 	}
 	
 	

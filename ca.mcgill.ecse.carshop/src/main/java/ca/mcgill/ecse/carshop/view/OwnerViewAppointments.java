@@ -47,13 +47,11 @@ public class OwnerViewAppointments extends JPanel {
 			
 			if (date != null && startTime != null) {
 				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings));
-				
 			}
 			
 		}
 		
 		titleJLabel = new JLabel("Appointments");
-		appointmentNodes = new ArrayList<>();
 		
 		GroupLayout groupLayout = new GroupLayout(this);
 		this.setLayout(groupLayout);
@@ -77,16 +75,16 @@ public class OwnerViewAppointments extends JPanel {
 		
 		
 		//add propertyChangeListener
-		for (int i = 0; i < appointmentNodes.size(); i++) {
-			appointmentNodes.get(i).addPropertyChangeListener(new PropertyChangeListener() {
-				
-				@Override
-				public void propertyChange(PropertyChangeEvent evt) {
-					refreshData();
-					
-				}
-			});
-		}
+//		for (int i = 0; i < appointmentNodes.size(); i++) {
+//			appointmentNodes.get(i).addPropertyChangeListener(new PropertyChangeListener() {
+//				
+//				@Override
+//				public void propertyChange(PropertyChangeEvent evt) {
+//					refreshData();
+//					
+//				}
+//			});
+//		}
 		
 		//create appointment components
 		Component[] components = new Component[appointmentNodes.size()];
