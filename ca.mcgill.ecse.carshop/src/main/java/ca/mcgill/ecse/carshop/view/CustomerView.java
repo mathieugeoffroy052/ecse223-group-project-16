@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.Vector;
 
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -17,7 +18,10 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
@@ -36,6 +40,7 @@ public class CustomerView extends JPanel {
 	
 	private JTextField createApptEnterStartDateTextField;
 	private JTextField createApptEnterStartTimeTextField;
+	private JTextField updateApptEnterNewDateTextField;
 	private JTextField updateApptEnterNewTimeTextField;
 	private JTextField newUsernameTextField;
 	private JTextField newPasswordTextField;
@@ -251,6 +256,41 @@ public class CustomerView extends JPanel {
 		add(plusUpdateServiceOfAppt);
 		
 		
+		// table - by Matthew
+		JTable table = new JTable();
+		//make the table non editable (for the user. the table will still get updated):
+		DefaultTableModel modelTable = new DefaultTableModel() {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		modelTable.addColumn("Service Booking");
+		modelTable.addColumn("Start Date");
+		modelTable.addColumn("Start Time");
+		modelTable.addColumn("End Date");
+		modelTable.addColumn("End Time");
+		table.setModel(modelTable);
+		
+		for(int i = 0; i< 20;i++) {
+			//TODO
+			//here is where we would get the TO information about the appointments 
+			//and insert them into the table
+			Vector<String> r = new Vector<String>();
+			r.addElement("---");		//service booking
+			r.addElement("---");		//start date
+			r.addElement("---");		//start time
+			r.addElement("---");		//end date
+			r.addElement("---");		//end time
+			modelTable.addRow(r);
+		}
+		JScrollPane scrollTable = new JScrollPane(table);
+		scrollTable.setBounds(700, 336 ,464, 268);
+		scrollTable.setVisible(true);
+		add(scrollTable);
+		// end of Table - by Matthew
+		
+		
 		LocalDate now = LocalDate.now();
 		
 		// create appointment calendar
@@ -351,7 +391,7 @@ public class CustomerView extends JPanel {
 			createApptChooseServiceComboBox.removeAllItems();
 			cancelApptSelectApptBox.removeAllItems();
 			updateApptNewServiceSelected.removeAllItems();
-//			Integer index = 0;
+			Integer index = 0;
 			System.out.println(CarShopApplication.getCurrentUser());
 //			for (TOAppointment appt : CarShopController.getCustomerAppointments(CarShopApplication.getCurrentUser())) {
 //				appointments.put(index, appt.getServiceName());
@@ -570,10 +610,4 @@ public class CustomerView extends JPanel {
 		// update visuals
 		refreshData();
 	}
-	
-	
-
-
-
-
 }
