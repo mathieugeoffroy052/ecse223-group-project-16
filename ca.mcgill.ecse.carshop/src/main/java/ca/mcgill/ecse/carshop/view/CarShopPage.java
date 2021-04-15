@@ -28,6 +28,7 @@ import javax.swing.JTextField;
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
+import ca.mcgill.ecse.carshop.model.CarShop;
 
 
 
@@ -88,7 +89,8 @@ public class CarShopPage extends JFrame {
             	
             	if (CarShopApplication.getCurrentUser() != null && CarShopApplication.getAccountType().equals(CarShopApplication.accountType.Owner)) {
 					System.out.println("logging in as owner...");
-					
+//            		CarShopApplication.logIn(username, password);
+
 					// init owner view
 					initComponentsOwnerView();
 					
@@ -96,15 +98,15 @@ public class CarShopPage extends JFrame {
             	
             	if (CarShopApplication.getCurrentUser() != null && CarShopApplication.getAccountType().equals(CarShopApplication.accountType.Customer)) {
             		System.out.println("Logging in as customer...");
-            		CarShopApplication.logIn("customer1", "12345678");
+//            		CarShopApplication.logIn(username, password);
             		
             		// init customer view
             		initComponentsCustomerView();
             	}
             	
-            	if (CarShopApplication.getCurrentUser() != null && CarShopApplication.getUser().getUsername().contains("technician")) {
+            	if (CarShopApplication.getCurrentUser() != null && CarShopApplication.getUser().getUsername().toLowerCase().contains("technician")) {
             		System.out.println("Logging in as technician...");
-            		
+            		CarShop carshop = CarShopApplication.getCarShop();
             		// init customer view
             		initComponentsTechnicianView();
             	}
