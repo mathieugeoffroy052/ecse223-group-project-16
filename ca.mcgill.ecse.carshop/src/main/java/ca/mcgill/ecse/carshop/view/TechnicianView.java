@@ -2,7 +2,10 @@ package ca.mcgill.ecse.carshop.view;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Vector;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 
 public class TechnicianView extends JPanel {
@@ -44,10 +47,6 @@ public class TechnicianView extends JPanel {
 	 * Initialize the contents of the frame.
 	 */
 	private void initializeTechnicianView() {
-//		frame = new JFrame();
-//		frame.setBounds(400, 400, 1000, 1000);
-//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("My Garage");
 		lblNewLabel.setBounds(60, 39, 65, 16);
@@ -57,11 +56,48 @@ public class TechnicianView extends JPanel {
 		lblNewLabel_1.setBounds(60, 129, 97, 16);
 		add(lblNewLabel_1);
 		
-		String[][] data = {{"", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"},{"Opening", "", "", "", "", ""},{"Closing", "", "", "", "", ""}};
-		String[] column = {"","","","","",""};
-		table = new JTable(data, column);
+		table = new JTable();
 		table.setBounds(60, 177, 572, 57);
 		add(table);
+		JTable scheduleTable = new JTable();
+		//make the table non editable (for the user. the table will still get updated):
+		DefaultTableModel scheduleModelTable = new DefaultTableModel() {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};		scheduleModelTable.addColumn("");
+		scheduleModelTable.addColumn("Monday");
+		scheduleModelTable.addColumn("Tuesday");
+		scheduleModelTable.addColumn("Wednesday");
+		scheduleModelTable.addColumn("Thursday");
+		scheduleModelTable.addColumn("Friday");
+
+		table.setModel(scheduleModelTable);
+		
+		Vector<String> opening = new Vector<String>();
+		opening.addElement("Opening");
+		opening.addElement("op monday");
+		opening.addElement("op tuesday");
+		opening.addElement("op wednesday");
+		opening.addElement("op thursday");
+		opening.addElement("op friday");
+		
+		Vector<String> closing = new Vector<String>();
+		closing.addElement("Closing");
+		closing.addElement("c monday");
+		closing.addElement("c tuesday");
+		closing.addElement("c wednesday");
+		closing.addElement("c thursday");
+		closing.addElement("c friday");
+		
+		scheduleModelTable.addRow(opening);
+		scheduleModelTable.addRow(closing);
+		
+		JScrollPane scheduleScrollTable = new JScrollPane(table);
+		scheduleScrollTable.setBounds(60, 177, 572, 57);
+		scheduleScrollTable.setVisible(true);
+		add(scheduleScrollTable);
 		
 		JLabel lblNewLabel_2 = new JLabel("Modify Business Hours");
 		lblNewLabel_2.setBounds(60, 321, 153, 16);
@@ -135,27 +171,36 @@ public class TechnicianView extends JPanel {
 		lblNewLabel_7.setBounds(60, 750, 97, 16);
 		add(lblNewLabel_7);
 		
-//		String[] appointmentColumnNames = {"", "", "", ""};
-//		String[][] dataAppointment = {{"Appointment name", "Booked customer", "Start time", "End time"}};
 		
-		//this is for testing purposes, and fails the tests miserably.
-		String[] appointmentColumnNames = {"", "", "", ""};
-		String[][] dataAppointment = {{"Appointment name", "Booked customer", "Start time", "End time"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"}, {"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"},{"a", "a", "a", "a"}};
-
+		JTable table = new JTable();
+		//make the table non editable (for the user. the table will still get updated):
+		DefaultTableModel modelTable = new DefaultTableModel() {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		modelTable.addColumn("Appointment name");
+		modelTable.addColumn("Booked customer");
+		modelTable.addColumn("Start time");
+		modelTable.addColumn("End time");
+		table.setModel(modelTable);
 		
-		JTable overviewTable = new JTable(dataAppointment, appointmentColumnNames);
-		overviewTable.setBounds(60, 460 ,572, 240);
-		JScrollPane overviewScrollPane = new JScrollPane(overviewTable);
-		overviewScrollPane.setBounds(622, 460, 10, 240);
-		//the scroll pane shows up but does not work yet.... time for some GOOGLING
-		add(overviewScrollPane);
-		Dimension d = overviewTable.getPreferredSize();
-		overviewScrollPane.setPreferredSize(new Dimension(d.width, 572));
-		overviewScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		add(overviewTable);
+		for(int i = 0; i< 20;i++) {
+			//here is where we would get the TO information about the appointments 
+			//and insert them into the table
+			Vector<String> r = new Vector<String>();
+			r.addElement("test a");
+			r.addElement("test b");
+			r.addElement("test c");
+			r.addElement("test d");
+			modelTable.addRow(r);
+		}
+		JScrollPane scrollTable = new JScrollPane(table);
+		scrollTable.setBounds(60, 460 ,572, 240);
+		scrollTable.setVisible(true);
+		add(scrollTable);
 
-//		DefaultTableModel overviewDtm = new DefaultTableModel(0, 0);
-//		overviewTable.setModel(overviewDtm);
 		
 		errorMessage = new JLabel("error messages will appear here!");
 		errorMessage.setForeground(Color.RED);
