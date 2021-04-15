@@ -235,20 +235,20 @@ public class CarShopPage extends JFrame {
 		setLayout(null);
 		
 		labelUsername = new JLabel("Username");
-		labelUsername.setBounds(x-175, y+100, 77, 16);
+		labelUsername.setBounds(x-175, y+75, 77, 16);
 		add(labelUsername);
 		
 		labelPassword = new JLabel("Password");
-		labelPassword.setBounds(x-175, y+75, 77, 16);
+		labelPassword.setBounds(x-175, y+100, 77, 16);
 		add(labelPassword);
 		
 		textUsername = new JTextField();
-		textUsername.setBounds(x-110, y+95, 184, 26);
+		textUsername.setBounds(x-110, y+70, 184, 26);
 		add(textUsername);
 		textUsername.setColumns(10);
 		
 		textPassword = new JPasswordField();
-		textPassword.setBounds(x-110, y+70, 184, 26);
+		textPassword.setBounds(x-110, y+95, 184, 26);
 		add(textPassword);
 		textPassword.setColumns(10);
 		

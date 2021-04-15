@@ -3,6 +3,7 @@ package ca.mcgill.ecse.carshop.view;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 
 public class TechnicianWindow {
@@ -12,6 +13,19 @@ public class TechnicianWindow {
 	private JTextField txtSetNewOpening;
 	private JTextField txtNewClosingTime;
 	private JTextField txtNewPassword;
+	private JLabel lblNewLabel;
+	private JLabel lblNewLabel_1;
+	private JButton btnNewButton_1;
+	private JSeparator separator, separator_1, separator_1_1;
+	private JLabel lblNewLabel_4;
+	private JLabel lblNewLabel_5;
+	private JLabel lblNewLabel_6;
+	private JLabel lblNewLabel_7;
+	private JComboBox comboBox;
+	private JButton btnNewButton;
+	private JLabel lblNewLabel_2;
+	private JTable overviewTable;
+	private JScrollPane overviewScrollPane;
 
 	/**
 	 * Launch the application.
@@ -46,11 +60,11 @@ public class TechnicianWindow {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("My Garage");
+		lblNewLabel = new JLabel("My Garage");
 		lblNewLabel.setBounds(60, 39, 65, 16);
 		frame.getContentPane().add(lblNewLabel);
 		
-		JLabel lblNewLabel_1 = new JLabel("Business Hours");
+		lblNewLabel_1 = new JLabel("Business Hours");
 		lblNewLabel_1.setBounds(60, 129, 97, 16);
 		frame.getContentPane().add(lblNewLabel_1);
 		
@@ -60,11 +74,11 @@ public class TechnicianWindow {
 		table.setBounds(60, 177, 572, 57);
 		frame.getContentPane().add(table);
 		
-		JLabel lblNewLabel_2 = new JLabel("Modify Business Hours");
+		lblNewLabel_2 = new JLabel("Modify Business Hours");
 		lblNewLabel_2.setBounds(60, 321, 153, 16);
 		frame.getContentPane().add(lblNewLabel_2);
 		
-		JComboBox comboBox = new JComboBox();
+		comboBox = new JComboBox();
 		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"}));
 		comboBox.setBounds(60, 349, 130, 27);
 		frame.getContentPane().add(comboBox);
@@ -79,7 +93,7 @@ public class TechnicianWindow {
 		frame.getContentPane().add(txtNewClosingTime);
 		txtNewClosingTime.setColumns(10);
 		
-		JButton btnNewButton = new JButton("Confirm Changes");
+		btnNewButton = new JButton("Confirm Changes");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -96,7 +110,7 @@ public class TechnicianWindow {
 		frame.getContentPane().add(txtNewPassword);
 		txtNewPassword.setColumns(10);
 		
-		JButton btnNewButton_1 = new JButton("Confirm Change");
+		btnNewButton_1 = new JButton("Confirm Change");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -104,32 +118,40 @@ public class TechnicianWindow {
 		btnNewButton_1.setBounds(379, 466, 130, 29);
 		frame.getContentPane().add(btnNewButton_1);
 		
-		JSeparator separator = new JSeparator();
+		separator = new JSeparator();
 		separator.setBounds(60, 417, 572, 12);
 		frame.getContentPane().add(separator);
 		
-		JSeparator separator_1 = new JSeparator();
+		separator_1 = new JSeparator();
 		separator_1.setBounds(60, 105, 572, 12);
 		frame.getContentPane().add(separator_1);
 		
-		JSeparator separator_1_1 = new JSeparator();
+		separator_1_1 = new JSeparator();
 		separator_1_1.setBounds(60, 288, 572, 12);
 		frame.getContentPane().add(separator_1_1);
 		
-		JLabel lblNewLabel_4 = new JLabel("technician-type");
+		lblNewLabel_4 = new JLabel("technician-type");
 		lblNewLabel_4.setBounds(60, 77, 166, 16);
 		frame.getContentPane().add(lblNewLabel_4);
 		
-		JLabel lblNewLabel_5 = new JLabel("New Opening Time");
+		lblNewLabel_5 = new JLabel("New Opening Time");
 		lblNewLabel_5.setBounds(215, 353, 119, 16);
 		frame.getContentPane().add(lblNewLabel_5);
 		
-		JLabel lblNewLabel_6 = new JLabel("New Closing Time");
+		lblNewLabel_6 = new JLabel("New Closing Time");
 		lblNewLabel_6.setBounds(215, 384, 140, 16);
 		frame.getContentPane().add(lblNewLabel_6);
 		
-		JLabel lblNewLabel_7 = new JLabel("New Password");
+		lblNewLabel_7 = new JLabel("New Password");
 		lblNewLabel_7.setBounds(60, 471, 97, 16);
 		frame.getContentPane().add(lblNewLabel_7);
+		
+		//in progress things
+//		String[] appointmentColumnNames = {"Appointment name", "Booked customer", "Start time", "End time"};
+//		overviewTable = new JTable(0,0);
+////		overviewTable.setcolumn(appointmentColumnNames);
+//		overviewScrollPane = new JScrollPane(overviewTable);
+//		
+//		frame.getContentPane().add(overviewTable);
 	}
 }
