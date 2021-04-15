@@ -86,7 +86,7 @@ public class CarShopPage extends JFrame {
             	//if user is logged in correctly, transition to a new window 
             	//(either customer or owner perspective)  
             	
-            	if (username.equals("owner")) {
+            	if (CarShopApplication.getCurrentUser() != null && CarShopApplication.getAccountType().equals(CarShopApplication.accountType.Owner)) {
 					System.out.println("logging in as owner...");
 					
 					// init owner view
@@ -94,7 +94,7 @@ public class CarShopPage extends JFrame {
 					
 				}
             	
-            	if (username.equals("customer1")) {
+            	if (CarShopApplication.getCurrentUser() != null && CarShopApplication.getAccountType().equals(CarShopApplication.accountType.Customer)) {
             		System.out.println("Logging in as customer...");
             		CarShopApplication.logIn("customer1", "12345678");
             		
@@ -102,7 +102,7 @@ public class CarShopPage extends JFrame {
             		initComponentsCustomerView();
             	}
             	
-            	if (username.toLowerCase().contains("technician")) {
+            	if (CarShopApplication.getCurrentUser() != null && CarShopApplication.getUser().getUsername().contains("technician")) {
             		System.out.println("Logging in as technician...");
             		
             		// init customer view
@@ -211,9 +211,11 @@ public class CarShopPage extends JFrame {
         add(labelInstructions2);
         
         //error label - shown as a test for now. remove this later!
-        labelError = new JLabel("error-area-remove-later-just-for-show----");
-        labelError.setBounds(x-175, y+125, 273, 16);
-        add(labelError);
+//        labelError = new JLabel("error-area-remove-later-just-for-show----");
+//        labelError.setBounds(x-175, y+125, 273, 16);
+//        add(labelError);
+        errorMessage.setBounds(x-175, y+125, 273, 16);
+        add(errorMessage);
 
     }
     

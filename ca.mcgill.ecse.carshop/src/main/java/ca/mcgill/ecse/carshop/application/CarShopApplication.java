@@ -33,7 +33,6 @@ public class CarShopApplication {
 	private static User user = null;	//might need to remove static
 	public static AccountType accountType = null;
 	private static boolean isLoggedIn = false;
-	private static String username = null;
 	private static Date systemDate = null;
 	private static Time systemTime = null;
 
@@ -60,7 +59,6 @@ public class CarShopApplication {
 			user = null;
 			accountType = null;
 			isLoggedIn = false;
-			username = null;
 			systemDate = null;
 			systemTime = null;
 		}
@@ -117,11 +115,14 @@ public class CarShopApplication {
 		}
 
 		public static void setUsername(String name) {
-			username = name;
+			user.setUsername(name);
 		}
 
 		public static String getCurrentUser() {
-			return username;
+			if(user == null) {
+				return null;
+			}
+			return user.getUsername();
 		}
 
 		public static void setSystemDate(Date date) {
