@@ -112,7 +112,6 @@ public class CarShopApplication {
 					}
 				}
 			}
-
 		}
 
 		public static void setUsername(String name) {

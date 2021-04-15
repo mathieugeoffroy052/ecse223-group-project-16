@@ -67,15 +67,13 @@ public class CarShopPage extends JFrame {
         
         buttonLogin.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent evt) {
-            	//TODO 
+            public void actionPerformed(ActionEvent evt) { 
             	String username = textUsername.getText();
             	String password = textPassword.getText();
             	error = null;
             	try {
 					CarShopController.login(username, password);
 				} catch (InvalidInputException e) {
-					// TODO Auto-generated catch block
 					error = e.getMessage();
 				}
             	if(error != null) {
@@ -112,7 +110,7 @@ public class CarShopPage extends JFrame {
             }
         });
         
-        // Sign up button (1st version)
+        // Sign up button - will automatically log in a new customer if no errors are raised
 		buttonSignup.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -126,14 +124,28 @@ public class CarShopPage extends JFrame {
 				} 
             	catch (InvalidInputException e) 
             	{
-					// TODO Auto-generated catch block
 					error = e.getMessage();
 				}
             	if(error != null) {
     				errorMessage.setText(error);
+            	}else {
+            		error = null;
+                	try {
+						CarShopController.login(username, password);
+					} catch (InvalidInputException e) {
+						error = e.getMessage();
+					}
+               		if(error!=null) {
+						errorMessage.setText(error);
+                	}else {
+                    	if (CarShopApplication.getCurrentUser() != null && CarShopApplication.getAccountType().equals(CarShopApplication.accountType.Customer)) {
+                    		System.out.println("Logging in as customer...");
+                    		
+                    		// init customer view
+                    		initComponentsCustomerView();
+                    	}
+                	}	
             	}
-            	initComponentsCustomerView();
-            	
             }
         });
     }
