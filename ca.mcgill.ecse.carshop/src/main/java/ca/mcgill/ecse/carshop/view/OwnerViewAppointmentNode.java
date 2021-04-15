@@ -149,7 +149,9 @@ public class OwnerViewAppointmentNode extends JPanel {
 		}
 		
 		refreshServiceList();
-//		firePropertyChange("Start button pressed", false, true);
+		if (error == "") {
+			firePropertyChange("Start button pressed", false, true);
+		}
 	}
 	
 	private void endButtonActionPerformed(ActionEvent event) {
@@ -163,7 +165,9 @@ public class OwnerViewAppointmentNode extends JPanel {
 		}
 		
 		refreshServiceList();
-//		firePropertyChange("End button pressed", false, true);
+		if (error == "") {
+			firePropertyChange("End button pressed", false, true);
+		}
 	}
 	
 	
@@ -177,7 +181,9 @@ public class OwnerViewAppointmentNode extends JPanel {
 			error = e.getMessage();
 		}
 		refreshServiceList();
-//		firePropertyChange("No Show button pressed", false, true);
+		if (error == "") {
+			firePropertyChange("No Show button pressed", false, true);
+		}
 	}
 	
 	

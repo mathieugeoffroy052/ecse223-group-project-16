@@ -75,16 +75,21 @@ public class OwnerViewAppointments extends JPanel {
 		
 		
 		//add propertyChangeListener
-//		for (int i = 0; i < appointmentNodes.size(); i++) {
-//			appointmentNodes.get(i).addPropertyChangeListener(new PropertyChangeListener() {
-//				
-//				@Override
-//				public void propertyChange(PropertyChangeEvent evt) {
-//					refreshData();
-//					
-//				}
-//			});
-//		}
+		for (int i = 0; i < appointmentNodes.size(); i++) {
+			appointmentNodes.get(i).addPropertyChangeListener(new PropertyChangeListener() {
+				
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) {
+					if (evt.getPropertyName().equals("End button pressed")
+							|| evt.getPropertyName().equals("No Show button pressed")
+							|| evt.getPropertyName().equals("Start button pressed")) {
+						System.out.println("Please wait, refreshing data");
+						refreshData();
+					}
+					
+				}
+			});
+		}
 		
 		//create appointment components
 		Component[] components = new Component[appointmentNodes.size()];
