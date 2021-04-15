@@ -1,12 +1,8 @@
 package ca.mcgill.ecse.carshop.view;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +21,6 @@ import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.TOAppointment;
 import ca.mcgill.ecse.carshop.controller.TOComboItem;
-import ca.mcgill.ecse.carshop.model.ComboItem;
 
 import org.jdatepicker.impl.JDatePanelImpl;
 
@@ -75,11 +70,17 @@ public class CustomerView extends JPanel {
 	private JButton deleteAccountButton;
 	
 	private JDatePickerImpl overviewDatePickerCreateAppt;
-	private JLabel overviewDateLabelCreateAppt; 
 
 	private JDatePickerImpl overviewDatePickerUpdateAppt;
-	private JLabel overviewDateLabelUpdateAppt; 
 	
+	// create appointment calendar
+	private SqlDateModel createApptDateText;
+	private Properties createApptDateDisplayed;
+
+	// update appointment calendar
+	private SqlDateModel updateApptDateText;
+	private Properties updateApptDateDisplayed;
+
 	private JButton plusCreateAppt;
 	private JButton plusUpdateAppt;
 	private JButton plusUpdateServiceOfAppt;
@@ -94,6 +95,8 @@ public class CustomerView extends JPanel {
 
 	private void initialize() {
 
+		// *** Buttons *** //
+		
 		errorMessage = new JLabel();
 		errorMessage.setForeground(Color.RED);
 		errorMessage.setBounds(6, 648, 97, 16);
@@ -114,11 +117,6 @@ public class CustomerView extends JPanel {
 		createApptEnterStartTimeText = new JLabel("Enter a start time: (hh:mm)");
 		createApptEnterStartTimeText.setBounds(274, 73, 208, 18);
 		add(createApptEnterStartTimeText);
-		
-//		createApptEnterStartDateTextField = new JTextField();
-//		createApptEnterStartDateTextField.setBounds(513, 41, 130, 26);
-//		add(createApptEnterStartDateTextField);
-//		createApptEnterStartDateTextField.setColumns(10);
 		
 		createApptEnterStartDateText = new JLabel("Enter start date: (yyyy-mm-dd)");
 		createApptEnterStartDateText.setBounds(274, 45, 227, 18);
@@ -164,11 +162,6 @@ public class CustomerView extends JPanel {
 		updateApptEnterNewDateText = new JLabel("Enter new date: (yyyy-mm-dd)");
 		updateApptEnterNewDateText.setBounds(274, 336, 249, 18);
 		add(updateApptEnterNewDateText);
-		
-//		updateApptEnterNewDateTextField = new JTextField();
-//		updateApptEnterNewDateTextField.setColumns(10);
-//		updateApptEnterNewDateTextField.setBounds(513, 332, 130, 26);
-//		add(updateApptEnterNewDateTextField);
 		
 		updateApptEnterNewTimeText = new JLabel("Enter new time: (hh:mm)");
 		updateApptEnterNewTimeText.setBounds(274, 364, 208, 18);
@@ -255,58 +248,49 @@ public class CustomerView extends JPanel {
 		add(plusUpdateServiceOfAppt);
 		
 		
-		// create appointment calendar
-		SqlDateModel overviewModel = new SqlDateModel();
 		LocalDate now = LocalDate.now();
-		overviewModel.setDate(now.getYear(), now.getMonthValue() - 1, now.getDayOfMonth());
-		overviewModel.setSelected(true);
-		Properties pO = new Properties();
-		pO.put("text.today", "Today");
-		pO.put("text.month", "Month");
-		pO.put("text.year", "Year");
-		JDatePanelImpl overviewDatePanel = new JDatePanelImpl(overviewModel, pO);
+		
+		// create appointment calendar
+		createApptDateText = new SqlDateModel();
+		createApptDateText.setDate(now.getYear(), now.getMonthValue() - 1, now.getDayOfMonth());
+		createApptDateText.setSelected(true);
+		createApptDateDisplayed = new Properties();
+		createApptDateDisplayed.put("text.today", "Today");
+		createApptDateDisplayed.put("text.month", "Month");
+		createApptDateDisplayed.put("text.year", "Year");
+		JDatePanelImpl overviewDatePanel = new JDatePanelImpl(createApptDateText, createApptDateDisplayed);
 		overviewDatePickerCreateAppt = new JDatePickerImpl(overviewDatePanel, new DateLabelFormatter());
-		overviewDateLabelCreateAppt = new JLabel();
-		overviewDateLabelCreateAppt.setText("Date for Overview:");
 		overviewDatePickerCreateAppt.setBounds(513, 41, 145, 26);//513, 41, 130, 26
-		overviewDateLabelCreateAppt.setBounds(500,400,300,200);
-		add(overviewDateLabelCreateAppt);
 		add(overviewDatePickerCreateAppt);
 		
 		
 		// update appointment calendar
-		SqlDateModel overviewModel1 = new SqlDateModel();
-		overviewModel.setDate(now.getYear(), now.getMonthValue() - 1, now.getDayOfMonth());
-		overviewModel.setSelected(true);
-		Properties pO1 = new Properties();
-		pO1.put("text.today", "Today");
-		pO1.put("text.month", "Month");
-		pO1.put("text.year", "Year");
-		JDatePanelImpl overviewDatePanel1 = new JDatePanelImpl(overviewModel1, pO1);
+		updateApptDateText = new SqlDateModel();
+		updateApptDateText.setDate(now.getYear(), now.getMonthValue() - 1, now.getDayOfMonth());
+		updateApptDateText.setSelected(true);
+		updateApptDateDisplayed = new Properties();
+		updateApptDateDisplayed.put("text.today", "Today");
+		updateApptDateDisplayed.put("text.month", "Month");
+		updateApptDateDisplayed.put("text.year", "Year");
+		JDatePanelImpl overviewDatePanel1 = new JDatePanelImpl(updateApptDateText, updateApptDateDisplayed);
 		overviewDatePickerUpdateAppt = new JDatePickerImpl(overviewDatePanel1, new DateLabelFormatter());
-		overviewDateLabelUpdateAppt = new JLabel();
-		overviewDateLabelUpdateAppt.setText("Date for Overview:");
 		overviewDatePickerUpdateAppt.setBounds(513, 332, 145, 26);//513, 332, 130, 26
-		overviewDateLabelUpdateAppt.setBounds(500,400,300,200);
-		add(overviewDateLabelUpdateAppt);
 		add(overviewDatePickerUpdateAppt);
 
 
-		// action listeners
+		// *** Action Listeners *** //
 		
-		// create an appointment
+		// create an appointment via the "+" button
 		plusCreateAppt.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				try {
 					plusCreateApptActionPerformed(evt);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					error = e.getMessage();
 				}
 			}
 
 			private void plusCreateApptActionPerformed(ActionEvent evt) throws Exception {
-				// TODO Auto-generated method stub
 				error = "";
 				if(createApptChooseServiceComboBox.getSelectedIndex()!=-1) {
 					String apptName = createApptChooseServiceComboBox.getItemAt(createApptChooseServiceComboBox.getSelectedIndex());
@@ -319,9 +303,11 @@ public class CustomerView extends JPanel {
 							  model.addElement(list1.get(0).getName());
 							}
 						createApptSelectOptServicesList = list;
-					} catch(Exception e) {
-						error += e.getMessage();
-					}	// otherwise, the list is empty (it's a service)
+					} catch(Exception e) {	// otherwise, the optional services list is empty (it's a service)
+						DefaultListModel<String> model = new DefaultListModel<>();
+						JList<String> list = new JList<>(model);
+						updateApptEnterNewOptServicesList = list;
+					}	
 				}
 				
 				// update visuals
@@ -330,19 +316,18 @@ public class CustomerView extends JPanel {
 		});
 		
 		
-		// update an appointment
+		
+		// update an appointment via the "+" button
 		plusUpdateAppt.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				try {
 					plusUpdateApptActionPerformed(evt);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					error = e.getMessage();
 				}
 			}
 
 			private void plusUpdateApptActionPerformed(ActionEvent evt) throws Exception {
-				// TODO Auto-generated method stub
 				error = "";
 				if(updateApptNewServiceSelected.getSelectedIndex()!=-1) {
 					String apptName = updateApptNewServiceSelected.getItemAt(updateApptNewServiceSelected.getSelectedIndex());
@@ -355,11 +340,11 @@ public class CustomerView extends JPanel {
 							  model.addElement(list1.get(0).getName());
 							}
 						updateApptEnterNewOptServicesList = list;
-					} catch(Exception e) {
+					} catch(Exception e) {	// otherwise, the list is empty (it's a service)
 						DefaultListModel<String> model = new DefaultListModel<>();
 						JList<String> list = new JList<>(model);
 						updateApptEnterNewOptServicesList = list;
-					}	// otherwise, the list is empty (it's a service)
+					}
 				}
 				
 				// update visuals
@@ -367,19 +352,19 @@ public class CustomerView extends JPanel {
 			}
 		});
 		
-		// update an appointment
+		
+		
+		// update the optional services via the "+" button
 		plusUpdateServiceOfAppt.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				try {
 					plusUpdateServiceOfApptActionPerformed(evt);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					error = e.getMessage();
 				}
 			}
 
 			private void plusUpdateServiceOfApptActionPerformed(ActionEvent evt) throws Exception {
-				// TODO Auto-generated method stub
 				error = "";
 				if(updateApptUpdateOptServicesList.getSelectedIndex()!=-1) {
 					String apptName = updateApptUpdateOptServicesList.getItemAt(updateApptUpdateOptServicesList.getSelectedIndex());
@@ -392,18 +377,17 @@ public class CustomerView extends JPanel {
 							  model.addElement(list1.get(0).getName());
 							}
 						updateApptEnterNewOptServicesList = list;
-					} catch(Exception e) {
+					} catch(Exception e) {	// otherwise, the list is empty (it's a service)
 						DefaultListModel<String> model = new DefaultListModel<>();
 						JList<String> list = new JList<>(model);
 						updateApptEnterNewOptServicesList = list;
-					}	// otherwise, the list is empty (it's a service)
+					}
 				}
 				
 				// update visuals
 				refreshData();
 			}
 		});
-		
 		
 		
 		
@@ -419,7 +403,6 @@ public class CustomerView extends JPanel {
 			}
 
 			private void createApptConfirmButtonActionPerformed(ActionEvent evt) throws Exception {
-				// TODO Auto-generated method stub
 				error = "";
 				
 				// call the controller
@@ -432,7 +415,7 @@ public class CustomerView extends JPanel {
 					}
 					CarShopController.CreateAppointmentWithOptServices(CarShopApplication.getCurrentUser(),
 							createApptChooseServiceComboBox.getItemAt(createApptChooseServiceComboBox.getSelectedIndex()), 
-							createApptEnterStartDateTextField.getText(), overviewDatePickerUpdateAppt.getModel().getValue().toString(), 
+							createApptEnterStartDateTextField.getText(), updateApptDateText.toString(), 
 							CarShopApplication.getCarShop(), optServices, true);
 				} catch (InvalidInputException e) {
 					error = e.getMessage();
@@ -442,6 +425,8 @@ public class CustomerView extends JPanel {
 				refreshData();
 			}
 		});
+		
+		
 		
 		// listeners for create appointment button
 		updateApptButton.addActionListener(new java.awt.event.ActionListener() {
@@ -455,7 +440,6 @@ public class CustomerView extends JPanel {
 			}
 
 			private void updateApptButtonActionPerformed(ActionEvent evt) throws Exception {
-				// TODO Auto-generated method stub
 				error = "";
 				
 				// call the controller
@@ -469,7 +453,7 @@ public class CustomerView extends JPanel {
 					// TODO
 					CarShopController.CreateAppointmentWithOptServices(CarShopApplication.getCurrentUser(),
 							createApptChooseServiceComboBox.getItemAt(createApptChooseServiceComboBox.getSelectedIndex()), 
-							createApptEnterStartDateTextField.getText(), overviewDatePickerUpdateAppt.getModel().getValue().toString(), 
+							createApptEnterStartDateTextField.getText(),updateApptDateText.toString(), 
 							CarShopApplication.getCarShop(), optServices, true);
 				} catch (InvalidInputException e) {
 					error = e.getMessage();
@@ -482,6 +466,8 @@ public class CustomerView extends JPanel {
 
 	}
 	
+	
+
 	private void refreshData() {
 		errorMessage.setText(error);
 		if (error == null || error.length() == 0) {
