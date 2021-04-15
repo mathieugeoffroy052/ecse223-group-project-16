@@ -37,6 +37,16 @@ public class CarShopController {
 	public CarShopController() {
 	}
 	
+	public static List<TOComboItem> getOptServicesWithName(String apptName) throws Exception {
+
+		List<ComboItem> list1 = CarShopApplication.getCarShop().getBookableService(0).getWithName(apptName).getMainService().getServiceCombo().getServices();
+		List<TOComboItem> toReturn = new ArrayList<>();
+		for(ComboItem ci : list1) {
+			toReturn.add(new TOComboItem(ci.getMandatory(),ci.getService().getName()));
+		}
+		return toReturn;
+
+	}
 	
 	public static List<TOBookableService> getCarShopBookableServices() {
 		CarShop cs = CarShopApplication.getCarShop();
@@ -53,11 +63,30 @@ public class CarShopController {
 		for(Customer c : CarShopApplication.getCarShop().getCustomers()) {
 			if(c.getUsername().equals(username)) {
 				int size = c.getAppointments().size();
-				List<TOAppointment> temp = new ArrayList<>();
-				for(int i = 0; i < size; i++) {
-					String nameOfService = c.getAppointment(i).getServiceBooking(0).getService().getName();
-					//temp.add(new TOAppointment(nameOfService)); TODO
-					
+				List<TOAppointment> temp = new ArrayList<>();	// create a list to store the customer's appointments
+				for(int i = 0; i < size; i++) {	// iterate through this list of appointments
+					Appointment curAppt = c.getAppointment(i);
+					String nameOfAppt = curAppt.getBookableService().getName();
+					Time startTime = curAppt.getServiceBooking(0).getTimeSlot().getStartTime();
+					Date startDate = curAppt.getServiceBooking(0).getTimeSlot().getStartDate();
+					List<TOServiceBooking> temp1 = new ArrayList<>();
+					for(ServiceBooking sb : curAppt.getServiceBookings()) {
+						TOGarage garage = new TOGarage(sb.getService().getGarage().getTechnician().getUsername());	// assuming name of garage is technician's username
+						TOService serv = new TOService(sb.getService().getName(),sb.getService().getDuration(),garage);
+						TOTimeSlot timeSlot = new TOTimeSlot(sb.getTimeSlot().getStartDate(),sb.getTimeSlot().getStartTime(),sb.getTimeSlot().getEndDate(),sb.getTimeSlot().getEndTime());
+						
+						// adds it to the array of service bookings
+						temp1.add(new TOServiceBooking(serv, timeSlot));
+						// finds the earliest time slot and adds it
+						if(sb.getTimeSlot().getStartDate().before(startDate) || sb.getTimeSlot().getStartDate().equals(startDate)) {
+							if(sb.getTimeSlot().getStartTime().before(startTime) || sb.getTimeSlot().getStartTime().equals(startTime)) {
+								startTime = sb.getTimeSlot().getStartTime();
+								startDate = sb.getTimeSlot().getStartDate();
+							}
+						}
+					}
+					// adds to list of TO appointments
+					temp.add(new TOAppointment(username,nameOfAppt,startDate,startTime,curAppt.getAppointmentStatusFullName(),temp1));
 				}
 				return temp;
 			}
@@ -230,6 +259,9 @@ public class CarShopController {
 		}
 	}
 	
+//	public static void CreateAppointmentWithOptServices(String customer, String serviceComboName, String startTime, String startDate, String optServices) {
+//		CreateAppointmentWithOptServices(customer, serviceComboName, startTime, startDate, CarShopApplication.getCarShop(), optServices, true);
+//	}
 	// creating appointment method
 	public static void CreateAppointmentWithOptServices(String customer, String serviceComboName, String startTime, String startDate, CarShop cs, String optServices, boolean isTrue) throws Exception {
 		if(customer.contains("owner") || customer.contains("Technician")) throw new InvalidInputException("Only customers can make an appointment");
