@@ -110,6 +110,7 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
+import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 
@@ -193,10 +194,30 @@ public class CarShopPage extends JFrame {
             }
         });
         
+        // Sign up button (1st version)
 		buttonSignup.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+            	//TODO 
+            	String username = textUsername.getText();
+            	String password = textPassword.getText();
+            	error = null;
+            	try 
+            	{
+					CarShopController.signUpUser(username, password, CarShopApplication.AccountType.Customer);
+				} 
+            	catch (InvalidInputException e) 
+            	{
+					// TODO Auto-generated catch block
+					error = e.getMessage();
+				}
+            	if(error != null) {
+    				errorMessage.setText(error);
+            	}
+            	initComponentsCustomerView();
+            	
+            }
+        });
     }
 
 
