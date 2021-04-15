@@ -144,7 +144,7 @@ public class OwnerViewAppointmentNode extends JPanel {
 
 		try {
 			CarShopController.startAppointmentAt(CarShopController.findAppointment(toAppointment), CarShopApplication.getSystemDateTime());
-		} catch (InvalidInputException e) {
+		} catch (Exception e) {
 			error = e.getMessage();
 		}
 		
@@ -157,8 +157,8 @@ public class OwnerViewAppointmentNode extends JPanel {
 		error = "";
 
 		try {
-			CarShopController.startAppointmentAt(CarShopController.findAppointment(toAppointment), CarShopApplication.getSystemDateTime());
-		} catch (InvalidInputException e) {
+			CarShopController.endAppointmentAt(CarShopController.findAppointment(toAppointment), CarShopApplication.getSystemDateTime());
+		} catch (Exception e) {
 			error = e.getMessage();
 		}
 		
@@ -172,8 +172,8 @@ public class OwnerViewAppointmentNode extends JPanel {
 		error = "";
 
 		try {
-			CarShopController.startAppointmentAt(CarShopController.findAppointment(toAppointment), CarShopApplication.getSystemDateTime());
-		} catch (InvalidInputException e) {
+			CarShopController.updateNoShowAt(CarShopController.findAppointment(toAppointment), CarShopApplication.getSystemDateTime());
+		} catch (Exception e) {
 			error = e.getMessage();
 		}
 		refreshServiceList();
