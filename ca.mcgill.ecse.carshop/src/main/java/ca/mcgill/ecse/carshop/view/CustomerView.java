@@ -1,6 +1,8 @@
 package ca.mcgill.ecse.carshop.view;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
@@ -91,6 +93,8 @@ public class CustomerView extends JPanel {
 		
 	public CustomerView() {
 		initialize();
+		refreshData();
+
 	}
 
 	private void initialize() {
@@ -283,35 +287,8 @@ public class CustomerView extends JPanel {
 		// create an appointment via the "+" button
 		plusCreateAppt.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try {
-					plusCreateApptActionPerformed(evt);
-				} catch (Exception e) {
-					error = e.getMessage();
-				}
-			}
-
-			private void plusCreateApptActionPerformed(ActionEvent evt) throws Exception {
-				error = "";
-				if(createApptChooseServiceComboBox.getSelectedIndex()!=-1) {
-					String apptName = createApptChooseServiceComboBox.getItemAt(createApptChooseServiceComboBox.getSelectedIndex());
-					
-					try {	// if it's an instance of servicecombo
-						DefaultListModel<String> model = new DefaultListModel<>();
-						JList<String> list = new JList<>(model);
-						List<TOComboItem> list1 = CarShopController.getOptServicesWithName(apptName);
-						for(int i = 0; i < list1.size(); i++ ) {
-							  model.addElement(list1.get(0).getName());
-							}
-						createApptSelectOptServicesList = list;
-					} catch(Exception e) {	// otherwise, the optional services list is empty (it's a service)
-						DefaultListModel<String> model = new DefaultListModel<>();
-						JList<String> list = new JList<>(model);
-						updateApptEnterNewOptServicesList = list;
-					}	
-				}
-				
-				// update visuals
-				refreshData();
+				try { plusCreateApptActionPerformed(evt); 
+				} catch (Exception e) { error = e.getMessage(); }
 			}
 		});
 		
@@ -320,35 +297,8 @@ public class CustomerView extends JPanel {
 		// update an appointment via the "+" button
 		plusUpdateAppt.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try {
-					plusUpdateApptActionPerformed(evt);
-				} catch (Exception e) {
-					error = e.getMessage();
-				}
-			}
-
-			private void plusUpdateApptActionPerformed(ActionEvent evt) throws Exception {
-				error = "";
-				if(updateApptNewServiceSelected.getSelectedIndex()!=-1) {
-					String apptName = updateApptNewServiceSelected.getItemAt(updateApptNewServiceSelected.getSelectedIndex());
-					
-					try {	// if it's an instance of servicecombo
-						DefaultListModel<String> model = new DefaultListModel<>();
-						JList<String> list = new JList<>(model);
-						List<TOComboItem> list1 = CarShopController.getOptServicesWithName(apptName);
-						for(int i = 0; i < list1.size(); i++ ) {
-							  model.addElement(list1.get(0).getName());
-							}
-						updateApptEnterNewOptServicesList = list;
-					} catch(Exception e) {	// otherwise, the list is empty (it's a service)
-						DefaultListModel<String> model = new DefaultListModel<>();
-						JList<String> list = new JList<>(model);
-						updateApptEnterNewOptServicesList = list;
-					}
-				}
-				
-				// update visuals
-				refreshData();
+				try { plusUpdateApptActionPerformed(evt);
+				} catch (Exception e) { error = e.getMessage(); }
 			}
 		});
 		
@@ -357,35 +307,8 @@ public class CustomerView extends JPanel {
 		// update the optional services via the "+" button
 		plusUpdateServiceOfAppt.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try {
-					plusUpdateServiceOfApptActionPerformed(evt);
-				} catch (Exception e) {
-					error = e.getMessage();
-				}
-			}
-
-			private void plusUpdateServiceOfApptActionPerformed(ActionEvent evt) throws Exception {
-				error = "";
-				if(updateApptUpdateOptServicesList.getSelectedIndex()!=-1) {
-					String apptName = updateApptUpdateOptServicesList.getItemAt(updateApptUpdateOptServicesList.getSelectedIndex());
-					
-					try {	// if it's an instance of servicecombo
-						DefaultListModel<String> model = new DefaultListModel<>();
-						JList<String> list = new JList<>(model);
-						List<TOComboItem> list1 = CarShopController.getOptServicesWithName(apptName);
-						for(int i = 0; i < list1.size(); i++ ) {
-							  model.addElement(list1.get(0).getName());
-							}
-						updateApptEnterNewOptServicesList = list;
-					} catch(Exception e) {	// otherwise, the list is empty (it's a service)
-						DefaultListModel<String> model = new DefaultListModel<>();
-						JList<String> list = new JList<>(model);
-						updateApptEnterNewOptServicesList = list;
-					}
-				}
-				
-				// update visuals
-				refreshData();
+				try { plusUpdateServiceOfApptActionPerformed(evt);
+				} catch (Exception e) { error = e.getMessage(); }
 			}
 		});
 		
@@ -394,35 +317,8 @@ public class CustomerView extends JPanel {
 		// listeners for create appointment button
 		createApptConfirmButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try {
-					createApptConfirmButtonActionPerformed(evt);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					error = e.getMessage();
-				}
-			}
-
-			private void createApptConfirmButtonActionPerformed(ActionEvent evt) throws Exception {
-				error = "";
-				
-				// call the controller
-				try {
-					// TODO replace error
-					List<String> list = createApptSelectOptServicesList.getSelectedValuesList();
-					String optServices = "";
-					for(String s : list) {
-						optServices += s+",";
-					}
-					CarShopController.CreateAppointmentWithOptServices(CarShopApplication.getCurrentUser(),
-							createApptChooseServiceComboBox.getItemAt(createApptChooseServiceComboBox.getSelectedIndex()), 
-							createApptEnterStartDateTextField.getText(), updateApptDateText.toString(), 
-							CarShopApplication.getCarShop(), optServices, true);
-				} catch (InvalidInputException e) {
-					error = e.getMessage();
-				}
-				
-				// update visuals
-				refreshData();
+				try { createApptConfirmButtonActionPerformed(evt);
+				} catch (Exception e) { error = e.getMessage(); }
 			}
 		});
 		
@@ -431,51 +327,21 @@ public class CustomerView extends JPanel {
 		// listeners for create appointment button
 		updateApptButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try {
-					updateApptButtonActionPerformed(evt);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					error = e.getMessage();
-				}
-			}
-
-			private void updateApptButtonActionPerformed(ActionEvent evt) throws Exception {
-				error = "";
-				
-				// call the controller
-				try {
-					// TODO replace error
-					List<String> list = createApptSelectOptServicesList.getSelectedValuesList();
-					String optServices = "";
-					for(String s : list) {
-						optServices += s+",";
-					}
-					// TODO
-					CarShopController.CreateAppointmentWithOptServices(CarShopApplication.getCurrentUser(),
-							createApptChooseServiceComboBox.getItemAt(createApptChooseServiceComboBox.getSelectedIndex()), 
-							createApptEnterStartDateTextField.getText(),updateApptDateText.toString(), 
-							CarShopApplication.getCarShop(), optServices, true);
-				} catch (InvalidInputException e) {
-					error = e.getMessage();
-				}
-				
-				// update visuals
-				refreshData();
+				try { updateApptButtonActionPerformed(evt);
+				} catch (Exception e) { error = e.getMessage(); }
 			}
 		});
 
 	}
 	
 	
-
+	
 	private void refreshData() {
 		errorMessage.setText(error);
 		if (error == null || error.length() == 0) {
 			// populate page with data
 			// text fields
-			createApptEnterStartDateTextField.setText("");
 			createApptEnterStartTimeTextField.setText("");
-			updateApptEnterNewDateTextField.setText("");
 			updateApptEnterNewTimeTextField.setText("");
 			// username
 			newUsernameTextField.setText("");
@@ -487,6 +353,7 @@ public class CustomerView extends JPanel {
 			cancelApptSelectApptBox.removeAllItems();
 			updateApptNewServiceSelected.removeAllItems();
 			Integer index = 0;
+			System.out.println(CarShopApplication.getCurrentUser());
 			for (TOAppointment appt : CarShopController.getCustomerAppointments(CarShopApplication.getCurrentUser())) {
 				appointments.put(index, appt.getServiceName());
 				createApptChooseServiceComboBox.addItem(appt.getServiceName());
@@ -576,6 +443,138 @@ public class CustomerView extends JPanel {
 		// this is needed because the size of the window changes depending on whether an error message is shown or not
 		
 	}
+	
+	
+	
+	private void plusCreateApptActionPerformed(ActionEvent evt) throws Exception {
+		error = "";
+		if(createApptChooseServiceComboBox.getSelectedIndex()!=-1) {
+			String apptName = createApptChooseServiceComboBox.getItemAt(createApptChooseServiceComboBox.getSelectedIndex());
+			
+			try {	// if it's an instance of servicecombo
+				DefaultListModel<String> model = new DefaultListModel<>();
+				JList<String> list = new JList<>(model);
+				List<TOComboItem> list1 = CarShopController.getOptServicesWithName(apptName);
+				for(int i = 0; i < list1.size(); i++ ) {
+					  model.addElement(list1.get(0).getName());
+					}
+				createApptSelectOptServicesList = list;
+			} catch(Exception e) {	// otherwise, the optional services list is empty (it's a service)
+				DefaultListModel<String> model = new DefaultListModel<>();
+				JList<String> list = new JList<>(model);
+				updateApptEnterNewOptServicesList = list;
+			}	
+		}
+		
+		// update visuals
+		refreshData();
+	}
+	
+	
+	
+	private void plusUpdateApptActionPerformed(ActionEvent evt) throws Exception {
+		error = "";
+		if(updateApptNewServiceSelected.getSelectedIndex()!=-1) {
+			String apptName = updateApptNewServiceSelected.getItemAt(updateApptNewServiceSelected.getSelectedIndex());
+			
+			try {	// if it's an instance of servicecombo
+				DefaultListModel<String> model = new DefaultListModel<>();
+				JList<String> list = new JList<>(model);
+				List<TOComboItem> list1 = CarShopController.getOptServicesWithName(apptName);
+				for(int i = 0; i < list1.size(); i++ ) {
+					  model.addElement(list1.get(0).getName());
+					}
+				updateApptEnterNewOptServicesList = list;
+			} catch(Exception e) {	// otherwise, the list is empty (it's a service)
+				DefaultListModel<String> model = new DefaultListModel<>();
+				JList<String> list = new JList<>(model);
+				updateApptEnterNewOptServicesList = list;
+			}
+		}
+		
+		// update visuals
+		refreshData();
+	}
+	
+	
+	
+	private void plusUpdateServiceOfApptActionPerformed(ActionEvent evt) throws Exception {
+		error = "";
+		if(updateApptUpdateOptServicesList.getSelectedIndex()!=-1) {
+			String apptName = updateApptUpdateOptServicesList.getItemAt(updateApptUpdateOptServicesList.getSelectedIndex());
+			
+			try {	// if it's an instance of servicecombo
+				DefaultListModel<String> model = new DefaultListModel<>();
+				JList<String> list = new JList<>(model);
+				List<TOComboItem> list1 = CarShopController.getOptServicesWithName(apptName);
+				for(int i = 0; i < list1.size(); i++ ) {
+					  model.addElement(list1.get(0).getName());
+					}
+				updateApptEnterNewOptServicesList = list;
+			} catch(Exception e) {	// otherwise, the list is empty (it's a service)
+				DefaultListModel<String> model = new DefaultListModel<>();
+				JList<String> list = new JList<>(model);
+				updateApptEnterNewOptServicesList = list;
+			}
+		}
+		
+		// update visuals
+		refreshData();
+	}
+	
+	
+	
+	private void createApptConfirmButtonActionPerformed(ActionEvent evt) throws Exception {
+		error = "";
+		
+		// call the controller
+		try {
+			// TODO replace error
+			List<String> list = createApptSelectOptServicesList.getSelectedValuesList();
+			String optServices = "";
+			for(String s : list) {
+				optServices += s+",";
+			}
+			CarShopController.CreateAppointmentWithOptServices(CarShopApplication.getCurrentUser(),
+					createApptChooseServiceComboBox.getItemAt(createApptChooseServiceComboBox.getSelectedIndex()), 
+					createApptEnterStartDateTextField.getText(), updateApptDateText.toString(), 
+					CarShopApplication.getCarShop(), optServices, true);
+		} catch (InvalidInputException e) {
+			error = e.getMessage();
+		}
+		
+		// update visuals
+		refreshData();
+	}
+	
+	
+	
+	private void updateApptButtonActionPerformed(ActionEvent evt) throws Exception {
+		error = "";
+		// call the controller
+		try {
+			// TODO replace error
+			List<String> list = createApptSelectOptServicesList.getSelectedValuesList();
+			String optServices = "";
+			for(String s : list) {
+				optServices += s+",";
+			}
+			// TODO
+			CarShopController.CreateAppointmentWithOptServices(CarShopApplication.getCurrentUser(),
+					createApptChooseServiceComboBox.getItemAt(createApptChooseServiceComboBox.getSelectedIndex()), 
+					createApptEnterStartDateTextField.getText(),updateApptDateText.toString(), 
+					CarShopApplication.getCarShop(), optServices, true);
+		} catch (InvalidInputException e) {
+			error = e.getMessage();
+		}
+		
+		// update visuals
+		refreshData();
+	}
+	
+	
+
+
 
 
 }

@@ -25,7 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-
+import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 
@@ -94,8 +94,9 @@ public class CarShopPage extends JFrame {
 					
 				}
             	
-            	if (username.equals("c")) {
+            	if (username.equals("customer1")) {
             		System.out.println("Logging in as customer...");
+            		CarShopApplication.logIn("customer1", "12345678");
             		
             		// init customer view
             		initComponentsCustomerView();
