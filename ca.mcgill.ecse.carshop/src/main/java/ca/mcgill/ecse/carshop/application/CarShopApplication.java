@@ -267,7 +267,6 @@ public class CarShopApplication {
 			return cs;
 		}
 
-		
 		// helper methods for set up
 		private static void OwnerDefinesServiceCombo(String owner, String name, String mainservice, 
 				String services, String mandatory, CarShop cs) throws InvalidInputException {

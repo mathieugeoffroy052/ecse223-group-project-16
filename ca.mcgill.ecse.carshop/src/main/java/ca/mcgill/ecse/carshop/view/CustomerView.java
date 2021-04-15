@@ -36,7 +36,6 @@ public class CustomerView extends JPanel {
 	
 	private JTextField createApptEnterStartDateTextField;
 	private JTextField createApptEnterStartTimeTextField;
-	private JTextField updateApptEnterNewDateTextField;
 	private JTextField updateApptEnterNewTimeTextField;
 	private JTextField newUsernameTextField;
 	private JTextField newPasswordTextField;
@@ -352,18 +351,18 @@ public class CustomerView extends JPanel {
 			createApptChooseServiceComboBox.removeAllItems();
 			cancelApptSelectApptBox.removeAllItems();
 			updateApptNewServiceSelected.removeAllItems();
-			Integer index = 0;
+//			Integer index = 0;
 			System.out.println(CarShopApplication.getCurrentUser());
-			for (TOAppointment appt : CarShopController.getCustomerAppointments(CarShopApplication.getCurrentUser())) {
-				appointments.put(index, appt.getServiceName());
-				createApptChooseServiceComboBox.addItem(appt.getServiceName());
-				updateApptNewServiceSelected.addItem(appt.getServiceName());	// not sure if this one is the right box
-				cancelApptSelectApptBox.addItem(appt.getServiceName());
-				index++;
-			};
-			createApptChooseServiceComboBox.setSelectedIndex(-1);
-			updateApptNewServiceSelected.setSelectedIndex(-1);
-			cancelApptSelectApptBox.setSelectedIndex(-1);
+//			for (TOAppointment appt : CarShopController.getCustomerAppointments(CarShopApplication.getCurrentUser())) {
+//				appointments.put(index, appt.getServiceName());
+//				createApptChooseServiceComboBox.addItem(appt.getServiceName());
+//				updateApptNewServiceSelected.addItem(appt.getServiceName());	// not sure if this one is the right box
+//				cancelApptSelectApptBox.addItem(appt.getServiceName());
+//				index++;
+//			};
+//			createApptChooseServiceComboBox.setSelectedIndex(-1);
+//			updateApptNewServiceSelected.setSelectedIndex(-1);
+//			cancelApptSelectApptBox.setSelectedIndex(-1);
 			
 			
 
