@@ -111,10 +111,30 @@ public class CarShopPage extends JFrame {
             }
         });
         
+        // Sign up button (1st version)
 		buttonSignup.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+            	//TODO 
+            	String username = textUsername.getText();
+            	String password = textPassword.getText();
+            	error = null;
+            	try 
+            	{
+					CarShopController.signUpUser(username, password, CarShopApplication.AccountType.Customer);
+				} 
+            	catch (InvalidInputException e) 
+            	{
+					// TODO Auto-generated catch block
+					error = e.getMessage();
+				}
+            	if(error != null) {
+    				errorMessage.setText(error);
+            	}
+            	initComponentsCustomerView();
+            	
+            }
+        });
     }
 
 
@@ -140,57 +160,61 @@ public class CarShopPage extends JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         
-      //layout
+        //layout
         labelWindow.setText("Car Shop Login");
+        
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setSize(screenSize.width, screenSize.height);
+        
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (screenSize.width)/2;
+        int y = (screenSize.height)/2;
         
 		setLayout(null);
 		
 		labelUsername = new JLabel("Username");
-		labelUsername.setBounds(761, 493, 77, 16);
+		labelUsername.setBounds(x-175, y+75, 77, 16);
 		add(labelUsername);
 		
 		labelPassword = new JLabel("Password");
-		labelPassword.setBounds(761, 521, 77, 16);
+		labelPassword.setBounds(x-175, y+100, 77, 16);
 		add(labelPassword);
 		
 		textUsername = new JTextField();
-		textUsername.setBounds(850, 488, 184, 26);
+		textUsername.setBounds(x-110, y+70, 184, 26);
 		add(textUsername);
 		textUsername.setColumns(10);
 		
 		textPassword = new JPasswordField();
-		textPassword.setBounds(850, 516, 184, 26);
+		textPassword.setBounds(x-110, y+95, 184, 26);
 		add(textPassword);
 		textPassword.setColumns(10);
 		
 		buttonSignup = new JButton("Sign up");
-		buttonSignup.setBounds(771, 566, 117, 29);
+		buttonSignup.setBounds(x-175, y+175, 117, 29);
 		add(buttonSignup);
 		
 		buttonLogin = new JButton("Log in");
-		buttonLogin.setBounds(900, 566, 117, 29);
+		buttonLogin.setBounds(x-60, y+175, 117, 29);
 		add(buttonLogin);
-		
+        
         labelApplication = new JLabel("Car shop application");
-        labelApplication.setBounds(761, 402, 142, 16);
+        labelApplication.setBounds(x-175, y-20, 142, 16);
         add(labelApplication);
         
         labelInstructions1 = new JLabel("Enter your username and password");
-        labelInstructions1.setBounds(761, 430, 273, 16);
+        labelInstructions1.setBounds(x-175, y+5, 273, 16);
         add(labelInstructions1);
         
         labelInstructions2 = new JLabel("To register a new account, select \"Sign up\"");
-        labelInstructions2.setBounds(761, 458, 273, 16);
+        labelInstructions2.setBounds(x-175, y+30, 273, 16);
         add(labelInstructions2);
         
-        //error messages will pop up here. Initialized with a bogus message temporarily
+        //error label - shown as a test for now. remove this later!
         labelError = new JLabel("error-area-remove-later-just-for-show----");
-        labelError.setBounds(761, 548, 273, 16);
+        labelError.setBounds(x-175, y+125, 273, 16);
         add(labelError);
 
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setSize(screenSize.width, screenSize.height);
-       
     }
     
     //initialize the owner panel

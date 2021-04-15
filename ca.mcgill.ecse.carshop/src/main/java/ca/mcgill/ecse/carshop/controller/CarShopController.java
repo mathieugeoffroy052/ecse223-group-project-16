@@ -1265,6 +1265,7 @@ public class CarShopController {
 			}
 			
 		}
+		
 		//adding the users
 		CarShop carShop = CarShopApplication.getCarShop();
 		
