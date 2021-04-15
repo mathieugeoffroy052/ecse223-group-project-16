@@ -21,6 +21,7 @@ import javax.swing.table.DefaultTableModel;
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
+import ca.mcgill.ecse.carshop.controller.TOAppointment;
 import ca.mcgill.ecse.carshop.controller.TOServiceBooking;
 
 public class OwnerViewAppointmentNode extends JPanel {
@@ -46,9 +47,10 @@ public class OwnerViewAppointmentNode extends JPanel {
 	private DefaultTableModel tableModel;
 	private String overviewColumnNames[] = { "Service", "Garage", "Duration", "Start Time", "End Time" };
 	private List<TOServiceBooking> toServiceBookings;
+	private TOAppointment toAppointment;
 
 	public OwnerViewAppointmentNode(String customer, String service, Date date, Time time, String status,
-			List<TOServiceBooking> toServiceBookings) {
+			List<TOServiceBooking> toServiceBookings, TOAppointment toAppt) {
 		// elements for error message
 		errorMessage = new JLabel();
 		errorMessage.setForeground(Color.RED);
@@ -59,6 +61,7 @@ public class OwnerViewAppointmentNode extends JPanel {
 		txtTime = new JLabel(CarShopController.timeToString(time));
 		txtStatus = new JLabel(status);
 		this.toServiceBookings = toServiceBookings;
+		this.toAppointment = toAppt;
 
 		tableServices = new JTable();
 		scrollPane = new JScrollPane(tableServices);
@@ -140,7 +143,7 @@ public class OwnerViewAppointmentNode extends JPanel {
 		error = "";
 
 		try {
-			CarShopController.startAppointmentAt(null, CarShopApplication.getSystemDateTime());
+			CarShopController.startAppointmentAt(CarShopController.findAppointment(toAppointment), CarShopApplication.getSystemDateTime());
 		} catch (InvalidInputException e) {
 			error = e.getMessage();
 		}
@@ -154,7 +157,7 @@ public class OwnerViewAppointmentNode extends JPanel {
 		error = "";
 
 		try {
-			CarShopController.startAppointmentAt(null, CarShopApplication.getSystemDateTime());
+			CarShopController.startAppointmentAt(CarShopController.findAppointment(toAppointment), CarShopApplication.getSystemDateTime());
 		} catch (InvalidInputException e) {
 			error = e.getMessage();
 		}
@@ -169,7 +172,7 @@ public class OwnerViewAppointmentNode extends JPanel {
 		error = "";
 
 		try {
-			CarShopController.startAppointmentAt(null, CarShopApplication.getSystemDateTime());
+			CarShopController.startAppointmentAt(CarShopController.findAppointment(toAppointment), CarShopApplication.getSystemDateTime());
 		} catch (InvalidInputException e) {
 			error = e.getMessage();
 		}

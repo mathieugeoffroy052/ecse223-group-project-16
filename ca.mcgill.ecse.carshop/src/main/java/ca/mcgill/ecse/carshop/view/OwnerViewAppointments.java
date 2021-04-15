@@ -46,7 +46,7 @@ public class OwnerViewAppointments extends JPanel {
 			List<TOServiceBooking> serviceBookings = appt.getServiceBookings();
 			
 			if (date != null && startTime != null) {
-				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings));
+				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings, appt));
 			}
 			
 		}
