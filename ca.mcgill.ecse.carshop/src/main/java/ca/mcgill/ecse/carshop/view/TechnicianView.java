@@ -76,20 +76,20 @@ public class TechnicianView extends JPanel {
 		table.setModel(scheduleModelTable);
 		
 		Vector<String> opening = new Vector<String>();
-		opening.addElement("Opening");
-		opening.addElement("op monday");
-		opening.addElement("op tuesday");
-		opening.addElement("op wednesday");
-		opening.addElement("op thursday");
-		opening.addElement("op friday");
+		opening.addElement("Opening");		
+		opening.addElement("---");		//monday 
+		opening.addElement("---");		//tuesday
+		opening.addElement("---");		//wednesday
+		opening.addElement("---");		//thursday	
+		opening.addElement("---");		//friday
 		
 		Vector<String> closing = new Vector<String>();
 		closing.addElement("Closing");
-		closing.addElement("c monday");
-		closing.addElement("c tuesday");
-		closing.addElement("c wednesday");
-		closing.addElement("c thursday");
-		closing.addElement("c friday");
+		closing.addElement("---");		//monday
+		closing.addElement("---");		//tuesday
+		closing.addElement("---");		//wednesday
+		closing.addElement("---");		//thursday
+		closing.addElement("---");		//friday
 		
 		scheduleModelTable.addRow(opening);
 		scheduleModelTable.addRow(closing);
@@ -190,10 +190,10 @@ public class TechnicianView extends JPanel {
 			//here is where we would get the TO information about the appointments 
 			//and insert them into the table
 			Vector<String> r = new Vector<String>();
-			r.addElement("test a");
-			r.addElement("test b");
-			r.addElement("test c");
-			r.addElement("test d");
+			r.addElement("---");		//appointment name
+			r.addElement("---");		//booked customer
+			r.addElement("---");		//start time
+			r.addElement("---");		//end time
 			modelTable.addRow(r);
 		}
 		JScrollPane scrollTable = new JScrollPane(table);
