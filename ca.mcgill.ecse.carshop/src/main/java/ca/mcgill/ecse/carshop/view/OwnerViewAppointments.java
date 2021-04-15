@@ -36,6 +36,7 @@ public class OwnerViewAppointments extends JPanel {
 	
 	public void initAppointments() {
 		appointments = CarShopController.getAppointmentsOwner();
+		appointmentNodes = new ArrayList<>();
 		for (TOAppointment appt : appointments) {
 			String customer = appt.getCustomerName();
 			String service = appt.getServiceName();
@@ -44,7 +45,11 @@ public class OwnerViewAppointments extends JPanel {
 			String status = appt.getStatus();
 			List<TOServiceBooking> serviceBookings = appt.getServiceBookings();
 			
-		appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings));
+			if (date != null && startTime != null) {
+				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings));
+				
+			}
+			
 		}
 		
 		titleJLabel = new JLabel("Appointments");

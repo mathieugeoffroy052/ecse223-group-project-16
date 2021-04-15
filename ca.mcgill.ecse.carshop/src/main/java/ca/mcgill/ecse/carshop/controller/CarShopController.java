@@ -2629,8 +2629,13 @@ public class CarShopController {
 		for (Appointment appointment : appointments) {
 			String customerName = appointment.getCustomer().getUsername();
 			String serviceName = appointment.getBookableService().getName();
-			Date date = appointment.getServiceBooking(0).getTimeSlot().getStartDate();
-			Time time = appointment.getServiceBooking(0).getTimeSlot().getStartTime();
+			
+			Date date = null;
+			Time time = null;
+			if (appointment.getServiceBookings().size() > 0) {
+				date = appointment.getServiceBooking(0).getTimeSlot().getStartDate();
+				time = appointment.getServiceBooking(0).getTimeSlot().getStartTime();
+			}
 			
 			List<ServiceBooking> serviceBookings = appointment.getServiceBookings();
 			List<TOServiceBooking> toServiceBookings = new ArrayList<>();
