@@ -30,7 +30,9 @@ import ca.mcgill.ecse.carshop.controller.TOTimeSlot;
 
 public class OwnerViewBusinessInfo extends JPanel {
 	
-	private static String errorMessage = "";
+	private static String errorMessage = null;
+	private static String smallErrorMessage = null;
+	private static JLabel smallErrorLabel;
 	private static JLabel errorLabel;
 	private static JLabel businessInfoTitle;
 	private static JLabel businessName;
@@ -111,11 +113,11 @@ public class OwnerViewBusinessInfo extends JPanel {
 	    addVacation = new JButton("Add");
 	    updateVacation = new JButton("Update");
 	    
-	    JSeparator horizontalLineTop = new JSeparator();
 		JSeparator horizontalLineMiddle1 = new JSeparator();
 		JSeparator horizontalLineMiddle2 = new JSeparator();
 		JSeparator horizontalLineBottom = new JSeparator();
 		JSeparator verticalLineLine = new JSeparator(SwingConstants.VERTICAL);
+		verticalLineLine.setLocation(this.getWidth()/2, this.getHeight()/2 - verticalLineLine.getHeight()/2);
 
 	    this.add(businessInfoTitle);
 
@@ -158,7 +160,6 @@ public class OwnerViewBusinessInfo extends JPanel {
 				layout.createParallelGroup()
 
 					.addComponent(errorLabel)
-					.addComponent(horizontalLineTop)
 					.addGroup(layout.createSequentialGroup()
 							.addGroup(layout.createParallelGroup()
 									.addComponent(businessInfoTitle)
@@ -194,7 +195,6 @@ public class OwnerViewBusinessInfo extends JPanel {
 				layout.createSequentialGroup()
 
 						.addComponent(errorLabel)
-						.addComponent(horizontalLineTop)
 						.addGroup(layout.createParallelGroup()
 								.addGroup(layout.createSequentialGroup()
 										.addComponent(businessInfoTitle)
@@ -268,42 +268,40 @@ public class OwnerViewBusinessInfo extends JPanel {
     }
     
     public static void refreshData() {
-    	try {
-    		
-    		businessName.setText(CarShopController.getBusinessName());
-    		email.setText(CarShopController.getBusinessEmail());
-    		phoneNum.setText(CarShopController.getBusinessPhone());
-    		address.setText(CarShopController.getBusinessAddress());
-    		
-    		TOBusinessHoursCS = CarShopController.getBusinessHours();
-    		stringBusinessHours = listBHToString(TOBusinessHoursCS);
-    		TOHolidaysCS = CarShopController.getHolidays();
-    		stringHolidays = listTSToString(TOHolidaysCS);
-    		TOVacationsCS = CarShopController.getVacations();
-    		stringVacations = listTSToString(TOVacationsCS);
-    		
-    		weeklySchedule.setListData(stringBusinessHours);
-    		upcomingHolidays.setListData(stringHolidays);
-    		upcomingVacations.setListData(stringVacations);
-    		
-    	} catch (Exception e) {
-    		errorMessage += e.getMessage();
-    	}
+    	if (errorMessage != null) errorLabel.setText(errorMessage);
+    	if (smallErrorMessage != null) smallErrorLabel.setText(smallErrorMessage);
+    	businessName.setText(CarShopController.getBusinessName());
+    	email.setText(CarShopController.getBusinessEmail());
+    	phoneNum.setText(CarShopController.getBusinessPhone());
+    	address.setText(CarShopController.getBusinessAddress());
+
+    	TOBusinessHoursCS = CarShopController.getBusinessHours();
+    	stringBusinessHours = listBHToString(TOBusinessHoursCS);
+    	TOHolidaysCS = CarShopController.getHolidays();
+    	stringHolidays = listTSToString(TOHolidaysCS);
+    	TOVacationsCS = CarShopController.getVacations();
+    	stringVacations = listTSToString(TOVacationsCS);
+
+    	weeklySchedule.setListData(stringBusinessHours);
+    	upcomingHolidays.setListData(stringHolidays);
+    	upcomingVacations.setListData(stringVacations);
     }
     
     //action methods
     private void updateBusinessInfoActionPerformed(ActionEvent evt) {
 		JFrame updateBusinessInfo = new JFrame();
+		smallErrorLabel = new JLabel();
+		smallErrorLabel.setForeground(Color.RED);
 		JLabel updateTitle = new JLabel("Update Business Information");
 		updateTitle.setFont(new Font("Arial", Font.BOLD, 22));
 		JLabel name = new JLabel("Name:");
-		JTextField nameText = new JTextField();
+		JTextField nameText = new JTextField(businessName.getText());
 		JLabel address = new JLabel("Address:");
-		JTextField addressText = new JTextField();
+		JTextField addressText = new JTextField(this.address.getText());
 		JLabel phoneNum = new JLabel("Phone Number:");
-		JFormattedTextField phoneNumText = new JFormattedTextField();
+		JFormattedTextField phoneNumText = new JFormattedTextField(this.phoneNum.getText());
 		JLabel email = new JLabel("Email:");
-		JTextField emailText = new JTextField();
+		JTextField emailText = new JTextField(this.email.getText());
 		JButton updateInfo = new JButton("Update");
 		
 		updateBusinessInfo.add(updateTitle);
@@ -325,6 +323,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 		//horizontal
 		layout.setHorizontalGroup(
 				layout.createParallelGroup()
+					.addComponent(smallErrorLabel)
 					.addComponent(updateTitle)
 					.addGroup(layout.createSequentialGroup()
 							.addGroup(layout.createParallelGroup()
@@ -345,6 +344,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 		//vertical 
 		layout.setVerticalGroup(
 				layout.createSequentialGroup()
+					.addComponent(smallErrorLabel)
 					.addComponent(updateTitle)
 					.addGroup(layout.createParallelGroup()
 							.addComponent(name)
@@ -370,21 +370,22 @@ public class OwnerViewBusinessInfo extends JPanel {
 				String newEmail = emailText.getText();
 				String newAddress = addressText.getText();
 				String newPhoneNum = phoneNumText.getText();
-				updateInfoActionPerformed(evt, newName, newPhoneNum, newEmail, newAddress);
+				updateInfoActionPerformed(evt, newName, newPhoneNum, newEmail, newAddress, updateBusinessInfo);
 			}
 		});
 		
 	}
     
-    private void updateInfoActionPerformed(ActionEvent evt, String name, String phoneNum, String email, String address) {
+    private void updateInfoActionPerformed(ActionEvent evt, String name, String phoneNum, String email, String address, JFrame frame) {
 		try {
 			CarShopController.updateBusinessInfo(name, address, phoneNum, email);
-			refreshData();
-			errorMessage = "";
+			smallErrorMessage = null;
+			frame.setVisible(false);
 		} catch (InvalidInputException e) {
-			errorMessage += e.getMessage();
+			smallErrorMessage = e.getMessage();
 		}
-		
+		refreshData();
+		frame.pack();
 	}
     
 }

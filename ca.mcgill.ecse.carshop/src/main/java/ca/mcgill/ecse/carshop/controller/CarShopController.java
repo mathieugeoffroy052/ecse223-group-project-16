@@ -796,9 +796,10 @@ public class CarShopController {
 				|| emailAddress.length() == 0) {
 			throw new InvalidInputException("Empty fields");
 		}
-		//checks if the email is in a proper format
-		isProperEmailAddress(emailAddress);
+		
 		try {
+			//checks if the email is in a proper format
+			isProperEmailAddress(emailAddress);
 			business.setName(nameString);
 			business.setAddress(address);
 			business.setPhoneNumber(phoneNumber);
@@ -980,7 +981,7 @@ public class CarShopController {
 	}
 
 	//returning the business hours
-	public static List<TOBusinessHour> getBusinessHours() throws InvalidInputException {
+	public static List<TOBusinessHour> getBusinessHours(){
 		Business business = CarShopApplication.getCarShop().getBusiness();
 		List<BusinessHour> businessHours = business.getBusinessHours();
 		List<TOBusinessHour> toBusinessHours = new ArrayList<>();
@@ -993,7 +994,7 @@ public class CarShopController {
 	}
 	
 	//returning the holidays
-	public static List<TOTimeSlot> getHolidays() throws InvalidInputException {
+	public static List<TOTimeSlot> getHolidays() {
 		Business business = CarShopApplication.getCarShop().getBusiness();
 		List<TimeSlot> holidaySlots = business.getHolidays();
 		List<TOTimeSlot> toHolidays = new ArrayList<>();
@@ -1006,7 +1007,7 @@ public class CarShopController {
 	}
 	
 	//returning the vacations
-	public static List<TOTimeSlot> getVacations() throws InvalidInputException {
+	public static List<TOTimeSlot> getVacations() {
 		Business business = CarShopApplication.getCarShop().getBusiness();
 		List<TimeSlot> vacationSlots = business.getVacations();
 		List<TOTimeSlot> toVacations = new ArrayList<>();

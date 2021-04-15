@@ -1,6 +1,7 @@
 package ca.mcgill.ecse.carshop.view;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Date;
@@ -52,6 +53,7 @@ public class OwnerViewAppointments extends JPanel {
 		}
 		
 		titleJLabel = new JLabel("Appointments");
+		titleJLabel.setFont(new Font("Arial", Font.BOLD, 22));
 		
 		GroupLayout groupLayout = new GroupLayout(this);
 		this.setLayout(groupLayout);
