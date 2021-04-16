@@ -16,7 +16,6 @@ import ca.mcgill.ecse.carshop.model.BookableService;
 import ca.mcgill.ecse.carshop.model.Business;
 import ca.mcgill.ecse.carshop.model.BusinessHour;
 import ca.mcgill.ecse.carshop.model.BusinessHour.DayOfWeek;
-import ca.mcgill.ecse.carshop.model.Technician.TechnicianType;
 import ca.mcgill.ecse.carshop.model.CarShop;
 import ca.mcgill.ecse.carshop.model.ComboItem;
 import ca.mcgill.ecse.carshop.model.Garage;
@@ -172,9 +171,9 @@ public class CarShopApplication {
 			return isLoggedIn;
 		}
 		
-		public static void main(String[] args) {
-
+		public static void main(String[] args) throws Exception {
 			//start UI
+			setUp();
 			java.awt.EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					try {
@@ -210,6 +209,10 @@ public class CarShopApplication {
 			CarShopController.newAccount("Transmission-Technician", "Transmission-Technician", cs);
 			CarShopController.newAccount("Electronics-Technician", "Electronics-Technician", cs);
 			CarShopController.newAccount("Fluids-Technician", "Fluids-Technician", cs);
+			
+			for(Technician t : cs.getTechnicians()) {
+				t.setGarage(new Garage(cs, t));// create a new object
+			}
 			
 			//			cs.setOwner(owner); // unnecessary step
 			// a business exists in the system
@@ -497,5 +500,8 @@ public class CarShopApplication {
 
 		// end helper methods for set up
 
+		
+
 }
+
 

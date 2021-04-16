@@ -828,9 +828,10 @@ public class CarShopController {
 				|| emailAddress.length() == 0) {
 			throw new InvalidInputException("Empty fields");
 		}
-		//checks if the email is in a proper format
-		isProperEmailAddress(emailAddress);
+		
 		try {
+			//checks if the email is in a proper format
+			isProperEmailAddress(emailAddress);
 			business.setName(nameString);
 			business.setAddress(address);
 			business.setPhoneNumber(phoneNumber);
@@ -1012,7 +1013,7 @@ public class CarShopController {
 	}
 
 	//returning the business hours
-	public static List<TOBusinessHour> getBusinessHours() throws InvalidInputException {
+	public static List<TOBusinessHour> getBusinessHours(){
 		Business business = CarShopApplication.getCarShop().getBusiness();
 		List<BusinessHour> businessHours = business.getBusinessHours();
 		List<TOBusinessHour> toBusinessHours = new ArrayList<>();
@@ -1025,7 +1026,7 @@ public class CarShopController {
 	}
 	
 	//returning the holidays
-	public static List<TOTimeSlot> getHolidays() throws InvalidInputException {
+	public static List<TOTimeSlot> getHolidays() {
 		Business business = CarShopApplication.getCarShop().getBusiness();
 		List<TimeSlot> holidaySlots = business.getHolidays();
 		List<TOTimeSlot> toHolidays = new ArrayList<>();
@@ -1038,7 +1039,7 @@ public class CarShopController {
 	}
 	
 	//returning the vacations
-	public static List<TOTimeSlot> getVacations() throws InvalidInputException {
+	public static List<TOTimeSlot> getVacations() {
 		Business business = CarShopApplication.getCarShop().getBusiness();
 		List<TimeSlot> vacationSlots = business.getVacations();
 		List<TOTimeSlot> toVacations = new ArrayList<>();
@@ -1605,14 +1606,12 @@ public class CarShopController {
 			int toUse = CarShopController.getTechnician("Tire-Technician", cs);
 			if(toUse == -1) {
 				technician = new Technician(username, password, TechnicianType.Tire, cs);
-				new Garage(cs, technician);
 			}
 		}
 		else if(username.equals("Engine-Technician") && password.equals("Engine-Technician")) {
 			int toUse = CarShopController.getTechnician("Engine-Technician", cs);
 			if(toUse == -1) {
 				technician = new Technician(username, password, TechnicianType.Engine, cs);
-				new Garage(cs, technician);
 
 			}		
 		}
@@ -1620,7 +1619,6 @@ public class CarShopController {
 			int toUse = CarShopController.getTechnician("Transmission-Technician", cs);
 			if(toUse == -1) {
 				technician = new Technician(username, password, TechnicianType.Transmission, cs);
-				new Garage(cs, technician);
 
 			}
 		}
@@ -1628,7 +1626,6 @@ public class CarShopController {
 			int toUse = CarShopController.getTechnician("Electronics-Technician", cs);
 			if(toUse == -1) {
 				technician = new Technician(username, password, TechnicianType.Electronics, cs);
-				new Garage(cs, technician);
 
 			}
 		}
@@ -1636,7 +1633,6 @@ public class CarShopController {
 			int toUse = CarShopController.getTechnician("Fluids-Technician", cs);
 			if(toUse == -1) {
 				technician = new Technician(username, password, TechnicianType.Fluids, cs);
-				new Garage(cs, technician);
 			}
 		}
 		try {
@@ -2687,8 +2683,13 @@ public class CarShopController {
 		for (Appointment appointment : appointments) {
 			String customerName = appointment.getCustomer().getUsername();
 			String serviceName = appointment.getBookableService().getName();
-			Date date = appointment.getServiceBooking(0).getTimeSlot().getStartDate();
-			Time time = appointment.getServiceBooking(0).getTimeSlot().getStartTime();
+			
+			Date date = null;
+			Time time = null;
+			if (appointment.getServiceBookings().size() > 0) {
+				date = appointment.getServiceBooking(0).getTimeSlot().getStartDate();
+				time = appointment.getServiceBooking(0).getTimeSlot().getStartTime();
+			}
 			
 			List<ServiceBooking> serviceBookings = appointment.getServiceBookings();
 			List<TOServiceBooking> toServiceBookings = new ArrayList<>();
@@ -2720,6 +2721,29 @@ public class CarShopController {
 		return toAppointments;
 	}
 	
+
+	public static String getBusinessName() {
+		String name = CarShopApplication.getCarShop().getBusiness().getName();
+		return name;
+	}
+	
+	public static String getBusinessEmail() {
+		String email = CarShopApplication.getCarShop().getBusiness().getEmail();
+		return email;
+	}
+	
+	public static String getBusinessPhone() {
+		String phone = CarShopApplication.getCarShop().getBusiness().getPhoneNumber();
+		return phone;
+	}
+	
+	public static String getBusinessAddress() {
+		String address = CarShopApplication.getCarShop().getBusiness().getAddress();
+		return address;
+	}
+	
+	
+
 	public static void setTechnicianPassword(String username, String password, CarShop cs) throws InvalidInputException {
 		Technician technician = findTechnician(username, cs);
 		technician.setPassword(password);
@@ -2834,53 +2858,5 @@ public class CarShopController {
 			throw new InvalidInputException(e.getMessage());
 		}
 	}
-	
-	public static void changeGarageBusinessHour(String day, String startTime, String endTime, String type, CarShop cs) throws InvalidInputException {
 
-		DayOfWeek dayOfWeek = CarShopController.getWeekDay(day);
-		int toCheck = 0;
-		List<BusinessHour> businessHours = cs.getBusiness().getBusinessHours();
-		for(int i=0; i<businessHours.size();i++) {
-			BusinessHour bh = businessHours.get(i);
-			if(bh.getDayOfWeek().toString().equals(day)) {
-				if(bh.getEndTime().before(stringToTime(endTime))) {
-					throw new IllegalArgumentException("Garage opening hours must be within weekly business hours");
-				}
-				if(bh.getStartTime().after(stringToTime(startTime))) {
-					throw new IllegalArgumentException("Garage opening hours must be within weekly business hours");
-				}
-				
-				//need to check if the hours im trying to set are vacation days, maybe....
-				if(dayOfWeek.equals(BusinessHour.DayOfWeek.Monday)) toCheck = 0; 
-				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Tuesday)) toCheck = 1;
-				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Wednesday)) toCheck = 2;
-				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Thursday)) toCheck = 3;
-				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Friday)) toCheck = 4;
-				else throw new InvalidInputException("The opening hours are not within the opening hours of the business");
-				// converts from string to time with method in the controller
-				Time ourStartTime = CarShopController.stringToTime(startTime);
-				Time ourEndTime = CarShopController.stringToTime(endTime);
-				Technician technician = CarShopController.findTechnician(type, cs);		
-				// "The opening hours cannot overlap"
-				Garage garage = technician.getGarage();
-				
-				garage.getBusinessHour(toCheck).setStartTime(ourStartTime);
-				//persistence
-				try {
-					CarShopPersistence.save(cs);
-				}catch(RuntimeException e) {
-					throw new InvalidInputException(e.getMessage());
-				}
-				garage.getBusinessHour(toCheck).setEndTime(ourEndTime);
-				//persistence
-				try {
-					CarShopPersistence.save(cs);
-				}catch(RuntimeException e) {
-					throw new InvalidInputException(e.getMessage());
-				}
-				break;
-				
-			}
-		}
-	}
 }
