@@ -252,7 +252,6 @@ public class CucumberStepDefinitions {
 		curUsername = User.getWithUsername(string).getUsername();
 		curPassword = User.getWithUsername(string).getPassword();
 		try {
-			CarShopApplication.setUsername(string);// CarShopApplication used
 			CarShopController.login(string, curPassword);
 		} catch (InvalidInputException e) {
 			error = e.getMessage();
