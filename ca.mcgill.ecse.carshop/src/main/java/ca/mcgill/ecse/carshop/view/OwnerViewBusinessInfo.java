@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -17,12 +18,15 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
-
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
 
 import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerDateModel;
 import javax.swing.SwingConstants;
+import javax.swing.text.DateFormatter;
 
+import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 import ca.mcgill.ecse.carshop.controller.TOBusinessHour;
@@ -30,48 +34,44 @@ import ca.mcgill.ecse.carshop.controller.TOTimeSlot;
 
 public class OwnerViewBusinessInfo extends JPanel {
 	
-	private static String errorMessage = "";
-	private JLabel errorLabel;
-	
-	private JLabel businessInfoTitle;
-	private JLabel businessName;
-    private String carshopName = "name";
-    private JLabel phoneNum;
-    private String carshopPhoneNum = "###";
-    private JLabel email;
-    private String carshopEmail = "a@a";
-    private JLabel address;
-    private String carshopAddress = "3333";
-    private JButton updateBusinessInfo;
+	private static String errorMessage = null;
+	private static String smallErrorMessage = null;
+	private static JLabel smallErrorLabel;
+	private static JLabel errorLabel;
+	private static JLabel businessInfoTitle;
+	private static JLabel businessName;
+    private static JLabel phoneNum;
+    private static JLabel email;
+    private static JLabel address;
+    private static JButton updateBusinessInfo;
     //weekly business hours
-    private JLabel businessHoursTitle;
-    private JList weeklySchedule; //list to hold weekly schedule (no scrolling)
-    private TOBusinessHour[] weeklyHours = new TOBusinessHour[1]; //transfer object for business hours TODO
 
+    private static JLabel businessHoursTitle;
+    private static JList weeklySchedule; //list to hold weekly schedule (no scrolling)
+    private static TOBusinessHour[] weeklyHours = new TOBusinessHour[1]; //transfer object for business hours TODO
     private static List<TOBusinessHour> TOBusinessHoursCS;
-
-    private JButton addWeeklyHours;
-    private JButton updateWeeklyHours;
+    private static String[] stringBusinessHours;
+    private static JButton addWeeklyHours;
+    private static JButton updateWeeklyHours;
     //holidays
-    private JLabel holidayTitle;
-    private JList upcomingHolidays; //list to show all the upcoming holidays
-    private TOTimeSlot[] carshopHolidays = new TOTimeSlot[0]; //TO for holidays TODO
-
+    private static JLabel holidayTitle;
+    private static JList upcomingHolidays; //list to show all the upcoming holidays
+    private static TOTimeSlot[] carshopHolidays = new TOTimeSlot[0]; //TO for holidays TODO
     private static List<TOTimeSlot> TOHolidaysCS;
-
-    private JScrollPane holidayScroller;
-    private JButton addHoliday;
-    private JButton updateHoliday;
+    private static String[] stringHolidays;
+    private static JScrollPane holidayScroller;
+    private static JButton addHoliday;
+    private static JButton updateHoliday;
     //vacations
-    private JLabel vacationTitle;
-    private JList upcomingVacations; //list to show all upcoming vacations
-    private TOTimeSlot[] carshopVacations = new TOTimeSlot[0]; //TO for vacations TODO
-
+    private static JLabel vacationTitle;
+    private static JList upcomingVacations; //list to show all upcoming vacations
+    private static TOTimeSlot[] carshopVacations = new TOTimeSlot[0]; //TO for vacations TODO
     private static List<TOTimeSlot> TOVacationsCS;
+    private static String[] stringVacations;
+    private static JScrollPane vacationScroller;
+    private static JButton addVacation;
+    private static JButton updateVacation;
 
-    private JScrollPane vacationScroller;
-    private JButton addVacation;
-    private JButton updateVacation;
     
     public OwnerViewBusinessInfo() {
     	
@@ -82,10 +82,10 @@ public class OwnerViewBusinessInfo extends JPanel {
     	
     	businessInfoTitle = new JLabel("Business Information");
     	businessInfoTitle.setFont(new Font("Arial", Font.BOLD, 22));
-		businessName = new JLabel(carshopName);
-	    phoneNum = new JLabel(carshopPhoneNum);
-	    email = new JLabel(carshopEmail);
-	    address = new JLabel(carshopAddress);
+		businessName = new JLabel();
+	    phoneNum = new JLabel();
+	    email = new JLabel();
+	    address = new JLabel();
 	    updateBusinessInfo = new JButton("Update");
 	    
 	    businessHoursTitle = new JLabel("Weekly Business Hours");
@@ -117,7 +117,6 @@ public class OwnerViewBusinessInfo extends JPanel {
 	    addVacation = new JButton("Add");
 	    updateVacation = new JButton("Update");
 	    
-	    JSeparator horizontalLineTop = new JSeparator();
 		JSeparator horizontalLineMiddle1 = new JSeparator();
 		JSeparator horizontalLineMiddle2 = new JSeparator();
 		JSeparator horizontalLineBottom = new JSeparator();
@@ -147,10 +146,17 @@ public class OwnerViewBusinessInfo extends JPanel {
 	    this.add(addVacation);
 	    this.add(updateVacation);
 	    
+	    
 	    //action listeners
 	    updateBusinessInfo.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				updateBusinessInfoActionPerformed(evt);
+			}
+		});
+	    
+	    addWeeklyHours.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				addWeeklyHoursActionPerformed(evt);
 			}
 		});
 	    
@@ -164,7 +170,6 @@ public class OwnerViewBusinessInfo extends JPanel {
 				layout.createParallelGroup()
 
 					.addComponent(errorLabel)
-					.addComponent(horizontalLineTop)
 					.addGroup(layout.createSequentialGroup()
 							.addGroup(layout.createParallelGroup()
 									.addComponent(businessInfoTitle)
@@ -200,7 +205,6 @@ public class OwnerViewBusinessInfo extends JPanel {
 				layout.createSequentialGroup()
 
 						.addComponent(errorLabel)
-						.addComponent(horizontalLineTop)
 						.addGroup(layout.createParallelGroup()
 								.addGroup(layout.createSequentialGroup()
 										.addComponent(businessInfoTitle)
@@ -231,7 +235,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 						.addComponent(horizontalLineBottom)
 				);
 		
-
+		refreshData();
     }
     
     //helper methods
@@ -243,29 +247,71 @@ public class OwnerViewBusinessInfo extends JPanel {
 
     }
     
-    public static void getSystemInfo() {
-    	try {
-    		TOBusinessHoursCS = CarShopController.getBusinessHours();
-    		TOHolidaysCS = CarShopController.getHolidays();
-    		TOVacationsCS = CarShopController.getVacations();
-    	} catch (Exception e) {
-    		errorMessage += e.getMessage();
+    public static String[] listBHToString(List<TOBusinessHour> list) {
+    	String[] newStringArray = new String[list.size()];
+    	int index = 0;
+    	if (list.get(0) == null) return null;
+    	for (Object bh : list) {
+    		TOBusinessHour BH = (TOBusinessHour) bh;
+    		String info = BH.getDayOfWeek() 
+    				+ ": " + CarShopController.timeToString(BH.getStartTime()) 
+    				+ " - " + CarShopController.timeToString(BH.getEndTime());
+    		newStringArray[index++] = info;
+    	}		    	
+    	return newStringArray;
+    }
+
+    public static String[] listTSToString(List<TOTimeSlot> list) {
+    	String[] newStringArray = new String[list.size()];
+    	int index = 0;
+    	if (list.get(0) == null) return null;	
+    	for (Object ts : list) {
+    		TOTimeSlot TS = (TOTimeSlot) ts;
+    		String info = "From " + CarShopController.dateToString(TS.getStartDate()) 
+	    		+ " at " + CarShopController.timeToString(TS.getStartTime()) 
+	    		+ " to " + CarShopController.dateToString(TS.getEndDate()) 
+	    		+ " at " + CarShopController.timeToString(TS.getEndTime());
+    		newStringArray[index++] = info;
     	}
+    	return newStringArray;
+
+    }
+    
+    public static void refreshData() {
+    	if (errorMessage != null) errorLabel.setText(errorMessage);
+    	if (smallErrorMessage != null) smallErrorLabel.setText(smallErrorMessage);
+    	businessName.setText(CarShopController.getBusinessName());
+    	email.setText(CarShopController.getBusinessEmail());
+    	phoneNum.setText(CarShopController.getBusinessPhone());
+    	address.setText(CarShopController.getBusinessAddress());
+
+    	TOBusinessHoursCS = CarShopController.getBusinessHours();
+    	stringBusinessHours = listBHToString(TOBusinessHoursCS);
+    	TOHolidaysCS = CarShopController.getHolidays();
+    	stringHolidays = listTSToString(TOHolidaysCS);
+    	TOVacationsCS = CarShopController.getVacations();
+    	stringVacations = listTSToString(TOVacationsCS);
+
+    	weeklySchedule.setListData(stringBusinessHours);
+    	upcomingHolidays.setListData(stringHolidays);
+    	upcomingVacations.setListData(stringVacations);
     }
     
     //action methods
     private void updateBusinessInfoActionPerformed(ActionEvent evt) {
 		JFrame updateBusinessInfo = new JFrame();
+		smallErrorLabel = new JLabel();
+		smallErrorLabel.setForeground(Color.RED);
 		JLabel updateTitle = new JLabel("Update Business Information");
 		updateTitle.setFont(new Font("Arial", Font.BOLD, 22));
 		JLabel name = new JLabel("Name:");
-		JTextField nameText = new JTextField(carshopName);
+		JTextField nameText = new JTextField(businessName.getText());
 		JLabel address = new JLabel("Address:");
-		JTextField addressText = new JTextField(carshopAddress);
+		JTextField addressText = new JTextField(this.address.getText());
 		JLabel phoneNum = new JLabel("Phone Number:");
-		JFormattedTextField phoneNumText = new JFormattedTextField(carshopPhoneNum);
+		JFormattedTextField phoneNumText = new JFormattedTextField(this.phoneNum.getText());
 		JLabel email = new JLabel("Email:");
-		JTextField emailText = new JTextField(carshopEmail);
+		JTextField emailText = new JTextField(this.email.getText());
 		JButton updateInfo = new JButton("Update");
 		
 		updateBusinessInfo.add(updateTitle);
@@ -287,6 +333,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 		//horizontal
 		layout.setHorizontalGroup(
 				layout.createParallelGroup()
+					.addComponent(smallErrorLabel)
 					.addComponent(updateTitle)
 					.addGroup(layout.createSequentialGroup()
 							.addGroup(layout.createParallelGroup()
@@ -307,6 +354,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 		//vertical 
 		layout.setVerticalGroup(
 				layout.createSequentialGroup()
+					.addComponent(smallErrorLabel)
 					.addComponent(updateTitle)
 					.addGroup(layout.createParallelGroup()
 							.addComponent(name)
@@ -332,20 +380,131 @@ public class OwnerViewBusinessInfo extends JPanel {
 				String newEmail = emailText.getText();
 				String newAddress = addressText.getText();
 				String newPhoneNum = phoneNumText.getText();
-				updateInfoActionPerformed(evt, newName, newPhoneNum, newEmail, newAddress);
+				updateInfoActionPerformed(evt, newName, newPhoneNum, newEmail, newAddress, updateBusinessInfo);
 			}
 		});
 		
 	}
     
-    private void updateInfoActionPerformed(ActionEvent evt, String name, String phoneNum, String email, String address) {
+    private void updateInfoActionPerformed(ActionEvent evt, String name, String phoneNum, String email, String address, JFrame frame) {
 		try {
 			CarShopController.updateBusinessInfo(name, address, phoneNum, email);
-			errorMessage = "";
+			smallErrorMessage = null;
+			frame.setVisible(false);
 		} catch (InvalidInputException e) {
-			errorMessage += e.getMessage();
+			smallErrorMessage = e.getMessage();
 		}
-		
+		refreshData();
+		frame.pack();
 	}
     
-}
+    private void addWeeklyHoursActionPerformed(ActionEvent evt) {
+    	JFrame addWeeklyHours = new JFrame();
+		smallErrorLabel = new JLabel();
+		smallErrorLabel.setForeground(Color.RED);
+		JLabel addTitle = new JLabel("Add Weekly Hours");
+		addTitle.setFont(new Font("Arial", Font.BOLD, 22));
+		JLabel day = new JLabel("Day:");
+		String [] dayNames = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+		JComboBox dayPicker = new JComboBox(dayNames);
+		JLabel startTime = new JLabel("Strat Time:");
+		
+		//START TIME
+		SpinnerDateModel model = new SpinnerDateModel();
+		model.setValue(CarShopApplication.getSystemTime());
+		
+		JSpinner startTimePicker = new JSpinner(model);
+		JSpinner.DateEditor editor = new JSpinner.DateEditor(startTimePicker, "HH:mm:ss");
+		DateFormatter formatter = (DateFormatter) editor.getTextField().getFormatter();
+		formatter.setAllowsInvalid(false); 
+		formatter.setOverwriteMode(true);
+		
+		startTimePicker.setEditor(editor);
+		
+		JLabel endTime = new JLabel("End Time:");
+		//END TIME
+		SpinnerDateModel model2 = new SpinnerDateModel();
+		model2.setValue(CarShopApplication.getSystemTime());
+		
+		JSpinner endTimePicker = new JSpinner(model2);
+		JSpinner.DateEditor editor2 = new JSpinner.DateEditor(endTimePicker, "HH:mm:ss");
+		DateFormatter formatter2 = (DateFormatter) editor2.getTextField().getFormatter();
+		formatter2.setAllowsInvalid(false); 
+		formatter2.setOverwriteMode(true);
+		
+		endTimePicker.setEditor(editor2);
+		JButton addWeeklyHoursButton = new JButton("Add");
+		
+		addWeeklyHours.add(smallErrorLabel);
+		addWeeklyHours.add(addTitle);
+		addWeeklyHours.add(day);
+		addWeeklyHours.add(dayPicker);
+		addWeeklyHours.add(startTime);
+		addWeeklyHours.add(startTimePicker);
+		addWeeklyHours.add(endTime);
+		addWeeklyHours.add(endTimePicker);
+		addWeeklyHours.add(addWeeklyHoursButton);
+		
+		GroupLayout layout = new GroupLayout(addWeeklyHours.getContentPane());
+		addWeeklyHours.getContentPane().setLayout(layout);
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+		
+		layout.setHorizontalGroup(
+				layout.createParallelGroup()
+					.addComponent(smallErrorLabel)
+					.addComponent(addTitle)
+					.addGroup(layout.createSequentialGroup()
+							.addGroup(layout.createParallelGroup()
+									.addComponent(day)
+									.addComponent(startTime)
+									.addComponent(endTime))
+							.addGroup(layout.createParallelGroup()
+									.addComponent(dayPicker)
+									.addComponent(startTimePicker)
+									.addComponent(endTimePicker)))
+					.addComponent(addWeeklyHoursButton));
+		
+		layout.setVerticalGroup(
+				layout.createSequentialGroup()
+					.addComponent(smallErrorLabel)
+					.addComponent(addTitle)
+					.addGroup(layout.createParallelGroup()
+							.addComponent(day)
+							.addComponent(dayPicker))
+					.addGroup(layout.createParallelGroup()
+							.addComponent(startTime)
+							.addComponent(startTimePicker))
+					.addGroup(layout.createParallelGroup()
+							.addComponent(endTime)
+							.addComponent(endTimePicker))
+					.addComponent(addWeeklyHoursButton));
+		
+		addWeeklyHours.pack();
+		centerWindow(addWeeklyHours);
+		addWeeklyHours.setVisible(true);
+		
+		addWeeklyHoursButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				String dayOfWeek = (String)(dayPicker.getSelectedItem());
+				String startTime = CarShopController.dateToString( new java.sql.Date(model.getDate().getTime()));
+				String endTime = CarShopController.dateToString(new java.sql.Date(model2.getDate().getTime()));
+				addWeeklyHoursButtonActionPerformed(evt, dayOfWeek, startTime, endTime, addWeeklyHours);
+			}
+		});
+	}
+
+
+	protected void addWeeklyHoursButtonActionPerformed(ActionEvent evt, String dayOfWeek, String startTime,
+			String endTime, JFrame frame) {
+		try {
+			CarShopController.createBusinessHour(dayOfWeek, startTime, endTime);
+			smallErrorMessage = null;
+			frame.setVisible(false);
+		} catch (Exception e) {
+			smallErrorMessage = e.getMessage();
+		}
+		refreshData();
+		frame.pack();
+		
+	}}

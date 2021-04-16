@@ -1,6 +1,9 @@
 package ca.mcgill.ecse.carshop.view;
 
 import java.awt.Component;
+import java.awt.Font;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.ArrayList;
@@ -28,8 +31,29 @@ public class OwnerViewAppointments extends JPanel {
 		
 		initAppointments();
 		
-		titleJLabel = new JLabel("Appointments");
+		
+		
+	}
+	
+	public void initAppointments() {
+		appointments = CarShopController.getAppointmentsOwner();
 		appointmentNodes = new ArrayList<>();
+		for (TOAppointment appt : appointments) {
+			String customer = appt.getCustomerName();
+			String service = appt.getServiceName();
+			Date date = appt.getDate();
+			Time startTime = appt.getStartTime();
+			String status = appt.getStatus();
+			List<TOServiceBooking> serviceBookings = appt.getServiceBookings();
+			
+			if (date != null && startTime != null) {
+				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings, appt));
+			}
+			
+		}
+		
+		titleJLabel = new JLabel("Appointments");
+		titleJLabel.setFont(new Font("Arial", Font.BOLD, 22));
 		
 		GroupLayout groupLayout = new GroupLayout(this);
 		this.setLayout(groupLayout);
@@ -52,26 +76,38 @@ public class OwnerViewAppointments extends JPanel {
 		groupLayout.setVerticalGroup(sequentialGroup);
 		
 		
+		//add propertyChangeListener
+		for (int i = 0; i < appointmentNodes.size(); i++) {
+			appointmentNodes.get(i).addPropertyChangeListener(new PropertyChangeListener() {
+				
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) {
+					if (evt.getPropertyName().equals("End button pressed")
+							|| evt.getPropertyName().equals("No Show button pressed")
+							|| evt.getPropertyName().equals("Start button pressed")) {
+						System.out.println("Please wait, refreshing data");
+						refreshData();
+					}
+					
+				}
+			});
+		}
+		
 		//create appointment components
 		Component[] components = new Component[appointmentNodes.size()];
 		for (int i = 0; i < components.length; i++) {
 			components[i] = appointmentNodes.get(i);
 		}
-		
 	}
 	
-	public void initAppointments() {
-		appointments = CarShopController.getAppointmentsOwner();
-		for (TOAppointment appt : appointments) {
-			String customer = appt.getCustomerName();
-			String service = appt.getServiceName();
-			Date date = appt.getDate();
-			Time startTime = appt.getStartTime();
-			String status = appt.getStatus();
-			List<TOServiceBooking> serviceBookings = appt.getServiceBookings();
-			
-			appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings));
-		}
+	public void refreshData() {
+		appointments = null;
+		appointmentNodes.clear();
+		
+		removeAll();
+		initAppointments();
+		revalidate();
+		repaint();
 	}
 	
 }
