@@ -22,6 +22,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SwingConstants;
 import javax.swing.text.DateFormatter;
@@ -75,7 +76,15 @@ public class OwnerViewBusinessInfo extends JPanel {
     
     public OwnerViewBusinessInfo() {
     	
-		
+    	TOBusinessHoursCS = CarShopController.getBusinessHours();
+    	stringBusinessHours = listBHToString(TOBusinessHoursCS);
+    	TOHolidaysCS = CarShopController.getHolidays();
+    	stringHolidays = listTSToString(TOHolidaysCS);
+    	
+    	
+    	TOVacationsCS = CarShopController.getVacations();
+    	stringVacations = listTSToString(TOVacationsCS); 	
+    	
 		//set up components
     	errorLabel = new JLabel(errorMessage);
     	errorLabel.setForeground(Color.RED);
@@ -90,7 +99,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 	    
 	    businessHoursTitle = new JLabel("Weekly Business Hours");
 	    businessHoursTitle.setFont(new Font("Arial", Font.BOLD, 22));
-	    weeklySchedule = new JList(weeklyHours);
+	    weeklySchedule = new JList(stringBusinessHours);
 	    weeklySchedule.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 	    weeklySchedule.setLayoutOrientation(JList.VERTICAL);
 	    weeklySchedule.setVisibleRowCount(7); //for 7 days in a week
@@ -99,21 +108,27 @@ public class OwnerViewBusinessInfo extends JPanel {
 	    
 	    holidayTitle = new JLabel("Holidays");
 	    holidayTitle.setFont(new Font("Arial", Font.BOLD, 22));
-	    upcomingHolidays = new JList(carshopHolidays); 
+	    upcomingHolidays = new JList(stringHolidays); 
 	    upcomingHolidays.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 	    upcomingHolidays.setLayoutOrientation(JList.VERTICAL);
 	    upcomingHolidays.setVisibleRowCount(10); //to change later
 	    holidayScroller = new JScrollPane(upcomingHolidays);
+	    holidayScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+	    Dimension dHoliday = upcomingHolidays.getPreferredSize();
+	    holidayScroller.setPreferredSize(new Dimension(dHoliday.width, dHoliday.height));
 	    addHoliday = new JButton("Add");
 	    updateHoliday = new JButton("Update");
 	    
 	    vacationTitle = new JLabel("Vacations");
 	    vacationTitle.setFont(new Font("Arial", Font.BOLD, 22));
-	    upcomingVacations = new JList(carshopVacations); 
+	    upcomingVacations = new JList(stringVacations); 
 	    upcomingVacations.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 	    upcomingVacations.setLayoutOrientation(JList.VERTICAL);
 	    upcomingVacations.setVisibleRowCount(10); //to change later
 	    vacationScroller = new JScrollPane(upcomingVacations);
+	    vacationScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);	
+	    Dimension dVacation = vacationScroller.getPreferredSize();
+	    vacationScroller.setPreferredSize(new Dimension(dVacation.width, dVacation.height));
 	    addVacation = new JButton("Add");
 	    updateVacation = new JButton("Update");
 	    
@@ -122,6 +137,8 @@ public class OwnerViewBusinessInfo extends JPanel {
 		JSeparator horizontalLineBottom = new JSeparator();
 		JSeparator verticalLineLine = new JSeparator(SwingConstants.VERTICAL);
 
+		refreshData();
+		
 	    this.add(businessInfoTitle);
 
 	    this.add(businessName);
@@ -251,11 +268,10 @@ public class OwnerViewBusinessInfo extends JPanel {
     	String[] newStringArray = new String[list.size()];
     	int index = 0;
     	if (list.get(0) == null) return null;
-    	for (Object bh : list) {
-    		TOBusinessHour BH = (TOBusinessHour) bh;
-    		String info = BH.getDayOfWeek() 
-    				+ ": " + CarShopController.timeToString(BH.getStartTime()) 
-    				+ " - " + CarShopController.timeToString(BH.getEndTime());
+    	for (TOBusinessHour bh : list) {
+    		String info = bh.getDayOfWeek() 
+    				+ ": " + CarShopController.timeToString(bh.getStartTime()) 
+    				+ " - " + CarShopController.timeToString(bh.getEndTime());
     		newStringArray[index++] = info;
     	}		    	
     	return newStringArray;
@@ -265,12 +281,11 @@ public class OwnerViewBusinessInfo extends JPanel {
     	String[] newStringArray = new String[list.size()];
     	int index = 0;
     	if (list.get(0) == null) return null;	
-    	for (Object ts : list) {
-    		TOTimeSlot TS = (TOTimeSlot) ts;
-    		String info = "From " + CarShopController.dateToString(TS.getStartDate()) 
-	    		+ " at " + CarShopController.timeToString(TS.getStartTime()) 
-	    		+ " to " + CarShopController.dateToString(TS.getEndDate()) 
-	    		+ " at " + CarShopController.timeToString(TS.getEndTime());
+    	for (TOTimeSlot ts : list) {
+    		String info = "From " + CarShopController.dateToString(ts.getStartDate()) 
+	    		+ " at " + CarShopController.timeToString(ts.getStartTime()) 
+	    		+ " to " + CarShopController.dateToString(ts.getEndDate()) 
+	    		+ " at " + CarShopController.timeToString(ts.getEndTime());
     		newStringArray[index++] = info;
     	}
     	return newStringArray;
@@ -289,12 +304,14 @@ public class OwnerViewBusinessInfo extends JPanel {
     	stringBusinessHours = listBHToString(TOBusinessHoursCS);
     	TOHolidaysCS = CarShopController.getHolidays();
     	stringHolidays = listTSToString(TOHolidaysCS);
+    	
+    	
     	TOVacationsCS = CarShopController.getVacations();
     	stringVacations = listTSToString(TOVacationsCS);
 
-    	weeklySchedule.setListData(stringBusinessHours);
-    	upcomingHolidays.setListData(stringHolidays);
-    	upcomingVacations.setListData(stringVacations);
+//    	weeklySchedule.setListData(stringBusinessHours);
+//    	upcomingHolidays.setListData(stringHolidays);
+//    	upcomingVacations.setListData(stringVacations);
     }
     
     //action methods
