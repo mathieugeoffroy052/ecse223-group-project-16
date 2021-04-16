@@ -142,7 +142,6 @@ public class TechnicianView extends JPanel {
 					errorMessage.setText(error);
 				}
 				if(!(openingTime == null||(closingTime == null||openingTime.equals("") || closingTime.equals("")))) {
-//					boolean inDateTimeRange = CarShopController.inDate
 					String day = (String) comboBox.getSelectedItem();
 					
 					int columnToChange = 0;
@@ -163,12 +162,28 @@ public class TechnicianView extends JPanel {
 					}
 					int rowToChange1 = 0;
 					int rowToChange2 = 0;
+					try {
+						error = "";
+						String op = openingTime.toString();
+						String cl = closingTime.toString();
+						String user = CarShopApplication.getCurrentUser();
+						CarShopController.changeGarageBusinessHour(day, op, cl,user , CarShopApplication.getCarShop());
+//						oldClosing = CarShopController.stringToTime(scheduleModelTable.getValueAt(rowToChange2, columnToChange).toString());
+					} catch (Exception e1) {
+						error = e1.getMessage();
+					}
+					if(error!=null) {
+						errorMessage.setText(error);
+					}
 					if(!openingTime.equals("")) {
 						rowToChange1 = 0;
 						scheduleModelTable.setValueAt(openingTime,rowToChange1,columnToChange);
 						try {
 							error = "";
-							oldOpening = CarShopController.stringToTime(scheduleModelTable.getValueAt(rowToChange1, columnToChange).toString());
+							String op = openingTime.toString();
+							String cl = closingTime.toString();
+							String user = CarShopApplication.getCurrentUser();
+							CarShopController.changeGarageBusinessHour(day, op, cl,user , CarShopApplication.getCarShop());
 						} catch (InvalidInputException e1) {
 							// TODO Auto-generated catch block
 							error = e1.getMessage();
@@ -180,29 +195,20 @@ public class TechnicianView extends JPanel {
 					if(!closingTime.toString().equals("")) {
 						rowToChange2 = 1;
 						scheduleModelTable.setValueAt(closingTime, rowToChange2, columnToChange);
-						try {
-							error = "";
-							oldClosing = CarShopController.stringToTime(scheduleModelTable.getValueAt(rowToChange2, columnToChange).toString());
-						} catch (InvalidInputException e1) {
-							error = e1.getMessage();
-						}
-						if(error!=null) {
-							errorMessage.setText(error);
-						}
 					}
 					
 					
-					try {
-						error = "";
-						//it doesnt ever check that the garage business hours are inside the business hours of the car shop...
-						CarShopController.setGarageBusinessHours(day, openingTime.toString(), closingTime.toString(), oldOpening.toString(), oldClosing.toString(), CarShopApplication.getCarShop());
-					} catch (InvalidInputException e1) {
-						// TODO Auto-generated catch block
-						error = e1.getMessage();
-					}
-					if(error!=null) {
-						errorMessage.setText(error);
-					}
+//					try {
+//						error = "";
+//						//it doesnt ever check that the garage business hours are inside the business hours of the car shop...
+//						CarShopController.setGarageBusinessHours(day, openingTime.toString(), closingTime.toString(), oldOpening.toString(), oldClosing.toString(), CarShopApplication.getCarShop());
+//					} catch (InvalidInputException e1) {
+//						// TODO Auto-generated catch block
+//						error = e1.getMessage();
+//					}
+//					if(error!=null) {
+//						errorMessage.setText(error);
+//					}
 				}
 				labelNotification.setText("");
 				txtSetNewOpening.setText("");
