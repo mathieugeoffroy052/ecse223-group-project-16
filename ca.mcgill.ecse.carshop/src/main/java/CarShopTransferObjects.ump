@@ -66,13 +66,15 @@ class TOService {
 }
 
 class TOServiceCombo {
+	depend java.util.List;
 	name;
-
+	TOComboItem mainService;
+	List<TOComboItem> services;
 }
 
 class TOComboItem {
   boolean mandatory;
-  name;
+  TOService service;
 
 }
 

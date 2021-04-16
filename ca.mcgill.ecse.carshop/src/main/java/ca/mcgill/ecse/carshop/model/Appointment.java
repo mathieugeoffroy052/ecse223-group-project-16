@@ -324,7 +324,7 @@ public class Appointment implements Serializable
     return wasEventProcessed;
   }
 
-  private boolean __autotransition7__()
+  private boolean __autotransition8__()
   {
     boolean wasEventProcessed = false;
     
@@ -353,7 +353,7 @@ public class Appointment implements Serializable
         delete();
         break;
       case HasEnded:
-        __autotransition7__();
+        __autotransition8__();
         break;
     }
   }

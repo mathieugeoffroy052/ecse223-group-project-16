@@ -20,6 +20,8 @@ public class OwnerView extends JPanel {
 		JTabbedPane tabbedPane = new JTabbedPane();
 		JPanel businessInfo = new OwnerViewBusinessInfo();
 		
+		JPanel serviceInfoJPanel = new OwnerViewServices();
+		
 		JPanel appointmentInfo = new OwnerViewAppointments();
 		JScrollPane scrollPane = new JScrollPane(appointmentInfo);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
@@ -32,7 +34,7 @@ public class OwnerView extends JPanel {
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 		
 		//adding the services tab
-		tabbedPane.addTab("Services", getComponentPopupMenu());
+		tabbedPane.addTab("Services", serviceInfoJPanel);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_2);
 		
 		//adding the appointments tab

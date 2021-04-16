@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
@@ -2719,6 +2720,58 @@ public class CarShopController {
 		}
 		
 		return toAppointments;
+	}
+	
+	public static List<TOServiceCombo> getServiceCombosOwner() {
+		CarShop carShop = CarShopApplication.getCarShop();
+		List<BookableService> bookableServices = carShop.getBookableServices();
+		List<TOServiceCombo> toServiceCombos = new ArrayList<>();
+		
+		for(BookableService bookableService : bookableServices) {
+			if (bookableService instanceof ServiceCombo) {
+				ServiceCombo serviceCombo = (ServiceCombo) bookableService;
+				String comboName = serviceCombo.getName();
+				ComboItem mainService = serviceCombo.getMainService();
+				Service main = mainService.getService(); 
+				TOGarage mainGarage = new TOGarage(main.getGarage().getTechnician().getType().name());
+				TOService toService = new TOService(main.getName(), main.getDuration(), mainGarage);
+				
+				TOComboItem toMainService = new TOComboItem(mainService.getMandatory(), toService);
+				
+				List<ComboItem> services = serviceCombo.getServices();
+				List<TOComboItem> comboItems = new ArrayList<>();
+				for(ComboItem item : services) {
+					Service s = item.getService(); 
+					TOGarage g = new TOGarage(s.getGarage().getTechnician().getType().name());
+					TOService toS = new TOService(s.getName(), s.getDuration(), g);
+					
+					TOComboItem toCI = new TOComboItem(item.getMandatory(), toS);
+					comboItems.add(toCI);
+				}
+				
+				TOServiceCombo toServiceCombo = new TOServiceCombo(comboName, toMainService, comboItems);
+				toServiceCombos.add(toServiceCombo);
+			}
+		}
+		
+		return toServiceCombos;
+	}
+	
+	public static List<TOService> getServicesOwner() {
+		CarShop carShop = CarShopApplication.getCarShop();
+		List<BookableService> bookableServices = carShop.getBookableServices();
+		List<TOService> toServices = new ArrayList<>();
+		
+		for(BookableService bookableService : bookableServices) {
+			if (bookableService instanceof Service) {
+				Service service = (Service) bookableService;
+				TOGarage toGarage = new TOGarage(service.getGarage().getTechnician().getType().name());
+				TOService toService = new TOService(service.getName(), service.getDuration(), toGarage);
+				
+				toServices.add(toService);
+			}
+		}
+		return toServices;
 	}
 	
 

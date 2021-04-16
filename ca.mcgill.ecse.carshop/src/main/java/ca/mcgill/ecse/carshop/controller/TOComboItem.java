@@ -3,7 +3,7 @@
 
 package ca.mcgill.ecse.carshop.controller;
 
-// line 73 "../../../../../CarShopTransferObjects.ump"
+// line 75 "../../../../../CarShopTransferObjects.ump"
 public class TOComboItem
 {
 
@@ -13,16 +13,16 @@ public class TOComboItem
 
   //TOComboItem Attributes
   private boolean mandatory;
-  private String name;
+  private TOService service;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public TOComboItem(boolean aMandatory, String aName)
+  public TOComboItem(boolean aMandatory, TOService aService)
   {
     mandatory = aMandatory;
-    name = aName;
+    service = aService;
   }
 
   //------------------------
@@ -37,10 +37,10 @@ public class TOComboItem
     return wasSet;
   }
 
-  public boolean setName(String aName)
+  public boolean setService(TOService aService)
   {
     boolean wasSet = false;
-    name = aName;
+    service = aService;
     wasSet = true;
     return wasSet;
   }
@@ -50,9 +50,9 @@ public class TOComboItem
     return mandatory;
   }
 
-  public String getName()
+  public TOService getService()
   {
-    return name;
+    return service;
   }
 
   public void delete()
@@ -62,7 +62,7 @@ public class TOComboItem
   public String toString()
   {
     return super.toString() + "["+
-            "mandatory" + ":" + getMandatory()+ "," +
-            "name" + ":" + getName()+ "]";
+            "mandatory" + ":" + getMandatory()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "service" + "=" + (getService() != null ? !getService().equals(this)  ? getService().toString().replaceAll("  ","    ") : "this" : "null");
   }
 }
