@@ -91,3 +91,19 @@ class TOServiceBooking {
 	TOService service;
 	TOTimeSlot timeSlot;
 }
+
+class TOCarshopService {
+	String name;
+	String garage;
+	Integer duration;
+}
+
+class TOCarshopCombo {
+	depend java.util.List;
+	String comboName;
+	String mainService;
+	List<String> services;
+	List<String> garages;
+	List<Integer> duration;
+	List<Boolean> mandatory;
+}
