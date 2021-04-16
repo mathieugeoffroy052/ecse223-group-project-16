@@ -3,7 +3,7 @@
 
 package ca.mcgill.ecse.carshop.controller;
 
-// line 92 "../../../../../CarShopTransferObjects.ump"
+// line 90 "../../../../../CarShopTransferObjects.ump"
 public class TOServiceBooking
 {
 

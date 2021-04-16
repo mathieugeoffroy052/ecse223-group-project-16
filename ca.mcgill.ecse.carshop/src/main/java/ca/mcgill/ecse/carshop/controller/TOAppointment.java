@@ -6,7 +6,7 @@ import java.util.List;
 import java.sql.Date;
 import java.sql.Time;
 
-// line 82 "../../../../../CarShopTransferObjects.ump"
+// line 80 "../../../../../CarShopTransferObjects.ump"
 public class TOAppointment
 {
 
