@@ -2858,5 +2858,55 @@ public class CarShopController {
 			throw new InvalidInputException(e.getMessage());
 		}
 	}
+	
+	public static List<TOCarshopService> getCarshopServices() {
+		List<TOCarshopService> toReturn = new ArrayList<>();
+		CarShop carShop = CarShopApplication.getCarShop();
+		
+		List<BookableService> bookableServices = carShop.getBookableServices();
+		
+		for(BookableService bookableService : bookableServices) {
+			if (bookableService instanceof Service) {
+				Service service = (Service) bookableService;
+				String serviceName = service.getName();
+				String garage = service.getGarage().getTechnician().getType().name();
+				int duration = service.getDuration();
+				
+				TOCarshopService toCarshopService = new TOCarshopService(serviceName, garage, duration);
+				toReturn.add(toCarshopService);
+			}
+		}
+		return toReturn;
+	}
+	
+	public static List<TOCarshopCombo> getCarshopServiceCOmbos() {
+		List<TOCarshopCombo> toReturn = new ArrayList<>();
+		CarShop carShop = CarShopApplication.getCarShop();
+		
+		List<BookableService> bookableServices = carShop.getBookableServices();
+		
+		for(BookableService bookableService : bookableServices) {
+			if (bookableService instanceof ServiceCombo) {
+				ServiceCombo serviceCombo = (ServiceCombo) bookableService;
+				String comboName = serviceCombo.getName();
+				String mainService = serviceCombo.getMainService().getService().getName();
+				List<String> services = new ArrayList<>();
+				List<String> garages = new ArrayList<>();
+				List<Integer> durations = new ArrayList<>();
+				List<Boolean> mandatory = new ArrayList<>();
+				
+				for(ComboItem item : serviceCombo.getServices()) {
+					services.add(item.getService().getName());
+					garages.add(item.getService().getGarage().getTechnician().getType().name());
+					durations.add(item.getService().getDuration());
+					mandatory.add(item.getMandatory());
+				}
+				
+				TOCarshopCombo toCarshopCombo = new TOCarshopCombo(comboName, mainService, services, garages, durations, mandatory);
+				toReturn.add(toCarshopCombo);
+			}
+		}
+		return toReturn;
+	}
 
 }
