@@ -37,12 +37,15 @@ public class CarShopController {
 	public CarShopController() {
 	}
 	
+	@SuppressWarnings("static-access")
 	public static List<TOComboItem> getOptServicesWithName(String apptName) throws Exception {
 
 		List<ComboItem> list1 = CarShopApplication.getCarShop().getBookableService(0).getWithName(apptName).getMainService().getServiceCombo().getServices();
 		List<TOComboItem> toReturn = new ArrayList<>();
+		String mainService = CarShopApplication.getCarShop().getBookableService(0).getWithName(apptName).getMainService().getService().toString();
 		for(ComboItem ci : list1) {
-			toReturn.add(new TOComboItem(ci.getMandatory(),ci.getService().getName()));
+			if(ci.getService().toString().equals(mainService) || ci.getMandatory()==true) continue;
+			else toReturn.add(new TOComboItem(ci.getMandatory(),ci.getService().getName()));
 		}
 		return toReturn;
 
@@ -2744,6 +2747,81 @@ public class CarShopController {
 	public static String getBusinessAddress() {
 		String address = CarShopApplication.getCarShop().getBusiness().getAddress();
 		return address;
+	}
+
+	@SuppressWarnings("static-access")
+	public static String getStartTimesWithServices(String apptName, String optServices, String startTime) throws InvalidInputException {
+		try {	// if it's a service then don't mind it
+			CarShopApplication.getCarShop().getBookableService(0).getWithName(apptName).getMainService();
+		} catch(Exception e) {
+			return startTime;
+		}
+		String toReturn = "";
+		String[] toCheck = optServices.split(",");
+		ArrayList<String> startTimes = new ArrayList<>();
+		startTimes.add(startTime);
+		ServiceCombo sb = CarShopApplication.getCarShop().getBookableService(0).getWithName(apptName).getMainService().getServiceCombo();
+		for(int i = 0; i < sb.getServices().size(); i++) {	// add all mandatory services first
+			ComboItem ci = sb.getService(i);
+			if(ci.getMandatory()==true) {
+				String tempStartTime = startTimes.get(startTimes.size()-1);
+				Time startTime1 = stringToTime(tempStartTime);
+				int duration = ci.getService().getDuration();
+				int minutes = duration%60;
+				int hours = duration/60;
+					
+				LocalTime localtime = startTime1.toLocalTime();
+				localtime = localtime.plusMinutes(minutes+10);
+				localtime = localtime.plusHours(hours);
+				Time endTime = Time.valueOf(localtime);
+				String endTimeString = endTime.toString().substring(0, 5);
+				startTimes.add(endTimeString);
+			}
+		}
+		for(int i = 0; i < toCheck.length; i++) {
+			String toExamine = toCheck[i];
+			String tempStartTime = startTimes.get(startTimes.size()-1);
+			Time startTime1 = stringToTime(tempStartTime);
+			int duration = CarShopApplication.getCarShop().getBookableService(0).getWithName(toExamine).getDuration();
+			int minutes = duration%60;
+			int hours = duration/60;
+				
+			LocalTime localtime = startTime1.toLocalTime();
+			localtime = localtime.plusMinutes(minutes+10);
+			localtime = localtime.plusHours(hours);
+			Time endTime = Time.valueOf(localtime);
+			String endTimeString = endTime.toString().substring(0, 5);
+			startTimes.add(endTimeString);
+		}
+		for(int i = 0; i < startTimes.size()-1; i++) {
+			toReturn+=startTimes.get(i)+",";
+		}
+		return toReturn;
+	}
+
+	public static void updateAppointmentCase1(String username, TOAppointment prevServName, String serviceName,
+			String timeOfChange) throws InvalidInputException {
+		Appointment toPassIn = findAppointment(prevServName);
+		changeServiceAt(toPassIn, username, serviceName, timeOfChange);
+	}
+
+	public static void updateAppointmentCase2(String username, TOAppointment prevTOAppt, String dateString, String time,
+			String timeOfChange) throws InvalidInputException {
+		Appointment toPassIn = findAppointment(prevTOAppt);
+		CarShopController.updateDateAndTimeAt(toPassIn, username, dateString, time, timeOfChange);
+		
+	}
+
+	public static void updateAppointmentCase3(String username, TOAppointment prevTOAppt, String optServices,
+			String time, String timeOfChange) throws InvalidInputException {
+		Appointment toPassIn = findAppointment(prevTOAppt);
+		CarShopController.addOptServiceAt(toPassIn, username, optServices, time, timeOfChange);
+		
+	}
+
+	public static void cancelAppointmentCase1(TOAppointment prevTOAppt, String optServices, String currentDateAndTime) throws InvalidInputException {
+		Appointment toPassIn = findAppointment(prevTOAppt);
+		CarShopController.cancelAppointmentAt(toPassIn, optServices, currentDateAndTime);
 	}
 	
 	

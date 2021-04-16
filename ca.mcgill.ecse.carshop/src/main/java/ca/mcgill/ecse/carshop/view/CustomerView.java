@@ -1,11 +1,10 @@
 package ca.mcgill.ecse.carshop.view;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -26,7 +25,9 @@ import javax.swing.table.DefaultTableModel;
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.TOAppointment;
+import ca.mcgill.ecse.carshop.controller.TOBookableService;
 import ca.mcgill.ecse.carshop.controller.TOComboItem;
+import ca.mcgill.ecse.carshop.model.Customer;
 
 import org.jdatepicker.impl.JDatePanelImpl;
 
@@ -38,9 +39,7 @@ public class CustomerView extends JPanel {
 
 	private static final long serialVersionUID = -7261632807094119148L;
 	
-	private JTextField createApptEnterStartDateTextField;
 	private JTextField createApptEnterStartTimeTextField;
-	private JTextField updateApptEnterNewDateTextField;
 	private JTextField updateApptEnterNewTimeTextField;
 	private JTextField newUsernameTextField;
 	private JTextField newPasswordTextField;
@@ -51,25 +50,35 @@ public class CustomerView extends JPanel {
 	
 	private JLabel bookanApptText;
 	private JLabel chooseServiceText;
-	private JComboBox<String> createApptChooseServiceComboBox;
+	private JComboBox<String> name1;
 	private JLabel createApptEnterStartTimeText;
 	private JLabel createApptEnterStartDateText;
 	private JLabel createApptSelectOptServicesText;
-	private JList<String> createApptSelectOptServicesList;
-	private JButton createApptConfirmButton;
+	
+	private JList<String> list1;
+	private DefaultListModel<String> model1;
+	private JButton confirmTimeButton1;
+	
+	private JButton confirmButton;
 	private JButton logOutButton;
 	private JLabel updateAppointmentText;
 	private JLabel updateAppointmentAndServicesText;
-	private JComboBox<String> updateApptUpdateOptServicesList;
+	private JComboBox<String> name2;	// swap
 	private JLabel updateApptEnterNewDateText;
 	private JLabel updateApptEnterNewTimeText;
 	private JLabel updateApptEnterNewOptServicesText;
-	private JList<String> updateApptEnterNewOptServicesList;
-	private JButton updateApptButton;
-	private JComboBox<String> updateApptNewServiceSelected;
+	
+	private JList<String> list2_3;
+	private DefaultListModel<String> model2_3;
+	private JLabel statusUpdate;
+	private JButton confirmTimeButton2;
+	private JLabel statusMake;
+	
+	private JButton updateButton;
+	private JComboBox<String> name3;	// swap
 	private JLabel lblCancelAnAppointment;
-	private JComboBox<String> cancelApptSelectApptBox;
-	private JButton confirmCancelApptButton;
+	private JComboBox<String> name4;
+	private JButton cancelButton;
 	private JLabel updateAccountInfoText;
 	private JLabel newUsernameText;
 	private JLabel newPasswordText;
@@ -87,13 +96,20 @@ public class CustomerView extends JPanel {
 	private SqlDateModel updateApptDateText;
 	private Properties updateApptDateDisplayed;
 
-	private JButton plusCreateAppt;
-	private JButton plusUpdateAppt;
-	private JButton plusUpdateServiceOfAppt;
+	private JButton plus1;
+	private JButton plus2;
+	private JButton plus3;
 
+	// Matthew's table
+	private JTable table;
+	private DefaultTableModel modelTable;
 	
 	// lists
 	private HashMap<Integer, String> appointments;
+	private List<TOAppointment> TOAppointments;
+
+	// for the update scenarios
+	private int updateStatusCode;
 		
 	public CustomerView() {
 		initialize();
@@ -101,13 +117,15 @@ public class CustomerView extends JPanel {
 
 	}
 
+
+
 	private void initialize() {
 
 		// *** Buttons *** //
 		
-		errorMessage = new JLabel();
+		errorMessage = new JLabel("");
 		errorMessage.setForeground(Color.RED);
-		errorMessage.setBounds(6, 648, 97, 16);
+		errorMessage.setBounds(6, 648, 400, 16);
 		add(errorMessage);
 		
 		bookanApptText = new JLabel("Book an Appointment");
@@ -118,9 +136,9 @@ public class CustomerView extends JPanel {
 		chooseServiceText.setBounds(16, 45, 208, 18);
 		add(chooseServiceText);
 		
-		createApptChooseServiceComboBox = new JComboBox<String>(new String[0]);
-		createApptChooseServiceComboBox.setBounds(13, 64, 216, 38);
-		add(createApptChooseServiceComboBox);
+		name1 = new JComboBox<String>(new String[0]);
+		name1.setBounds(13, 64, 216, 38);
+		add(name1);
 		
 		createApptEnterStartTimeText = new JLabel("Enter a start time: (hh:mm)");
 		createApptEnterStartTimeText.setBounds(274, 73, 208, 18);
@@ -139,13 +157,14 @@ public class CustomerView extends JPanel {
 		createApptSelectOptServicesText.setBounds(16, 114, 339, 18);
 		add(createApptSelectOptServicesText);
 		
-		createApptSelectOptServicesList = new JList<String>(new String[0]);
-		createApptSelectOptServicesList.setBounds(18, 144, 208, 70);
-		add(createApptSelectOptServicesList);
+		model1 = new DefaultListModel<>();
+		list1 = new JList<String>(model1);
+		list1.setBounds(18, 144, 208, 70);
+		add(list1);
 		
-		createApptConfirmButton = new JButton("Confirm");
-		createApptConfirmButton.setBounds(526, 185, 117, 29);
-		add(createApptConfirmButton);
+		confirmButton = new JButton("Confirm");
+		confirmButton.setBounds(526, 185, 117, 29);
+		add(confirmButton);
 		
 		logOutButton = new JButton("Log out");
 		logOutButton.addActionListener(new ActionListener() {
@@ -163,9 +182,9 @@ public class CustomerView extends JPanel {
 		updateAppointmentAndServicesText.setBounds(16, 313, 239, 18);
 		add(updateAppointmentAndServicesText);
 		
-		updateApptUpdateOptServicesList = new JComboBox<String>(new String[0]);
-		updateApptUpdateOptServicesList.setBounds(13, 332, 216, 38);
-		add(updateApptUpdateOptServicesList);
+		name2 = new JComboBox<String>(new String[0]);
+		name2.setBounds(13, 332, 216, 38);
+		add(name2);
 		
 		updateApptEnterNewDateText = new JLabel("Enter new date: (yyyy-mm-dd)");
 		updateApptEnterNewDateText.setBounds(274, 336, 249, 18);
@@ -177,24 +196,25 @@ public class CustomerView extends JPanel {
 		
 		updateApptEnterNewTimeTextField = new JTextField();
 		updateApptEnterNewTimeTextField.setColumns(10);
-		updateApptEnterNewTimeTextField.setBounds(513, 360, 130, 26);
+		updateApptEnterNewTimeTextField.setBounds(513, 361, 130, 26);
 		add(updateApptEnterNewTimeTextField);
 		
 		updateApptEnterNewOptServicesText = new JLabel("Select optional services: (leave empty if just a service)");
 		updateApptEnterNewOptServicesText.setBounds(16, 413, 339, 18);
 		add(updateApptEnterNewOptServicesText);
 		
-		updateApptEnterNewOptServicesList = new JList<String>(new String[0]);
-		updateApptEnterNewOptServicesList.setBounds(18, 443, 208, 70);
-		add(updateApptEnterNewOptServicesList);
+		model2_3 = new DefaultListModel<>();
+		list2_3 = new JList<String>(model2_3);
+		list2_3.setBounds(18, 443, 208, 70);
+		add(list2_3);
 		
-		updateApptButton = new JButton("Update");
-		updateApptButton.setBounds(526, 490, 117, 29);
-		add(updateApptButton);
+		updateButton = new JButton("Update");
+		updateButton.setBounds(526, 490, 117, 29);
+		add(updateButton);
 		
-		updateApptNewServiceSelected = new JComboBox<String>(new String[0]);
-		updateApptNewServiceSelected.setBounds(13, 361, 216, 38);
-		add(updateApptNewServiceSelected);
+		name3 = new JComboBox<String>(new String[0]);
+		name3.setBounds(13, 361, 216, 38);
+		add(name3);
 		
 		GroupLayout layout = new GroupLayout(this);	// sets a layout
 		this.setLayout(layout);
@@ -205,13 +225,13 @@ public class CustomerView extends JPanel {
 		lblCancelAnAppointment.setBounds(16, 573, 149, 16);
 		add(lblCancelAnAppointment);
 		
-		cancelApptSelectApptBox = new JComboBox<String>(new String[0]);
-		cancelApptSelectApptBox.setBounds(13, 590, 216, 38);
-		add(cancelApptSelectApptBox);
+		name4 = new JComboBox<String>(new String[0]);
+		name4.setBounds(13, 590, 216, 38);
+		add(name4);
 		
-		confirmCancelApptButton = new JButton("Confirm");
-		confirmCancelApptButton.setBounds(241, 594, 117, 29);
-		add(confirmCancelApptButton);
+		cancelButton = new JButton("Confirm");
+		cancelButton.setBounds(241, 594, 117, 29);
+		add(cancelButton);
 		
 		updateAccountInfoText = new JLabel("Update Account Information");
 		updateAccountInfoText.setBounds(923, 114, 178, 18);
@@ -243,23 +263,23 @@ public class CustomerView extends JPanel {
 		deleteAccountButton.setBounds(916, 250, 136, 29);
 		add(deleteAccountButton);
 		
-		plusCreateAppt = new JButton("+");
-		plusCreateAppt.setBounds(221, 68, 50, 29);
-		add(plusCreateAppt);
+		plus1 = new JButton("+");
+		plus1.setBounds(221, 68, 50, 29);
+		add(plus1);
 		
-		plusUpdateAppt = new JButton("+");
-		plusUpdateAppt.setBounds(221, 336, 50, 29);
-		add(plusUpdateAppt);
+		plus2 = new JButton("+");
+		plus2.setBounds(221, 336, 50, 29);
+		add(plus2);
 		
-		plusUpdateServiceOfAppt = new JButton("+");
-		plusUpdateServiceOfAppt.setBounds(221, 365, 50, 29);
-		add(plusUpdateServiceOfAppt);
+		plus3 = new JButton("+");
+		plus3.setBounds(221, 365, 50, 29);
+		add(plus3);
 		
 		
 		// table - by Matthew
-		JTable table = new JTable();
+		table = new JTable();
 		//make the table non editable (for the user. the table will still get updated):
-		DefaultTableModel modelTable = new DefaultTableModel() {
+		modelTable = new DefaultTableModel() {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
@@ -320,13 +340,31 @@ public class CustomerView extends JPanel {
 		overviewDatePickerUpdateAppt.setBounds(513, 332, 145, 26);//513, 332, 130, 26
 		add(overviewDatePickerUpdateAppt);
 
+		
+		statusUpdate = new JLabel("Current Status: Nothing changed");
+		statusUpdate.setForeground(new Color(60, 179, 113));
+		statusUpdate.setBounds(16, 525, 627, 16);
+		add(statusUpdate);
+		
+		confirmTimeButton2 = new JButton("Confirm Time");
+		confirmTimeButton2.setBounds(513, 390, 130, 29);
+		add(confirmTimeButton2);
+		
+		confirmTimeButton1 = new JButton("Confirm Time");
+		confirmTimeButton1.setBounds(513, 96, 130, 29);
+		add(confirmTimeButton1);
+		
+		statusMake= new JLabel("Current Status: Nothing added");
+		statusMake.setForeground(new Color(60, 179, 113));
+		statusMake.setBounds(16, 226, 627, 16);
+		add(statusMake);
 
 		// *** Action Listeners *** //
-		
+
 		// create an appointment via the "+" button
-		plusCreateAppt.addActionListener(new java.awt.event.ActionListener() {
+		plus1.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try { plusCreateApptActionPerformed(evt); 
+				try { plus1ActionPerformed(evt); 
 				} catch (Exception e) { error = e.getMessage(); }
 			}
 		});
@@ -334,9 +372,9 @@ public class CustomerView extends JPanel {
 		
 		
 		// update an appointment via the "+" button
-		plusUpdateAppt.addActionListener(new java.awt.event.ActionListener() {
+		plus2.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try { plusUpdateApptActionPerformed(evt);
+				try { plus2ActionPerformed(evt);
 				} catch (Exception e) { error = e.getMessage(); }
 			}
 		});
@@ -344,9 +382,26 @@ public class CustomerView extends JPanel {
 		
 		
 		// update the optional services via the "+" button
-		plusUpdateServiceOfAppt.addActionListener(new java.awt.event.ActionListener() {
+		plus3.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try { plusUpdateServiceOfApptActionPerformed(evt);
+				try { plus3ActionPerformed(evt);
+				} catch (Exception e) { error = e.getMessage(); }
+			}
+		});
+		
+		
+		// update the time 1
+		confirmTimeButton1.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				try { confirmTimeButton1ActionPerformed(evt);
+				} catch (Exception e) { error = e.getMessage(); }
+			}
+		});
+		
+		// update the time 2
+		confirmTimeButton2.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				try { confirmTimeButton2ActionPerformed(evt);
 				} catch (Exception e) { error = e.getMessage(); }
 			}
 		});
@@ -354,9 +409,9 @@ public class CustomerView extends JPanel {
 		
 		
 		// listeners for create appointment button
-		createApptConfirmButton.addActionListener(new java.awt.event.ActionListener() {
+		confirmButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try { createApptConfirmButtonActionPerformed(evt);
+				try { confirmButtonActionPerformed(evt);
 				} catch (Exception e) { error = e.getMessage(); }
 			}
 		});
@@ -364,249 +419,377 @@ public class CustomerView extends JPanel {
 		
 		
 		// listeners for create appointment button
-		updateApptButton.addActionListener(new java.awt.event.ActionListener() {
+		updateButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try { updateApptButtonActionPerformed(evt);
+				try { updateButtonActionPerformed(evt);
 				} catch (Exception e) { error = e.getMessage(); }
 			}
 		});
 
-}
+		// listeners for cancel appointment button
+		cancelButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				try { cancelButtonActionPerformed(evt);
+				} catch (Exception e) { error = e.getMessage(); }
+			}
+		});
+		
+		
+		// *** Account Information *** //
+		deleteAccountButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				try { deleteAccountButtonActionPerformed(evt);
+				} catch (Exception e) { error = e.getMessage(); }
+			}
+		});
+	}
+	
+	
+	
+	private void refreshInit() {
+		
+		appointments = new HashMap<Integer, String>();
+		if(name1.getSelectedIndex()==-1) {
+			name1.removeAllItems();
+		}
+		Integer index = 0;
+		name2.addItem("Select...");
+		name4.addItem("Select...");
+		TOAppointments = new ArrayList<>();
+		for (TOAppointment appt : CarShopController.getCustomerAppointments(CarShopApplication.getCurrentUser())) {
+			appointments.put(index, appt.getServiceName());
+			TOAppointments.add(appt);
+			name2.addItem(appt.getServiceName());
+			name4.addItem(appt.getServiceName());
+			index++;
+		};
+		
+		// get all the services in the carshop's services
+		name1.addItem("Select...");
+		name3.addItem("Select...");
+		for(TOBookableService sb : CarShopController.getCarShopBookableServices()) {
+			name1.addItem(sb.getName());
+			name3.addItem(sb.getName());	// not sure if this one is the right box
+
+		}
+	}
+	
 	
 	
 	private void refreshData() {
 		errorMessage.setText(error);
 		if (error == null || error.length() == 0) {
-			// populate page with data
-			// text fields
+			
 			createApptEnterStartTimeTextField.setText("");
 			updateApptEnterNewTimeTextField.setText("");
-			// username
-			newUsernameTextField.setText("");
-			newPasswordTextField.setText("");
-
-			// add appointments to the appointment box
-			appointments = new HashMap<Integer, String>();
-			createApptChooseServiceComboBox.removeAllItems();
-			cancelApptSelectApptBox.removeAllItems();
-			updateApptNewServiceSelected.removeAllItems();
+			
+			name1.removeAll();
+			name2.removeAll();
+			name3.removeAll();
+			name4.removeAll();
+			
+			name1.addItem("Select...");
+			name2.addItem("Select...");
+			name3.addItem("Select...");
+			name4.addItem("Select...");
+			
 			Integer index = 0;
-			System.out.println(CarShopApplication.getCurrentUser());
-//			for (TOAppointment appt : CarShopController.getCustomerAppointments(CarShopApplication.getCurrentUser())) {
-//				appointments.put(index, appt.getServiceName());
-//				createApptChooseServiceComboBox.addItem(appt.getServiceName());
-//				updateApptNewServiceSelected.addItem(appt.getServiceName());	// not sure if this one is the right box
-//				cancelApptSelectApptBox.addItem(appt.getServiceName());
-//				index++;
-//			};
-//			createApptChooseServiceComboBox.setSelectedIndex(-1);
-//			updateApptNewServiceSelected.setSelectedIndex(-1);
-//			cancelApptSelectApptBox.setSelectedIndex(-1);
+			appointments = new HashMap<Integer, String>();
+			if(TOAppointments!=null) {
+				TOAppointments.removeAll(TOAppointments);
+				for (TOAppointment appt : CarShopController.getCustomerAppointments(CarShopApplication.getCurrentUser())) {
+					if(appointments.put(index, appt.getServiceName())==null) {
+						name2.addItem(appt.getServiceName());
+						name4.addItem(appt.getServiceName());
+						TOAppointments.add(appt);
+					}
+					index++;
+				};
+			}
 			
-			
+			name1.setSelectedIndex(0);
+			name2.setSelectedIndex(0);
+			name3.setSelectedIndex(0);
+			name4.setSelectedIndex(0);
 
+			updateStatusCode = 0;
+			confirmTimeButton1.setForeground(Color.black);
+
+			list2_3.removeAll();
+			statusMake.setText("Current Status: Nothing added");
+			statusUpdate.setText("Current Status: Nothing changed");
 			
-			// toggle repair status
-//			buses = new HashMap<Integer, String>();
-//			busToggleList.removeAllItems();
-//			index = 0;
-//			for (TOBusVehicle bus : BtmsController.getBuses()) {
-//				buses.put(index, bus.getLicencePlate());
-//				busToggleList.addItem(bus.getLicencePlate());
-//				index++;
-//			};
-//			busToggleList.setSelectedIndex(-1);
-//		
-//			// bus assignment - bus
-//			availableBuses = new HashMap<Integer, String>();
-//			busList.removeAllItems();
-//			index = 0;
-//			for (TOBusVehicle bus : BtmsController.getAvailableBuses()) {
-//				availableBuses.put(index, bus.getLicencePlate());
-//				busList.addItem(bus.getLicencePlate());
-//				index++;
-//			};
-//			busList.setSelectedIndex(-1);
-//			// bus assignment - route (also combo box for bus route visualization)
-//			routes = new HashMap<Integer, TORoute>();
-//			routeList.removeAllItems();
-//			routeList2.removeAllItems();
-//			routeList2.addItem("no Route selected");
-//			index = 0;
-//			for (TORoute route : BtmsController.getRoutes()) {
-//				routes.put(index, route);
-//				routeList.addItem("#" + route.getNumber());
-//				routeList2.addItem("#" + route.getNumber());
-//				index++;
-//			};
-//			routeList.setSelectedIndex(-1);
-//			// bus assignment - date
-//			assignmentDatePicker.getModel().setValue(null);
-//			
-//			// schedule driver - driver
-//			availableDrivers = new HashMap<Integer, Integer>();
-//			driverList.removeAllItems();
-//			index = 0;
-//			for (TODriver driver : BtmsController.getAvailableDrivers()) {
-//				availableDrivers.put(index, driver.getId());
-//				driverList.addItem("#" + driver.getId() + " " + driver.getName());
-//				index++;
-//			};
-//			driverList.setSelectedIndex(-1);
-//			// schedule driver - assignment
-//			assignments = new HashMap<Integer, TORouteAssignment>();
-//			assignmentList.removeAllItems();
-//			index = 0;
-//			for (TORouteAssignment assignment : BtmsController.getAssignments()) {
-//				assignments.put(index, assignment);
-//				assignmentList.addItem(assignment.getDate() + ": Route #" + assignment.getNumber() + ", Bus " + assignment.getLicencePlate());
-//				index++;
-//			};
-//			assignmentList.setSelectedIndex(-1);
-//			// schedule driver - shift
-//			shifts = new HashMap<Integer, String>();
-//			shiftList.removeAllItems();
-//			index = 0;
-//			for (String shift : BtmsController.getShiftValues()) {
-//				shifts.put(index, shift);
-//				shiftList.addItem(shift);
-//				index++;
-//			};
-			// selectedIndex of shiftList defaults to 0 - does not need to be set
+			for(TOBookableService sb : CarShopController.getCarShopBookableServices()) {
+				name1.addItem(sb.getName());
+				name3.addItem(sb.getName());	// not sure if this one is the right box
+
+			}
 		}
-//		
-		// daily overview
-//		refreshDailyOverview();
-
-		// this is needed because the size of the window changes depending on whether an error message is shown or not
-		
 	}
 	
 	
 	
-	private void plusCreateApptActionPerformed(ActionEvent evt) throws Exception {
+	private void plus1ActionPerformed(ActionEvent evt) throws Exception {
 		error = "";
-		if(createApptChooseServiceComboBox.getSelectedIndex()!=-1) {
-			String apptName = createApptChooseServiceComboBox.getItemAt(createApptChooseServiceComboBox.getSelectedIndex());
-			
+		String apptName = name1.getItemAt(name1.getSelectedIndex());
+		statusMake.setText("Current Status: Nothing added");
+		confirmTimeButton1.setForeground(Color.red);
+		if(!apptName.equals("Select...")) {
 			try {	// if it's an instance of servicecombo
-				DefaultListModel<String> model = new DefaultListModel<>();
-				JList<String> list = new JList<>(model);
 				List<TOComboItem> list1 = CarShopController.getOptServicesWithName(apptName);
+				model1.removeAllElements();
 				for(int i = 0; i < list1.size(); i++ ) {
-					  model.addElement(list1.get(0).getName());
-					}
-				createApptSelectOptServicesList = list;
+				  model1.addElement(list1.get(i).getName());
+				}
 			} catch(Exception e) {	// otherwise, the optional services list is empty (it's a service)
-				DefaultListModel<String> model = new DefaultListModel<>();
-				JList<String> list = new JList<>(model);
-				updateApptEnterNewOptServicesList = list;
+				model1.removeAllElements();
 			}	
 		}
 		
-		// update visuals
-		refreshData();
 	}
 	
 	
 	
-	private void plusUpdateApptActionPerformed(ActionEvent evt) throws Exception {
+	private void plus2ActionPerformed(ActionEvent evt) throws Exception {
 		error = "";
-		if(updateApptNewServiceSelected.getSelectedIndex()!=-1) {
-			String apptName = updateApptNewServiceSelected.getItemAt(updateApptNewServiceSelected.getSelectedIndex());
+		String apptName = name2.getItemAt(name2.getSelectedIndex());
+		if(!apptName.equals("Select...")) {
 			
 			try {	// if it's an instance of servicecombo
-				DefaultListModel<String> model = new DefaultListModel<>();
-				JList<String> list = new JList<>(model);
+				name3.setSelectedIndex(0);
+				statusUpdate.setText("Current Status(3): Add optional services for " + apptName + " (select above)");
+				updateStatusCode = 3;
 				List<TOComboItem> list1 = CarShopController.getOptServicesWithName(apptName);
+				model2_3.removeAllElements();
 				for(int i = 0; i < list1.size(); i++ ) {
-					  model.addElement(list1.get(0).getName());
-					}
-				updateApptEnterNewOptServicesList = list;
+				  model2_3.addElement(list1.get(i).getName());
+				}
 			} catch(Exception e) {	// otherwise, the list is empty (it's a service)
-				DefaultListModel<String> model = new DefaultListModel<>();
-				JList<String> list = new JList<>(model);
-				updateApptEnterNewOptServicesList = list;
+				model2_3.removeAllElements();
 			}
 		}
 		
-		// update visuals
-		refreshData();
 	}
 	
 	
 	
-	private void plusUpdateServiceOfApptActionPerformed(ActionEvent evt) throws Exception {
+	private void plus3ActionPerformed(ActionEvent evt) throws Exception {
 		error = "";
-		if(updateApptUpdateOptServicesList.getSelectedIndex()!=-1) {
-			String apptName = updateApptUpdateOptServicesList.getItemAt(updateApptUpdateOptServicesList.getSelectedIndex());
-			
+		String apptName = name3.getItemAt(name3.getSelectedIndex());
+		if(!apptName.equals("Select...")) {			
 			try {	// if it's an instance of servicecombo
-				DefaultListModel<String> model = new DefaultListModel<>();
-				JList<String> list = new JList<>(model);
+				if(!name2.getItemAt(name2.getSelectedIndex()).equals("Select...")) {
+					statusUpdate.setText("Current Status(1): Update "+name2.getItemAt(name2.getSelectedIndex())+" to "+apptName);
+					updateStatusCode = 1;
+				}
+				updateApptEnterNewTimeTextField.setText("");
 				List<TOComboItem> list1 = CarShopController.getOptServicesWithName(apptName);
+				model2_3.removeAllElements();
 				for(int i = 0; i < list1.size(); i++ ) {
-					  model.addElement(list1.get(0).getName());
-					}
-				updateApptEnterNewOptServicesList = list;
+				  model2_3.addElement(list1.get(i).getName());
+				}
 			} catch(Exception e) {	// otherwise, the list is empty (it's a service)
-				DefaultListModel<String> model = new DefaultListModel<>();
-				JList<String> list = new JList<>(model);
-				updateApptEnterNewOptServicesList = list;
+				model2_3.removeAllElements();
 			}
 		}
 		
-		// update visuals
-		refreshData();
+	}
+	
+
+	
+	private void confirmTimeButton1ActionPerformed(ActionEvent evt) {
+		// TODO Auto-generated method stub
+		confirmTimeButton1.setForeground(Color.black);
+		String monthString = String.valueOf(createApptDateText.getMonth()+1);
+		if((createApptDateText.getMonth()+1)<10) monthString = "0"+(createApptDateText.getMonth()+1);
+		String dayString = String.valueOf(createApptDateText.getDay());
+		if(createApptDateText.getDay()<10) dayString = "0"+createApptDateText.getDay();
+		String dateString = createApptDateText.getYear()+"-"+monthString+"-"+dayString;
+		String time = createApptEnterStartTimeTextField.getText();
+		if(createApptEnterStartTimeTextField.getText().charAt(1)==':') {
+			time = "0"+createApptEnterStartTimeTextField.getText();
+		}
+		statusMake.setText("Current Status: Create an appointment for "+name1.getItemAt(name1.getSelectedIndex()) + " at "+ time + " on " + dateString);
 	}
 	
 	
 	
-	private void createApptConfirmButtonActionPerformed(ActionEvent evt) throws Exception {
+	private void confirmTimeButton2ActionPerformed(ActionEvent evt) {
+		// TODO Auto-generated method stub
+		if(!name2.getItemAt(name2.getSelectedIndex()).equals("Select...") && !updateApptEnterNewTimeTextField.getText().equals("")) {
+			String monthString = String.valueOf(updateApptDateText.getMonth()+1);
+			if((updateApptDateText.getMonth()+1)<10) monthString = "0"+(updateApptDateText.getMonth()+1);
+			String dayString = String.valueOf(updateApptDateText.getDay());
+			if(updateApptDateText.getDay()<10) dayString = "0"+updateApptDateText.getDay();
+			String dateString = updateApptDateText.getYear()+"-"+monthString+"-"+dayString;
+			String time = updateApptEnterNewTimeTextField.getText();
+			if(updateApptEnterNewTimeTextField.getText().charAt(1)==':') {
+				time = "0"+updateApptEnterNewTimeTextField.getText();
+			}
+			statusUpdate.setText("Current Status(2): Update " + name2.getItemAt(name2.getSelectedIndex()) + " to " + time + " at " + dateString);
+			updateStatusCode = 2;
+		}
+		name3.setSelectedIndex(0);
+	}
+	
+	
+	// Assumption: services selected optionally will occur 10 minutes after one another.
+	private void confirmButtonActionPerformed(ActionEvent evt) throws Exception {
 		error = "";
 		
 		// call the controller
-		try {
+//		try {
 			// TODO replace error
-			List<String> list = createApptSelectOptServicesList.getSelectedValuesList();
+			List<String> list = list1.getSelectedValuesList();
 			String optServices = "";
 			for(String s : list) {
 				optServices += s+",";
 			}
-			CarShopController.CreateAppointmentWithOptServices(CarShopApplication.getCurrentUser(),
-					createApptChooseServiceComboBox.getItemAt(createApptChooseServiceComboBox.getSelectedIndex()), 
-					createApptEnterStartDateTextField.getText(), updateApptDateText.toString(), 
-					CarShopApplication.getCarShop(), optServices, true);
-		} catch (InvalidInputException e) {
-			error = e.getMessage();
+			String customer = CarShopApplication.getCurrentUser();
+			String sbName = name1.getItemAt(name1.getSelectedIndex());
+			String currentDateAndTime = CarShopApplication.getSystemDateTime();
+			String monthString = String.valueOf(createApptDateText.getMonth()+1);
+			if((createApptDateText.getMonth()+1)<10) monthString = "0"+(createApptDateText.getMonth()+1);
+			String dayString = String.valueOf(createApptDateText.getDay());
+			if(createApptDateText.getDay()<10) dayString = "0"+createApptDateText.getDay();
+			String dateString = createApptDateText.getYear()+"-"+monthString+"-"+dayString;
+			String time = createApptEnterStartTimeTextField.getText();
+			if(createApptEnterStartTimeTextField.getText().charAt(1)==':') {
+				time = "0"+createApptEnterStartTimeTextField.getText();
+			}
+			System.out.println(CarShopApplication.getCarShop().getAppointments().size());
+			try {
+			CarShopController.createAppointmentAt(customer, sbName, optServices, dateString, time, currentDateAndTime);
+			} catch(Exception e) {
+				error = e.getMessage();
+				errorMessage.setText(error);
+				errorMessage.setForeground(Color.red);
+			}
+			System.out.println(CarShopApplication.getCarShop().getAppointments().size());
+			
+//		} catch (InvalidInputException e) {
+//			error = e.getMessage();
+//			errorMessage.setText(error);
+//		}
+		
+		// update visuals
+		refreshData();
+	}
+	
+
+	
+	/*
+	 * There are three cases here:
+	 * @when the customer changes the BookableService for their appointment to another BookableService:			updateStatusCode = 1;	// serv1 -> serv2
+	 *  - only need name2 and name3 # done
+	 * @When the customer changes the date and time to another date and time:									updateStatusCode = 2;	// time1 -> time2
+	 *  - only need name2 and date,time fields # done - TODO bug with date picker
+	 * @When the customer adds optService(s) to a service combo with start time specific to that optService:	updateStatusCode = 3;	// addOptServices
+	 *  - only need list2_3 and name2 # 
+	 * Assumption: services selected optionally will occur 10 minutes after one another.
+	 */
+	private void updateButtonActionPerformed(ActionEvent evt) {
+		error = "";
+		
+		try {
+			// depends on 3 states
+			if(updateStatusCode == 0) {
+				return;
+			}
+			else if(updateStatusCode == 1) {	// serv1 -> serv2
+				String timeOfChange = CarShopApplication.getSystemDateTime();
+				String serviceName = name3.getItemAt(name3.getSelectedIndex());
+				String prevServName = name2.getItemAt(name2.getSelectedIndex());
+				String username = CarShopApplication.getCurrentUser();
+				TOAppointment prevTOAppt = null;
+				for(TOAppointment toa : TOAppointments) {
+					if(toa.getServiceName().equals(prevServName)) {
+						prevTOAppt = toa;
+					}
+				}
+				CarShopController.updateAppointmentCase1(username, prevTOAppt, serviceName, timeOfChange);
+			}
+			else if(updateStatusCode == 2) {	// time1 -> time2
+				String timeOfChange = CarShopApplication.getSystemDateTime();
+				String prevServName = name2.getItemAt(name2.getSelectedIndex());
+				String username = CarShopApplication.getCurrentUser();
+				TOAppointment prevTOAppt = null;
+				for(TOAppointment toa : TOAppointments) {
+					if(toa.getServiceName().equals(prevServName)) {
+						prevTOAppt = toa;
+					}
+				}
+				String monthString = String.valueOf(updateApptDateText.getMonth()+1);
+				if((updateApptDateText.getMonth()+1)<10) monthString = "0"+(updateApptDateText.getMonth()+1);
+				String dayString = String.valueOf(updateApptDateText.getDay());
+				if(updateApptDateText.getDay()<10) dayString = "0"+updateApptDateText.getDay();
+				String dateString = updateApptDateText.getYear()+"-"+monthString+"-"+dayString;
+				String time = updateApptEnterNewTimeTextField.getText();
+				if(updateApptEnterNewTimeTextField.getText().charAt(1)==':') {
+					time = "0"+updateApptEnterNewTimeTextField.getText();
+				}
+				CarShopController.updateAppointmentCase2(username, prevTOAppt, dateString, time, timeOfChange);
+				
+			} 
+			else if(updateStatusCode == 3) {	// addOptServices
+				String timeOfChange = CarShopApplication.getSystemDateTime();
+				String username = CarShopApplication.getCurrentUser();
+				String servName = name2.getItemAt(name2.getSelectedIndex());
+				List<String> list = list2_3.getSelectedValuesList();
+				String optServices = "";
+				for(String s : list) {
+					optServices += s+",";
+				}
+				String time = updateApptEnterNewTimeTextField.getText();
+				if(updateApptEnterNewTimeTextField.getText().charAt(1)==':') {
+					time = "0"+updateApptEnterNewTimeTextField.getText();
+				}
+				TOAppointment prevTOAppt = null;
+				for(TOAppointment toa : TOAppointments) {
+					if(toa.getServiceName().equals(servName)) {
+						prevTOAppt = toa;
+					}
+				}
+				CarShopController.updateAppointmentCase3(username, prevTOAppt, optServices, time, timeOfChange);
+				
+			}
+							
+		} catch (Exception e) {}
+		
+		refreshData();
+	}
+	
+	
+
+	private void cancelButtonActionPerformed(ActionEvent evt) {
+		error = "";
+		List<String> list = list1.getSelectedValuesList();
+		String optServices = "";
+		for(String s : list) {
+			optServices += s+",";
+		}
+		try {
+			String currentDateAndTime = CarShopApplication.getSystemDateTime();
+			String servName = name4.getItemAt(name2.getSelectedIndex());
+			TOAppointment prevTOAppt = null;
+			for(TOAppointment toa : TOAppointments) {
+				if(toa.getServiceName().equals(servName)) {
+					prevTOAppt = toa;
+				}
+			}
+			CarShopController.cancelAppointmentCase1(prevTOAppt, optServices, currentDateAndTime);
+		} catch (Exception e) {
+			error += e.getMessage();
 		}
 		
 		// update visuals
 		refreshData();
 	}
 	
-	
-	
-	private void updateApptButtonActionPerformed(ActionEvent evt) throws Exception {
-		error = "";
-		// call the controller
-		try {
-			// TODO replace error
-			List<String> list = createApptSelectOptServicesList.getSelectedValuesList();
-			String optServices = "";
-			for(String s : list) {
-				optServices += s+",";
-			}
-			// TODO
-			CarShopController.CreateAppointmentWithOptServices(CarShopApplication.getCurrentUser(),
-					createApptChooseServiceComboBox.getItemAt(createApptChooseServiceComboBox.getSelectedIndex()), 
-					createApptEnterStartDateTextField.getText(),updateApptDateText.toString(), 
-					CarShopApplication.getCarShop(), optServices, true);
-		} catch (InvalidInputException e) {
-			error = e.getMessage();
-		}
+
+	private void deleteAccountButtonActionPerformed(ActionEvent evt) {
+		// TODO 
+		// make a pop-up come up
 		
-		// update visuals
-		refreshData();
 	}
 }
