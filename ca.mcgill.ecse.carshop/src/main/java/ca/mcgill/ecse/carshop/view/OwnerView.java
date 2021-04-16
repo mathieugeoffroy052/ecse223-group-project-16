@@ -19,6 +19,8 @@ public class OwnerView extends JPanel {
 		JTabbedPane tabbedPane = new JTabbedPane();
 		JPanel businessInfo = new OwnerViewBusinessInfo();
 		JPanel appointmentInfo = new OwnerViewAppointments();
+		JPanel profileInfo = new OwnerViewProfile();
+		
 		// adding the business info tab
 		tabbedPane.addTab("Business Information", businessInfo);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
@@ -29,6 +31,10 @@ public class OwnerView extends JPanel {
 		
 		//adding the appointments tab
 		tabbedPane.addTab("Appointments", appointmentInfo);
+		tabbedPane.setMnemonicAt(0, KeyEvent.VK_3);
+		
+		//adding the profile tab
+		tabbedPane.addTab("Profile", profileInfo);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_3);
 		
 		// add the tabbed pane to this panel

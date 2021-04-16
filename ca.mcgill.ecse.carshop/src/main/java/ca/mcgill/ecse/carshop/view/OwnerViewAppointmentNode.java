@@ -20,7 +20,6 @@ import javax.swing.table.DefaultTableModel;
 
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
-import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 import ca.mcgill.ecse.carshop.controller.TOAppointment;
 import ca.mcgill.ecse.carshop.controller.TOServiceBooking;
 
@@ -191,21 +190,25 @@ public class OwnerViewAppointmentNode extends JPanel {
 	private void refreshServiceList() {
 		errorMessage.setText(error);
 		
-		tableModel = new DefaultTableModel(0, 0);
-		tableModel.setColumnIdentifiers(overviewColumnNames);
-		tableServices.setModel(tableModel);
-		for (TOServiceBooking item : toServiceBookings) {
-			String service = item.getService().getName();
-			String garage = item.getService().getGarage().getName();
-			String duration = Integer.toString(item.getService().getDuration());
-			String start = CarShopController.timeToString(item.getTimeSlot().getStartTime());
-			String end = CarShopController.timeToString(item.getTimeSlot().getEndTime());
-			
-			Object[] obj = { service, garage, duration, start, end };
-			tableModel.addRow(obj);
+		if (error == null || error.length() == 0) {
+			tableModel = new DefaultTableModel(0, 0);
+			tableModel.setColumnIdentifiers(overviewColumnNames);
+			tableServices.setModel(tableModel);
+			for (TOServiceBooking item : toServiceBookings) {
+				String service = item.getService().getName();
+				String garage = item.getService().getGarage().getName();
+				String duration = Integer.toString(item.getService().getDuration());
+				String start = CarShopController.timeToString(item.getTimeSlot().getStartTime());
+				String end = CarShopController.timeToString(item.getTimeSlot().getEndTime());
+				
+				Object[] obj = { service, garage, duration, start, end };
+				tableModel.addRow(obj);
+			}
+			Dimension d = tableServices.getPreferredSize();
+			scrollPane.setPreferredSize(new Dimension(d.width, TABLE_HEIGHT));
 		}
-		Dimension d = tableServices.getPreferredSize();
-		scrollPane.setPreferredSize(new Dimension(d.width, TABLE_HEIGHT));
+		revalidate();
+		repaint();
 	}
 
 }
