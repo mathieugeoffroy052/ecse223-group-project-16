@@ -48,6 +48,30 @@ public class OwnerViewAppointments extends JPanel {
 			
 			if (date != null && startTime != null) {
 				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings, appt));
+
+				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings, appt));
+
+				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings, appt));
+
+				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings, appt));
+
+				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings, appt));
+
+				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings, appt));
+
+				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings, appt));
+
+				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings, appt));
+
+				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings, appt));
+
+				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings, appt));
+
+				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings, appt));
+
+				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings, appt));
+
+				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings, appt));
 			}
 			
 		}

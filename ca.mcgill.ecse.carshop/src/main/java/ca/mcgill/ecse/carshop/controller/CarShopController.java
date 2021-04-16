@@ -1606,14 +1606,12 @@ public class CarShopController {
 			int toUse = CarShopController.getTechnician("Tire-Technician", cs);
 			if(toUse == -1) {
 				technician = new Technician(username, password, TechnicianType.Tire, cs);
-				new Garage(cs, technician);
 			}
 		}
 		else if(username.equals("Engine-Technician") && password.equals("Engine-Technician")) {
 			int toUse = CarShopController.getTechnician("Engine-Technician", cs);
 			if(toUse == -1) {
 				technician = new Technician(username, password, TechnicianType.Engine, cs);
-				new Garage(cs, technician);
 
 			}		
 		}
@@ -1621,7 +1619,6 @@ public class CarShopController {
 			int toUse = CarShopController.getTechnician("Transmission-Technician", cs);
 			if(toUse == -1) {
 				technician = new Technician(username, password, TechnicianType.Transmission, cs);
-				new Garage(cs, technician);
 
 			}
 		}
@@ -1629,7 +1626,6 @@ public class CarShopController {
 			int toUse = CarShopController.getTechnician("Electronics-Technician", cs);
 			if(toUse == -1) {
 				technician = new Technician(username, password, TechnicianType.Electronics, cs);
-				new Garage(cs, technician);
 
 			}
 		}
@@ -1637,7 +1633,6 @@ public class CarShopController {
 			int toUse = CarShopController.getTechnician("Fluids-Technician", cs);
 			if(toUse == -1) {
 				technician = new Technician(username, password, TechnicianType.Fluids, cs);
-				new Garage(cs, technician);
 			}
 		}
 		try {

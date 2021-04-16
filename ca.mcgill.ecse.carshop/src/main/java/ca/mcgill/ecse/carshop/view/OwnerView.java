@@ -4,6 +4,7 @@ import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
 /**
@@ -18,7 +19,14 @@ public class OwnerView extends JPanel {
 		
 		JTabbedPane tabbedPane = new JTabbedPane();
 		JPanel businessInfo = new OwnerViewBusinessInfo();
+		
 		JPanel appointmentInfo = new OwnerViewAppointments();
+		JScrollPane scrollPane = new JScrollPane(appointmentInfo);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		
+		JPanel profileInfo = new OwnerViewProfile();
+		
+		
 		// adding the business info tab
 		tabbedPane.addTab("Business Information", businessInfo);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
@@ -28,7 +36,11 @@ public class OwnerView extends JPanel {
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_2);
 		
 		//adding the appointments tab
-		tabbedPane.addTab("Appointments", appointmentInfo);
+		tabbedPane.addTab("Appointments", scrollPane);
+		tabbedPane.setMnemonicAt(0, KeyEvent.VK_3);
+		
+		//adding the profile tab
+		tabbedPane.addTab("Profile", profileInfo);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_3);
 		
 		// add the tabbed pane to this panel
