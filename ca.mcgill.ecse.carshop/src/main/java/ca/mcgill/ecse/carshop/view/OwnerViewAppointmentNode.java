@@ -1,9 +1,12 @@
 package ca.mcgill.ecse.carshop.view;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.List;
@@ -42,7 +45,6 @@ public class OwnerViewAppointmentNode extends JPanel {
 	private JButton btnNoShowButton;
 
 	private String error;
-	private static final int TABLE_HEIGHT = 200;
 	private DefaultTableModel tableModel;
 	private String overviewColumnNames[] = { "Service", "Garage", "Duration", "Start Time", "End Time" };
 	private List<TOServiceBooking> toServiceBookings;
@@ -65,8 +67,16 @@ public class OwnerViewAppointmentNode extends JPanel {
 		tableServices = new JTable();
 		scrollPane = new JScrollPane(tableServices);
 		Dimension d = tableServices.getPreferredSize();
-		scrollPane.setPreferredSize(new Dimension(d.width, TABLE_HEIGHT));
-		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setPreferredSize(new Dimension(d.width, tableServices.getRowHeight() * (tableServices.getRowCount() + 2)));
+
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+		scrollPane.addMouseWheelListener(new MouseWheelListener() {
+			
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				getParent().dispatchEvent(e);
+			}
+		});
 		this.add(scrollPane);
 
 		btnStartButton = new JButton("Start");
@@ -205,7 +215,8 @@ public class OwnerViewAppointmentNode extends JPanel {
 				tableModel.addRow(obj);
 			}
 			Dimension d = tableServices.getPreferredSize();
-			scrollPane.setPreferredSize(new Dimension(d.width, TABLE_HEIGHT));
+			scrollPane.setPreferredSize(new Dimension(d.width, tableServices.getRowHeight() * (tableServices.getRowCount() + 2)));
+
 		}
 		revalidate();
 		repaint();
