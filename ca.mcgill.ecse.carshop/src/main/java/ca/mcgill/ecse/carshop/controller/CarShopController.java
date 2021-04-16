@@ -2905,8 +2905,7 @@ public class CarShopController {
 				}catch(RuntimeException e) {
 					throw new InvalidInputException(e.getMessage());
 				}
-				break;
-				
+				break;				
 			}
 		}
 	}

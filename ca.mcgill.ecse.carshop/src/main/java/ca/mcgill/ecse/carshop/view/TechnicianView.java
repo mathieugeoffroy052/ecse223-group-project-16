@@ -72,7 +72,7 @@ public class TechnicianView extends JPanel {
 		lblNewLabel.setBounds(60, 39, 65, 16);
 		add(lblNewLabel);
 		
-		JLabel lblNewLabel_1 = new JLabel("Business Hours");
+		JLabel lblNewLabel_1 = new JLabel("Garage Hours");
 		lblNewLabel_1.setBounds(60, 129, 97, 16);
 		add(lblNewLabel_1);
 		
@@ -216,7 +216,7 @@ public class TechnicianView extends JPanel {
 		scheduleScrollTable.setVisible(true);
 		add(scheduleScrollTable);
 		
-		JLabel lblNewLabel_2 = new JLabel("Modify Business Hours");
+		JLabel lblNewLabel_2 = new JLabel("Modify Garage Hours");
 		lblNewLabel_2.setBounds(60, 321, 153, 16);
 		add(lblNewLabel_2);
 		
