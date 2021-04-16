@@ -1,7 +1,10 @@
 package ca.mcgill.ecse.carshop.view;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
@@ -10,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -116,6 +120,14 @@ public class CustomerView extends JPanel {
 
 	// for the update scenarios
 	private int updateStatusCode;
+	
+	// for the pop-up
+	private JLabel smallErrorLabel;
+
+	// update username, password
+	private JButton updateUsernameButton;
+	private JButton updatePasswordButton;
+
 		
 	public CustomerView() {
 		initialize();
@@ -131,7 +143,7 @@ public class CustomerView extends JPanel {
 		
 		errorMessage = new JLabel("");
 		errorMessage.setForeground(Color.RED);
-		errorMessage.setBounds(6, 648, 1000, 16);
+		errorMessage.setBounds(16, 648, 1000, 16);
 		add(errorMessage);
 		
 		bookanApptText = new JLabel("Book an Appointment");
@@ -351,6 +363,15 @@ public class CustomerView extends JPanel {
 		statusMake.setForeground(new Color(60, 179, 113));
 		statusMake.setBounds(16, 226, 627, 16);
 		add(statusMake);
+		
+		updateUsernameButton = new JButton("Update username");
+		updateUsernameButton.setBounds(1170, 156, 153, 29);
+		add(updateUsernameButton);
+
+		updatePasswordButton = new JButton("Update password");
+		updatePasswordButton.setBounds(1170, 194, 153, 29);
+		add(updatePasswordButton);
+		
 
 		// *** Action Listeners *** //
 
@@ -432,6 +453,27 @@ public class CustomerView extends JPanel {
 		deleteAccountButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				try { deleteAccountButtonActionPerformed(evt);
+				} catch (Exception e) { error = e.getMessage(); }
+			}
+		});
+		
+		logOutButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				try { logOutButtonActionPerformed(evt);
+				} catch (Exception e) { error = e.getMessage(); }
+			}
+		});
+		
+		updateUsernameButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				try { updateUsernameButtonActionPerformed(evt);
+				} catch (Exception e) { error = e.getMessage(); }
+			}
+		});
+		
+		updatePasswordButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				try { updatePasswordButtonActionPerformed(evt);
 				} catch (Exception e) { error = e.getMessage(); }
 			}
 		});
@@ -546,7 +588,6 @@ public class CustomerView extends JPanel {
 		}
 	}
 	
-
 
 
 	private void plus1ActionPerformed(ActionEvent evt) throws Exception {
@@ -797,18 +838,181 @@ public class CustomerView extends JPanel {
 		refreshData();
 	}
 	
+	
 
+	private void updateUsernameButtonActionPerformed(ActionEvent evt) {
+		// TODO Auto-generated method stub
+		error = "";
+		CarShopController.updateUsername(CarShopApplication.getCurrentUser(), newUsernameTextField.getText());
+		error += "New username is "+newUsernameTextField.getText();
+		errorMessage.setText(error);
+	}
+	
+	
+
+	private void updatePasswordButtonActionPerformed(ActionEvent evt) throws InterruptedException {
+		// TODO Auto-generated method stub
+		error = "";
+		CarShopController.updatePassword(CarShopApplication.getCurrentUser(), newPasswordTextField.getText());
+		error += "New password is "+newPasswordTextField.getText();
+		errorMessage.setText(error);
+
+	}
+	
+	
+	
+	private void logOutButtonActionPerformed(ActionEvent evt) {
+		// TODO Auto-generated method stub
+		error = "";
+		CarShopApplication.logOut();
+		error += "Now logged out. Close application and log in again to continue.";
+		errorMessage.setText(error);
+		for(int i = 0; i < modelTable.getRowCount(); i++) {
+			modelTable.removeRow(i);
+		}
+		
+		createApptEnterStartTimeTextField.setText("");
+		updateApptEnterNewTimeTextField.setText("");
+
+		name1.removeAllItems();
+		name2.removeAllItems();
+		name3.removeAllItems();
+		name4.removeAllItems();
+		
+		name1.addItem("Select...");
+		name2.addItem("Select...");
+		name3.addItem("Select...");
+		name4.addItem("Select...");
+		
+		name1.setSelectedIndex(0);
+		name2.setSelectedIndex(0);
+		name3.setSelectedIndex(0);
+		name4.setSelectedIndex(0);
+
+		updateStatusCode = 0;
+		confirmTimeButton1.setForeground(Color.black);
+
+		list2_3.removeAll();
+		statusMake.setText("You are logged out.");
+		statusUpdate.setText("You are logged out.");
+		
+		for(int i = 0; i < modelTable.getRowCount(); i++) {
+			modelTable.removeRow(i);
+		}
+		
+	}
+	
+
+	
 	private void deleteAccountButtonActionPerformed(ActionEvent evt) {
 		// TODO 
-//		JFrame addWeeklyHours = new JFrame();
-//		add(addWeeklyHours);
-//		
-//		GroupLayout layout = new GroupLayout(addWeeklyHours.getContentPane());
-//		addWeeklyHours.getContentPane().setLayout(layout);
-//		layout.setAutoCreateGaps(true);
-//		layout.setAutoCreateContainerGaps(true);
-		new DeleteAccountPopUp();
+		JFrame popUpRemoveAccount = new JFrame();
+		smallErrorLabel = new JLabel();
+		smallErrorLabel.setForeground(Color.RED);
+		smallErrorLabel.setText("Close window to cancel.");
+		JLabel addTitle = new JLabel("Are you sure?");
+		addTitle.setFont(new Font("Arial", Font.BOLD, 22));
+		JLabel confirmationText = new JLabel("");
+		JLabel userLabel = new JLabel("Username:");
+		JTextField usernameField = new JTextField();
+		usernameField.setSize(200, 20);
+		JTextField passwordField = new JTextField();
+		passwordField.setSize(200, 20);
+		JLabel passLabel = new JLabel("Password:");	
+		JButton confirmDeleteButton = new JButton("Delete Account");
 		
 		
+		GroupLayout layout = new GroupLayout(popUpRemoveAccount.getContentPane());
+		popUpRemoveAccount.getContentPane().setLayout(layout);
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+		
+		layout.setHorizontalGroup(
+				layout.createParallelGroup()
+					.addComponent(smallErrorLabel)
+					.addComponent(addTitle)
+					.addGroup(layout.createSequentialGroup()
+							.addGroup(layout.createParallelGroup()
+									.addComponent(userLabel)
+									.addComponent(passLabel))
+							.addGroup(layout.createParallelGroup()
+									.addComponent(confirmationText)
+									.addComponent(usernameField)
+									.addComponent(passwordField)))
+					.addComponent(confirmDeleteButton));
+		
+		layout.setVerticalGroup(
+				layout.createSequentialGroup()
+					.addComponent(smallErrorLabel)
+					.addComponent(addTitle)
+					.addGroup(layout.createParallelGroup()
+							.addComponent(confirmationText))
+					.addGroup(layout.createParallelGroup()
+							.addComponent(userLabel)
+							.addComponent(usernameField))
+					.addGroup(layout.createParallelGroup()
+							.addComponent(passLabel)
+							.addComponent(passwordField))
+					.addComponent(confirmDeleteButton));
+		
+		popUpRemoveAccount.pack();
+		centerWindow(popUpRemoveAccount);
+		popUpRemoveAccount.setVisible(true);
+		
+		confirmDeleteButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				error = "";
+				try {
+					String newUsername = usernameField.getText();
+					CarShopController.getCustomerByUsername(newUsername);
+				} catch (Exception e) {
+					error += e.getMessage();
+					errorMessage.setText(error);
+					return;
+				}
+				try {
+					String newUsername = usernameField.getText();
+					String newPassword = passwordField.getText();
+					CarShopController.checkIfPasswordCorrect(newUsername, newPassword);
+					confirmDeleteButtonActionPerformed(evt, popUpRemoveAccount, newUsername);
+				} catch(Exception e) {
+					error += e.getMessage();
+					errorMessage.setText(error);
+				}
+			}
+		});		
+		
+	}
+	
+	
+	
+	protected void confirmDeleteButtonActionPerformed(ActionEvent evt, JFrame frame, String newUsername) {
+		error = "";
+		try {
+			for(TOAppointment TOAppt : TOAppointments) {
+				CarShopController.cancelAppointmentCase1(TOAppt, CarShopApplication.getCurrentUser(), CarShopApplication.getSystemDateTime());
+			}
+			CarShopController.deleteCustomerAccount(newUsername);
+			frame.setVisible(false);
+		} catch (Exception e) {
+		}
+		error += "Account deleted. Can no longer access appointment services.";
+		errorMessage.setText(error);
+		for(int i = 0; i < modelTable.getRowCount(); i++) {
+			modelTable.removeRow(i);
+		}
+		refreshData();
+		frame.pack();
+		
+	}
+
+
+	
+	public static void centerWindow(Window frame) {
+	    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+	    int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
+	    int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
+	    frame.setLocation(x, y);
+	
 	}
 }

@@ -2815,9 +2815,9 @@ public class CarShopController {
 		
 	}
 
-	public static void cancelAppointmentCase1(TOAppointment prevTOAppt, String optServices, String currentDateAndTime) throws InvalidInputException {
+	public static void cancelAppointmentCase1(TOAppointment prevTOAppt, String customer, String currentDateAndTime) throws InvalidInputException {
 		Appointment toPassIn = findAppointment(prevTOAppt);
-		CarShopController.cancelAppointmentAt(toPassIn, optServices, currentDateAndTime);
+		CarShopController.cancelAppointmentAt(toPassIn, customer, currentDateAndTime);
 	}
 	
 	
@@ -2935,6 +2935,43 @@ public class CarShopController {
 		}catch(RuntimeException e) {
 			throw new InvalidInputException(e.getMessage());
 		}
+	}
+
+	public static boolean checkIfPasswordCorrect(String newUsername, String newPassword) throws InvalidInputException {
+		// TODO Auto-generated method stub
+		Customer c = (Customer) Customer.getWithUsername(newUsername);
+		if(c.getUsername().equals(newUsername) && !c.getPassword().equals(newPassword)) throw new InvalidInputException("Password is incorrect!");
+
+		return c.getPassword().equals(newPassword);
+	}
+
+	public static void getCustomerByUsername(String newUsername) throws InvalidInputException {
+		// TODO Auto-generated method stub
+		try {
+			Customer.getWithUsername(newUsername);
+		} catch (Exception e) {
+			throw new InvalidInputException("Username does not exist!");
+		}
+	}
+
+	public static void deleteCustomerAccount(String newUsername) {
+		// TODO Auto-generated method stub
+		for(Customer c : CarShopApplication.getCarShop().getCustomers()) {
+			if(c.getUsername().equals(newUsername)) {
+				c.delete();
+			}
+		}
+	}
+
+	public static void updatePassword(String currentUser, String text) {
+		// TODO Auto-generated method stub
+		Customer.getWithUsername(currentUser).setPassword(text);
+	}
+
+	public static void updateUsername(String currentUser, String text) {
+		// TODO Auto-generated method stub
+		Customer.getWithUsername(currentUser).setUsername(text);
+
 	}
 
 }
