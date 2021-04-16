@@ -2,6 +2,7 @@ package ca.mcgill.ecse.carshop.view;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Time;
 import java.util.Vector;
 
 import javax.swing.*;
@@ -12,6 +13,8 @@ import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 import ca.mcgill.ecse.carshop.controller.TOBusinessHour;
+import ca.mcgill.ecse.carshop.controller.TOAppointment;
+
 import java.util.List;
 
 
@@ -113,12 +116,25 @@ public class TechnicianView extends JPanel {
 		JButton btnNewButton = new JButton("Confirm Changes");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String openingTime = txtSetNewOpening.getText();
-				String closingTime = txtNewClosingTime.getText();
+				Time openingTime = null;
+				Time closingTime = null;
+				Time oldOpening = null;
+				Time oldClosing = null;
+				try {
+					error = "";
+					//works properly as long as proper times are inputted and no errors are thrown...
+					//if one of the text fields is empty it freaks out D:
+					openingTime = CarShopController.stringToTime(txtSetNewOpening.getText());
+					closingTime = CarShopController.stringToTime(txtNewClosingTime.getText());
+				} catch (InvalidInputException e1) {
+					// TODO Auto-generated catch block
+					error = e1.getMessage();
+				}
+				if(error!=null) {
+					errorMessage.setText(error);
+				}
 				String day = (String) comboBox.getSelectedItem();
-				//TODO
-				//need to call the controller to change the business hour of the garage
-				//assuming the controller method has now been called, need to change the JTable
+				
 				int columnToChange = 0;
 				if(day.equals("Monday")) {
 					columnToChange = 1;
@@ -140,11 +156,40 @@ public class TechnicianView extends JPanel {
 				if(!openingTime.equals("")) {
 					rowToChange1 = 0;
 					scheduleModelTable.setValueAt(openingTime,rowToChange1,columnToChange);
+					try {
+						error = "";
+						oldOpening = CarShopController.stringToTime(scheduleModelTable.getValueAt(rowToChange1, columnToChange).toString());
+					} catch (InvalidInputException e1) {
+						// TODO Auto-generated catch block
+						error = e1.getMessage();
+					}
+					if(error!=null) {
+						errorMessage.setText(error);
+					}
 				}
-				if(!closingTime.equals("")) {
+				if(!closingTime.toString().equals("")) {
 					rowToChange2 = 1;
 					scheduleModelTable.setValueAt(closingTime, rowToChange2, columnToChange);
+					try {
+						error = "";
+						oldClosing = CarShopController.stringToTime(scheduleModelTable.getValueAt(rowToChange2, columnToChange).toString());
+					} catch (InvalidInputException e1) {
+						// TODO Auto-generated catch block
+						error = e1.getMessage();
+					}
+					if(error!=null) {
+						errorMessage.setText(error);
+					}
 				}
+				
+				try {
+					//it doesnt ever check that the garage business hours are inside the business hours of the car shop...
+					CarShopController.setGarageBusinessHours(day, openingTime.toString(), closingTime.toString(), oldOpening.toString(), oldClosing.toString(), CarShopApplication.getCarShop());
+				} catch (InvalidInputException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
 				txtSetNewOpening.setText("");
 				txtNewClosingTime.setText("");
 			}
@@ -241,22 +286,26 @@ public class TechnicianView extends JPanel {
 				return false;
 			}
 		};
-		modelTable.addColumn("Appointment name");
-		modelTable.addColumn("Booked customer");
+		modelTable.addColumn("Appointment date");
 		modelTable.addColumn("Start time");
-		modelTable.addColumn("End time");
+		modelTable.addColumn("Appointment name");
+		modelTable.addColumn("Customer name");
 		table.setModel(modelTable);
 		
-		for(int i = 0; i< 20;i++) {
-			//here is where we would get the TO information about the appointments 
-			//and insert them into the table
+		List<TOAppointment> toGarageAppointments = CarShopController.getGarageAppointments();
+		for(TOAppointment app: toGarageAppointments) {
+			
 			Vector<String> r = new Vector<String>();
-			r.addElement("---");		//appointment name
-			r.addElement("---");		//booked customer
-			r.addElement("---");		//start time
-			r.addElement("---");		//end time
+			
+			r.addElement(app.getDate().toString());			//appointment date
+			r.addElement(app.getStartTime().toString());	//start time
+			r.addElement(app.getServiceName());				//appt name
+			r.addElement(app.getCustomerName());			//customer name
+			
 			modelTable.addRow(r);
-		}
+		}			
+
+		
 		JScrollPane scrollTable = new JScrollPane(table);
 		scrollTable.setBounds(60, 460 ,572, 240);
 		scrollTable.setVisible(true);
