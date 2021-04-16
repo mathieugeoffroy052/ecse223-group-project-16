@@ -1487,7 +1487,8 @@ public class CarShopController {
 	
 	// loging for a technician
 	public static void technicianLogin(String username, String password) throws InvalidInputException {
-		User user = User.getWithUsername(username);
+//		User user = User.getWithUsername(username);
+		Technician user = findTechnician(username, CarShopApplication.getCarShop());
 		if(user != null && user.getPassword().equals(password)) {
 			CarShopApplication.setUser(user);
 			CarShopApplication.setAccountType(getApplicationTechnicianType(user.getUsername()));
@@ -1523,7 +1524,7 @@ public class CarShopController {
 	public static void login(String username, String password) throws InvalidInputException {
 		if(username.equals("owner")) {
 			ownerLogin(username, password);
-		}else if(username.contains("Technician")) {
+		}else if(username.toLowerCase().contains("technician")) {
 			technicianLogin(username, password);
 		}else {
 			customerLogin(username, password);
@@ -1599,19 +1600,44 @@ public class CarShopController {
 			if(CarShopApplication.getCarShop().getOwner() == null) owner = new Owner(username, password, cs);
 		}
 		else if(username.equals("Tire-Technician") && password.equals("Tire-Technician")) {
-			technician = new Technician(username, password, TechnicianType.Tire, cs);
+			// check if the technician exists, get their password, if it's NOT "Tire-Technician" then just get out of the method
+//			Technician t = getTechnicianWithName("Tire-Technician");
+			int toUse = CarShopController.getTechnician("Tire-Technician", cs);
+			if(toUse == -1) {
+				technician = new Technician(username, password, TechnicianType.Tire, cs);
+				new Garage(cs, technician);
+			}
 		}
 		else if(username.equals("Engine-Technician") && password.equals("Engine-Technician")) {
-			technician = new Technician(username, password, TechnicianType.Engine, cs);
+			int toUse = CarShopController.getTechnician("Engine-Technician", cs);
+			if(toUse == -1) {
+				technician = new Technician(username, password, TechnicianType.Engine, cs);
+				new Garage(cs, technician);
+
+			}		
 		}
 		else if(username.equals("Transmission-Technician") && password.equals("Transmission-Technician")) {
-			technician = new Technician(username, password, TechnicianType.Transmission, cs);
+			int toUse = CarShopController.getTechnician("Transmission-Technician", cs);
+			if(toUse == -1) {
+				technician = new Technician(username, password, TechnicianType.Transmission, cs);
+				new Garage(cs, technician);
+
+			}
 		}
 		else if(username.equals("Electronics-Technician") && password.equals("Electronics-Technician")) {
-			technician = new Technician(username, password, TechnicianType.Electronics, cs);
+			int toUse = CarShopController.getTechnician("Electronics-Technician", cs);
+			if(toUse == -1) {
+				technician = new Technician(username, password, TechnicianType.Electronics, cs);
+				new Garage(cs, technician);
+
+			}
 		}
 		else if(username.equals("Fluids-Technician") && password.equals("Fluids-Technician")) {
-			technician = new Technician(username, password, TechnicianType.Fluids, cs);
+			int toUse = CarShopController.getTechnician("Fluids-Technician", cs);
+			if(toUse == -1) {
+				technician = new Technician(username, password, TechnicianType.Fluids, cs);
+				new Garage(cs, technician);
+			}
 		}
 		try {
 			CarShopPersistence.save(cs);

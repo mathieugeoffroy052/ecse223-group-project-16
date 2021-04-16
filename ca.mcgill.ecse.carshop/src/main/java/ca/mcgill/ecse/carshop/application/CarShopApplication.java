@@ -16,6 +16,7 @@ import ca.mcgill.ecse.carshop.model.BookableService;
 import ca.mcgill.ecse.carshop.model.Business;
 import ca.mcgill.ecse.carshop.model.BusinessHour;
 import ca.mcgill.ecse.carshop.model.BusinessHour.DayOfWeek;
+import ca.mcgill.ecse.carshop.model.Technician.TechnicianType;
 import ca.mcgill.ecse.carshop.model.CarShop;
 import ca.mcgill.ecse.carshop.model.ComboItem;
 import ca.mcgill.ecse.carshop.model.Garage;
@@ -111,7 +112,6 @@ public class CarShopApplication {
 					}
 				}
 			}
-
 		}
 
 		public static void setUsername(String name) {
@@ -173,13 +173,14 @@ public class CarShopApplication {
 		}
 		
 		public static void main(String[] args) {
-//			try {
-//				carShop = setUp();
-//				
-//			} catch (Exception e) {}
+
 			//start UI
 			java.awt.EventQueue.invokeLater(new Runnable() {
 				public void run() {
+					try {
+						carShop = setUp();
+						
+					} catch (Exception e) {}
 					new CarShopPage().setVisible(true);
 				}
 			});
@@ -196,15 +197,28 @@ public class CarShopApplication {
 			cs.delete();
 			setCurrentDateAndTime("2021-02-01+09:00");	// sets in carshopapplication
 			// sets the owner
-			Owner owner = new Owner("owner", "owner", cs);
-//			cs.setOwner(owner); // unnecessary step
+//			Owner owner = new Owner("owner", "owner", cs);
+//			Technician technician1 = new Technician("Tires-Technician", "Tires-Technician", TechnicianType.Tire, cs);
+//			Technician technician2 = new Technician("Engine-Technician", "Engine-Technician", TechnicianType.Engine, cs);
+//			Technician technician3 = new Technician("Transmission-Technician", "Transmission-Technician", TechnicianType.Transmissionm, cs);
+//			Technician technician4 = new Technician("Electronics-Technician", "Electronics-Technician", TechnicianType.Electronics, cs);
+//			Technician technician5 = new Technician("Fluids-Technician", "Fluids-Technician", TechnicianType.Fluids, cs);
+
+			CarShopController.newAccount("owner",  "owner", cs);
+			CarShopController.newAccount("Tire-Technician", "Tire-Technician", cs);
+			CarShopController.newAccount("Engine-Technician", "Engine-Technician", cs);
+			CarShopController.newAccount("Transmission-Technician", "Transmission-Technician", cs);
+			CarShopController.newAccount("Electronics-Technician", "Electronics-Technician", cs);
+			CarShopController.newAccount("Fluids-Technician", "Fluids-Technician", cs);
+			
+			//			cs.setOwner(owner); // unnecessary step
 			// a business exists in the system
 			Business bs = new Business("car-shop", "montreal", "5141234567", "xyz@mcgill.ca", cs);// create a new object
 //			cs.setBusiness(bs); // unnecessary step
 			// create a customer in the system
 			cs.addCustomer("customer1", "12345678");
 			
-			createTechniciansWithGarages(cs);
+//			createTechniciansWithGarages(cs);
 			setUpBusinessHours(cs);
 			
 			// adds the one holiday
