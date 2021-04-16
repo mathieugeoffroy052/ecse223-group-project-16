@@ -31,7 +31,7 @@ public class TechnicianView extends JPanel {
 	private DefaultTableModel modelTable;
 	private JComboBox comboBox;
 	private static List<TOBusinessHour> garageBusinessHours = CarShopController.getGarageTOBusinessHours();
-;
+	private JLabel labelNotification;
 	
 	/**
 	 * Launch the application.
@@ -62,6 +62,11 @@ public class TechnicianView extends JPanel {
 	 */
 	private void initializeTechnicianView() {
 		
+		
+		labelNotification = new JLabel();
+		labelNotification.setBounds(206, 775, 300, 29);
+		add(labelNotification);
+		
 		JLabel lblNewLabel = new JLabel("My Garage");
 		lblNewLabel.setBounds(60, 39, 65, 16);
 		add(lblNewLabel);
@@ -81,8 +86,7 @@ public class TechnicianView extends JPanel {
 				return false;
 			}
 		};	
-		
-		
+			
 		scheduleModelTable.addColumn("");
 		scheduleModelTable.addColumn("Monday");
 		scheduleModelTable.addColumn("Tuesday");
@@ -113,6 +117,8 @@ public class TechnicianView extends JPanel {
 		comboBox.setBounds(60, 349, 130, 27);
 		add(comboBox);
 		
+		
+		//changing garage opening hours
 		JButton btnNewButton = new JButton("Confirm Changes");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -189,7 +195,7 @@ public class TechnicianView extends JPanel {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-
+				labelNotification.setText("");
 				txtSetNewOpening.setText("");
 				txtNewClosingTime.setText("");
 			}
@@ -235,12 +241,12 @@ public class TechnicianView extends JPanel {
 					CarShopController.setTechnicianPassword(username, password, CarShopApplication.getCarShop());
 					txtNewPassword.setText("");
 				} catch (InvalidInputException e1) {
-					// TODO Auto-generated catch block
 					error = e1.getMessage();
 				}
 				if(error != null) {
 					errorMessage.setText(error);
 				}else {
+					labelNotification.setText("Password changed successfully");
 					//change successful. might add a notification for the technician 
 					//saying the pw change was successful
 				}
@@ -304,15 +310,13 @@ public class TechnicianView extends JPanel {
 			
 			modelTable.addRow(r);
 		}			
-
-		
 		JScrollPane scrollTable = new JScrollPane(table);
 		scrollTable.setBounds(60, 460 ,572, 240);
 		scrollTable.setVisible(true);
 		add(scrollTable);
 
 		
-		errorMessage = new JLabel("error messages will appear here!");
+		errorMessage = new JLabel("");
 		errorMessage.setForeground(Color.RED);
 		errorMessage.setBounds(60, 250, 572, 29 );
 		add(errorMessage);
