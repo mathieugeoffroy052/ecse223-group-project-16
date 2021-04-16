@@ -2774,8 +2774,56 @@ public class CarShopController {
 		return toBusinessHours;
 	}
 	
+	//returns the transfer objects for every appointment in a technician's garage
+	//the technician must be logged in for this to work
+	public static List<TOAppointment> getGarageAppointments(){
+		String username = CarShopApplication.getUser().getUsername();
+		CarShop cs = CarShopApplication.getCarShop();
+		Technician technician = findTechnician(username, cs);
+		Garage technicianGarage = technician.getGarage();
+		List<Appointment> csAppointments = cs.getAppointments();
+		List<TOAppointment> toGarageAppointments = new ArrayList<>();
+		
+		
+		for (Appointment appointment : csAppointments) {
+			String customerName = appointment.getCustomer().getUsername();
+			
+			List<ServiceBooking> serviceBookings = appointment.getServiceBookings();
+			List<TOServiceBooking> toServiceBookings = new ArrayList<>();
+			
+			for (ServiceBooking serviceBooking : serviceBookings) {
+				String name = serviceBooking.getService().getName();
+				int duration = serviceBooking.getService().getDuration();
+				Garage garage = serviceBooking.getService().getGarage();
+				String garageName = garage.getTechnician().getType().name();
+				if(garage.equals(technicianGarage)) {
+					
+					TOGarage toGarage = new TOGarage(garageName);
+					TOService toService = new TOService(name, duration, toGarage);
+					
+					Date startDate = serviceBooking.getTimeSlot().getStartDate();
+					Date endDate = serviceBooking.getTimeSlot().getEndDate();
+					Time startTime = serviceBooking.getTimeSlot().getStartTime();
+					Time endTime = serviceBooking.getTimeSlot().getEndTime();
+					String specificServiceName = serviceBooking.getService().getName();
+					
+					TOTimeSlot toTimeSlot = new TOTimeSlot(startDate, startTime, endDate, endTime);
+					
+					TOServiceBooking toServiceBooking = new TOServiceBooking(toService, toTimeSlot);
+					toServiceBookings.add(toServiceBooking);
+					
+					String status = appointment.getAppointmentStatusFullName();
+					
+					TOAppointment toAppointment = new TOAppointment(customerName, specificServiceName, startDate, startTime, status, toServiceBookings);
+					toGarageAppointments.add(toAppointment);
+				}
+			}
+		}
+		return toGarageAppointments;
+	}
+	
 	//this method does not work yet!
-	public static void setGarageBusinessHours(String day, String start, String end, CarShop cs) throws InvalidInputException {
+	public static void setGarageBusinessHours(String day, String newStart, String newEnd, String oldStart, String oldEnd, CarShop cs) throws InvalidInputException {
 		Technician technician = findTechnician(CarShopApplication.getCurrentUser(), cs);
 		Garage garage = technician.getGarage();
 		DayOfWeek weekday = null;
@@ -2796,9 +2844,19 @@ public class CarShopController {
 		}
 		//need to remove the old business hour, but this is becoming a bit of an issue
 		//TODO
-		garage.removeBusinessHour(null);
-		BusinessHour newBusinessHour = new BusinessHour(weekday, stringToTime(start), stringToTime(end), cs);
-		garage.addBusinessHour(newBusinessHour);
+		//i think this works correctly, but unsure...
+		Time newGarageStart = stringToTime(newStart);
+		Time newGarageEnd = stringToTime(newEnd);
+		BusinessHour newBusinessHour = new BusinessHour(weekday, newGarageStart, newGarageEnd, cs);
+		List<BusinessHour> garageHours = garage.getBusinessHours();
+		for(int i=0; i< garageHours.size();i++) {
+			if(garageHours.get(i).getStartTime().toString().equals(oldStart) && garageHours.get(i).getEndTime().toString().equals(oldStart)) {
+				garage.removeBusinessHour(garageHours.get(i));
+				garage.addOrMoveBusinessHourAt(newBusinessHour, i);
+			}
+		}
+//		BusinessHour newBusinessHour = new BusinessHour(weekday, stringToTime(start), stringToTime(end), cs);
+//		garage.addBusinessHour(newBusinessHour);
 		try {
 			CarShopPersistence.save(cs);
 		}catch(RuntimeException e) {
