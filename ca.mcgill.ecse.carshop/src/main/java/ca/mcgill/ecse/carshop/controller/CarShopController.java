@@ -2726,6 +2726,7 @@ public class CarShopController {
 		return toAppointments;
 	}
 	
+
 	public static String getBusinessName() {
 		String name = CarShopApplication.getCarShop().getBusiness().getName();
 		return name;
@@ -2747,4 +2748,62 @@ public class CarShopController {
 	}
 	
 	
+
+	public static void setTechnicianPassword(String username, String password, CarShop cs) throws InvalidInputException {
+		Technician technician = findTechnician(username, cs);
+		technician.setPassword(password);
+		//persistence
+		try {
+			CarShopPersistence.save(cs);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
+	}
+	
+	
+	public static List<TOBusinessHour> getGarageTOBusinessHours() {
+		String username = CarShopApplication.getUser().getUsername();
+		Technician technician = findTechnician(username, CarShopApplication.getCarShop());
+		List<BusinessHour> businessHours = technician.getGarage().getBusinessHours();
+		List<TOBusinessHour> toBusinessHours = new ArrayList<>();
+		for (BusinessHour businessHour : businessHours) {
+			TOBusinessHour toBusinessHour = new TOBusinessHour(businessHour.getDayOfWeek().name(),
+					businessHour.getStartTime(), businessHour.getEndTime());
+			toBusinessHours.add(toBusinessHour);
+		}		
+		return toBusinessHours;
+	}
+	
+	//this method does not work yet!
+	public static void setGarageBusinessHours(String day, String start, String end, CarShop cs) throws InvalidInputException {
+		Technician technician = findTechnician(CarShopApplication.getCurrentUser(), cs);
+		Garage garage = technician.getGarage();
+		DayOfWeek weekday = null;
+		if(day.equals("Monday")) {
+			weekday = DayOfWeek.Monday;
+		}
+		if(day.equals("Tuesday")) {
+			weekday = DayOfWeek.Tuesday;
+		}
+		if(day.equals("Wednesday")) {
+			weekday = DayOfWeek.Wednesday;
+		}
+		if(day.equals("Thursday")) {
+			weekday = DayOfWeek.Thursday;
+		}
+		if(day.equals("Friday")) {
+			weekday = DayOfWeek.Friday;
+		}
+		//need to remove the old business hour, but this is becoming a bit of an issue
+		//TODO
+		garage.removeBusinessHour(null);
+		BusinessHour newBusinessHour = new BusinessHour(weekday, stringToTime(start), stringToTime(end), cs);
+		garage.addBusinessHour(newBusinessHour);
+		try {
+			CarShopPersistence.save(cs);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
+	}
+
 }
