@@ -210,6 +210,10 @@ public class CarShopApplication {
 			CarShopController.newAccount("Electronics-Technician", "Electronics-Technician", cs);
 			CarShopController.newAccount("Fluids-Technician", "Fluids-Technician", cs);
 			
+			for(Technician t : cs.getTechnicians()) {
+				t.setGarage(new Garage(cs, t));// create a new object
+			}
+			
 			//			cs.setOwner(owner); // unnecessary step
 			// a business exists in the system
 			Business bs = new Business("car-shop", "montreal", "5141234567", "xyz@mcgill.ca", cs);// create a new object

@@ -1609,14 +1609,12 @@ public class CarShopController {
 			int toUse = CarShopController.getTechnician("Tire-Technician", cs);
 			if(toUse == -1) {
 				technician = new Technician(username, password, TechnicianType.Tire, cs);
-				new Garage(cs, technician);
 			}
 		}
 		else if(username.equals("Engine-Technician") && password.equals("Engine-Technician")) {
 			int toUse = CarShopController.getTechnician("Engine-Technician", cs);
 			if(toUse == -1) {
 				technician = new Technician(username, password, TechnicianType.Engine, cs);
-				new Garage(cs, technician);
 
 			}		
 		}
@@ -1624,7 +1622,6 @@ public class CarShopController {
 			int toUse = CarShopController.getTechnician("Transmission-Technician", cs);
 			if(toUse == -1) {
 				technician = new Technician(username, password, TechnicianType.Transmission, cs);
-				new Garage(cs, technician);
 
 			}
 		}
@@ -1632,7 +1629,6 @@ public class CarShopController {
 			int toUse = CarShopController.getTechnician("Electronics-Technician", cs);
 			if(toUse == -1) {
 				technician = new Technician(username, password, TechnicianType.Electronics, cs);
-				new Garage(cs, technician);
 
 			}
 		}
@@ -1640,7 +1636,6 @@ public class CarShopController {
 			int toUse = CarShopController.getTechnician("Fluids-Technician", cs);
 			if(toUse == -1) {
 				technician = new Technician(username, password, TechnicianType.Fluids, cs);
-				new Garage(cs, technician);
 			}
 		}
 		try {
@@ -2729,6 +2724,7 @@ public class CarShopController {
 		return toAppointments;
 	}
 	
+
 	public static String getBusinessName() {
 		String name = CarShopApplication.getCarShop().getBusiness().getName();
 		return name;
@@ -2825,4 +2821,120 @@ public class CarShopController {
 	}
 	
 	
+
+	public static void setTechnicianPassword(String username, String password, CarShop cs) throws InvalidInputException {
+		Technician technician = findTechnician(username, cs);
+		technician.setPassword(password);
+		//persistence
+		try {
+			CarShopPersistence.save(cs);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
+	}
+	
+	
+	public static List<TOBusinessHour> getGarageTOBusinessHours() {
+		String username = CarShopApplication.getUser().getUsername();
+		Technician technician = findTechnician(username, CarShopApplication.getCarShop());
+		List<BusinessHour> businessHours = technician.getGarage().getBusinessHours();
+		List<TOBusinessHour> toBusinessHours = new ArrayList<>();
+		for (BusinessHour businessHour : businessHours) {
+			TOBusinessHour toBusinessHour = new TOBusinessHour(businessHour.getDayOfWeek().name(),
+					businessHour.getStartTime(), businessHour.getEndTime());
+			toBusinessHours.add(toBusinessHour);
+		}		
+		return toBusinessHours;
+	}
+	
+	//returns the transfer objects for every appointment in a technician's garage
+	//the technician must be logged in for this to work
+	public static List<TOAppointment> getGarageAppointments(){
+		String username = CarShopApplication.getUser().getUsername();
+		CarShop cs = CarShopApplication.getCarShop();
+		Technician technician = findTechnician(username, cs);
+		Garage technicianGarage = technician.getGarage();
+		List<Appointment> csAppointments = cs.getAppointments();
+		List<TOAppointment> toGarageAppointments = new ArrayList<>();
+		
+		
+		for (Appointment appointment : csAppointments) {
+			String customerName = appointment.getCustomer().getUsername();
+			
+			List<ServiceBooking> serviceBookings = appointment.getServiceBookings();
+			List<TOServiceBooking> toServiceBookings = new ArrayList<>();
+			
+			for (ServiceBooking serviceBooking : serviceBookings) {
+				String name = serviceBooking.getService().getName();
+				int duration = serviceBooking.getService().getDuration();
+				Garage garage = serviceBooking.getService().getGarage();
+				String garageName = garage.getTechnician().getType().name();
+				if(garage.equals(technicianGarage)) {
+					
+					TOGarage toGarage = new TOGarage(garageName);
+					TOService toService = new TOService(name, duration, toGarage);
+					
+					Date startDate = serviceBooking.getTimeSlot().getStartDate();
+					Date endDate = serviceBooking.getTimeSlot().getEndDate();
+					Time startTime = serviceBooking.getTimeSlot().getStartTime();
+					Time endTime = serviceBooking.getTimeSlot().getEndTime();
+					String specificServiceName = serviceBooking.getService().getName();
+					
+					TOTimeSlot toTimeSlot = new TOTimeSlot(startDate, startTime, endDate, endTime);
+					
+					TOServiceBooking toServiceBooking = new TOServiceBooking(toService, toTimeSlot);
+					toServiceBookings.add(toServiceBooking);
+					
+					String status = appointment.getAppointmentStatusFullName();
+					
+					TOAppointment toAppointment = new TOAppointment(customerName, specificServiceName, startDate, startTime, status, toServiceBookings);
+					toGarageAppointments.add(toAppointment);
+				}
+			}
+		}
+		return toGarageAppointments;
+	}
+	
+	//this method does not work yet!
+	public static void setGarageBusinessHours(String day, String newStart, String newEnd, String oldStart, String oldEnd, CarShop cs) throws InvalidInputException {
+		Technician technician = findTechnician(CarShopApplication.getCurrentUser(), cs);
+		Garage garage = technician.getGarage();
+		DayOfWeek weekday = null;
+		if(day.equals("Monday")) {
+			weekday = DayOfWeek.Monday;
+		}
+		if(day.equals("Tuesday")) {
+			weekday = DayOfWeek.Tuesday;
+		}
+		if(day.equals("Wednesday")) {
+			weekday = DayOfWeek.Wednesday;
+		}
+		if(day.equals("Thursday")) {
+			weekday = DayOfWeek.Thursday;
+		}
+		if(day.equals("Friday")) {
+			weekday = DayOfWeek.Friday;
+		}
+		//need to remove the old business hour, but this is becoming a bit of an issue
+		//TODO
+		//i think this works correctly, but unsure...
+		Time newGarageStart = stringToTime(newStart);
+		Time newGarageEnd = stringToTime(newEnd);
+		BusinessHour newBusinessHour = new BusinessHour(weekday, newGarageStart, newGarageEnd, cs);
+		List<BusinessHour> garageHours = garage.getBusinessHours();
+		for(int i=0; i< garageHours.size();i++) {
+			if(garageHours.get(i).getStartTime().toString().equals(oldStart) && garageHours.get(i).getEndTime().toString().equals(oldStart)) {
+				garage.removeBusinessHour(garageHours.get(i));
+				garage.addOrMoveBusinessHourAt(newBusinessHour, i);
+			}
+		}
+//		BusinessHour newBusinessHour = new BusinessHour(weekday, stringToTime(start), stringToTime(end), cs);
+//		garage.addBusinessHour(newBusinessHour);
+		try {
+			CarShopPersistence.save(cs);
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
+	}
+
 }
