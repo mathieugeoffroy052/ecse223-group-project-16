@@ -2745,6 +2745,7 @@ public class CarShopController {
 		return toBusinessHours;
 	}
 	
+	//this method does not work yet!
 	public static void setGarageBusinessHours(String day, String start, String end, CarShop cs) throws InvalidInputException {
 		Technician technician = findTechnician(CarShopApplication.getCurrentUser(), cs);
 		Garage garage = technician.getGarage();
