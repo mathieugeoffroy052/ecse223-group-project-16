@@ -1,6 +1,7 @@
 package ca.mcgill.ecse.carshop.view;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
@@ -14,13 +15,17 @@ import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SpinnerDateModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.DateFormatter;
 
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
@@ -103,6 +108,7 @@ public class CustomerView extends JPanel {
 	// Matthew's table
 	private JTable table;
 	private DefaultTableModel modelTable;
+	private JScrollPane scrollTable;
 	
 	// lists
 	private HashMap<Integer, String> appointments;
@@ -113,7 +119,7 @@ public class CustomerView extends JPanel {
 		
 	public CustomerView() {
 		initialize();
-		refreshData();
+		refreshInit();
 
 	}
 
@@ -125,7 +131,7 @@ public class CustomerView extends JPanel {
 		
 		errorMessage = new JLabel("");
 		errorMessage.setForeground(Color.RED);
-		errorMessage.setBounds(6, 648, 400, 16);
+		errorMessage.setBounds(6, 648, 1000, 16);
 		add(errorMessage);
 		
 		bookanApptText = new JLabel("Book an Appointment");
@@ -263,15 +269,15 @@ public class CustomerView extends JPanel {
 		deleteAccountButton.setBounds(916, 250, 136, 29);
 		add(deleteAccountButton);
 		
-		plus1 = new JButton("+");
+		plus1 = new JButton("Log");
 		plus1.setBounds(221, 68, 50, 29);
 		add(plus1);
 		
-		plus2 = new JButton("+");
+		plus2 = new JButton("Log");
 		plus2.setBounds(221, 336, 50, 29);
 		add(plus2);
 		
-		plus3 = new JButton("+");
+		plus3 = new JButton("Log");
 		plus3.setBounds(221, 365, 50, 29);
 		add(plus3);
 		
@@ -285,26 +291,13 @@ public class CustomerView extends JPanel {
 				return false;
 			}
 		};
-		modelTable.addColumn("Service Booking");
+		modelTable.addColumn("ServiceBooking");
 		modelTable.addColumn("Start Date");
 		modelTable.addColumn("Start Time");
-		modelTable.addColumn("End Date");
-		modelTable.addColumn("End Time");
+		modelTable.addColumn("Status");
 		table.setModel(modelTable);
 		
-		for(int i = 0; i< 20;i++) {
-			//TODO
-			//here is where we would get the TO information about the appointments 
-			//and insert them into the table
-			Vector<String> r = new Vector<String>();
-			r.addElement("---");		//service booking
-			r.addElement("---");		//start date
-			r.addElement("---");		//start time
-			r.addElement("---");		//end date
-			r.addElement("---");		//end time
-			modelTable.addRow(r);
-		}
-		JScrollPane scrollTable = new JScrollPane(table);
+		scrollTable = new JScrollPane(table);
 		scrollTable.setBounds(700, 336 ,464, 268);
 		scrollTable.setVisible(true);
 		add(scrollTable);
@@ -472,6 +465,18 @@ public class CustomerView extends JPanel {
 			name3.addItem(sb.getName());	// not sure if this one is the right box
 
 		}
+		
+
+		for(TOAppointment TOApp: TOAppointments) {
+			
+			Vector<String> r = new Vector<String>();
+			r.addElement(TOApp.getServiceName());
+			r.addElement(TOApp.getDate().toString());
+			r.addElement(TOApp.getStartTime().toString());
+			r.addElement(TOApp.getStatus());
+			
+			modelTable.addRow(r);
+		}
 	}
 	
 	
@@ -482,11 +487,11 @@ public class CustomerView extends JPanel {
 			
 			createApptEnterStartTimeTextField.setText("");
 			updateApptEnterNewTimeTextField.setText("");
-			
-			name1.removeAll();
-			name2.removeAll();
-			name3.removeAll();
-			name4.removeAll();
+
+			name1.removeAllItems();
+			name2.removeAllItems();
+			name3.removeAllItems();
+			name4.removeAllItems();
 			
 			name1.addItem("Select...");
 			name2.addItem("Select...");
@@ -524,11 +529,26 @@ public class CustomerView extends JPanel {
 				name3.addItem(sb.getName());	// not sure if this one is the right box
 
 			}
+			
+			for(int i = 0; i < modelTable.getRowCount(); i++) {
+				modelTable.removeRow(i);
+			}
+			
+			for(TOAppointment TOApp: TOAppointments) {
+				
+				Vector<String> r = new Vector<String>();
+				r.addElement(TOApp.getServiceName());
+				r.addElement(TOApp.getDate().toString());
+				r.addElement(TOApp.getStartTime().toString());
+				r.addElement(TOApp.getStatus());
+				modelTable.addRow(r);
+			}		
 		}
 	}
 	
-	
-	
+
+
+
 	private void plus1ActionPerformed(ActionEvent evt) throws Exception {
 		error = "";
 		String apptName = name1.getItemAt(name1.getSelectedIndex());
@@ -637,41 +657,31 @@ public class CustomerView extends JPanel {
 	private void confirmButtonActionPerformed(ActionEvent evt) throws Exception {
 		error = "";
 		
-		// call the controller
-//		try {
-			// TODO replace error
-			List<String> list = list1.getSelectedValuesList();
-			String optServices = "";
-			for(String s : list) {
-				optServices += s+",";
-			}
-			String customer = CarShopApplication.getCurrentUser();
-			String sbName = name1.getItemAt(name1.getSelectedIndex());
-			String currentDateAndTime = CarShopApplication.getSystemDateTime();
-			String monthString = String.valueOf(createApptDateText.getMonth()+1);
-			if((createApptDateText.getMonth()+1)<10) monthString = "0"+(createApptDateText.getMonth()+1);
-			String dayString = String.valueOf(createApptDateText.getDay());
-			if(createApptDateText.getDay()<10) dayString = "0"+createApptDateText.getDay();
-			String dateString = createApptDateText.getYear()+"-"+monthString+"-"+dayString;
-			String time = createApptEnterStartTimeTextField.getText();
-			if(createApptEnterStartTimeTextField.getText().charAt(1)==':') {
-				time = "0"+createApptEnterStartTimeTextField.getText();
-			}
-			System.out.println(CarShopApplication.getCarShop().getAppointments().size());
-			try {
-			CarShopController.createAppointmentAt(customer, sbName, optServices, dateString, time, currentDateAndTime);
-			} catch(Exception e) {
-				error = e.getMessage();
-				errorMessage.setText(error);
-				errorMessage.setForeground(Color.red);
-			}
-			System.out.println(CarShopApplication.getCarShop().getAppointments().size());
+
+		List<String> list = list1.getSelectedValuesList();
+		String optServices = "";
+		for(String s : list) {
+			optServices += s+",";
+		}
+		String customer = CarShopApplication.getCurrentUser();
+		String sbName = name1.getItemAt(name1.getSelectedIndex());
+		String currentDateAndTime = CarShopApplication.getSystemDateTime();
+		String monthString = String.valueOf(createApptDateText.getMonth()+1);
+		if((createApptDateText.getMonth()+1)<10) monthString = "0"+(createApptDateText.getMonth()+1);
+		String dayString = String.valueOf(createApptDateText.getDay());
+		if(createApptDateText.getDay()<10) dayString = "0"+createApptDateText.getDay();
+		String dateString = createApptDateText.getYear()+"-"+monthString+"-"+dayString;
+		String time = createApptEnterStartTimeTextField.getText();
+		if(createApptEnterStartTimeTextField.getText().charAt(1)==':') {
+			time = "0"+createApptEnterStartTimeTextField.getText();
+		}
+		try {
+		CarShopController.createAppointmentAt(customer, sbName, optServices, dateString, time, currentDateAndTime);
+		} catch(Exception e) {
+			error = e.getMessage();
+			errorMessage.setText(error);
+		}
 			
-//		} catch (InvalidInputException e) {
-//			error = e.getMessage();
-//			errorMessage.setText(error);
-//		}
-		
 		// update visuals
 		refreshData();
 	}
@@ -754,7 +764,11 @@ public class CustomerView extends JPanel {
 				
 			}
 							
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			error += e.getMessage();
+			errorMessage.setText(error);
+
+		}
 		
 		refreshData();
 	}
@@ -763,33 +777,38 @@ public class CustomerView extends JPanel {
 
 	private void cancelButtonActionPerformed(ActionEvent evt) {
 		error = "";
-		List<String> list = list1.getSelectedValuesList();
-		String optServices = "";
-		for(String s : list) {
-			optServices += s+",";
-		}
+		String username = CarShopApplication.getCurrentUser();
+
 		try {
 			String currentDateAndTime = CarShopApplication.getSystemDateTime();
-			String servName = name4.getItemAt(name2.getSelectedIndex());
+			String servName = name4.getItemAt(name4.getSelectedIndex());
 			TOAppointment prevTOAppt = null;
 			for(TOAppointment toa : TOAppointments) {
 				if(toa.getServiceName().equals(servName)) {
 					prevTOAppt = toa;
 				}
 			}
-			CarShopController.cancelAppointmentCase1(prevTOAppt, optServices, currentDateAndTime);
+			CarShopController.cancelAppointmentCase1(prevTOAppt, username, currentDateAndTime);
 		} catch (Exception e) {
 			error += e.getMessage();
+			errorMessage.setText(error);
 		}
 		
-		// update visuals
 		refreshData();
 	}
 	
 
 	private void deleteAccountButtonActionPerformed(ActionEvent evt) {
 		// TODO 
-		// make a pop-up come up
+//		JFrame addWeeklyHours = new JFrame();
+//		add(addWeeklyHours);
+//		
+//		GroupLayout layout = new GroupLayout(addWeeklyHours.getContentPane());
+//		addWeeklyHours.getContentPane().setLayout(layout);
+//		layout.setAutoCreateGaps(true);
+//		layout.setAutoCreateContainerGaps(true);
+		new DeleteAccountPopUp();
+		
 		
 	}
 }
