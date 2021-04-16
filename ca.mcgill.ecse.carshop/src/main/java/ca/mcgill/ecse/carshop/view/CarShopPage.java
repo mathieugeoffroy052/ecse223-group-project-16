@@ -299,20 +299,6 @@ public class CarShopPage extends JFrame {
 	}
 
 
-	//initialize business info
-	private void initComponentsOwnerViewBusinessInfo() {
-
-	}
-
-	//initialize services
-	private void initComponentsOwnerViewServices() {
-
-	}
-
-	//initialize appointments
-	private void initComponentsOwnerViewAppointments() {
-
-	}
 
 
 }
