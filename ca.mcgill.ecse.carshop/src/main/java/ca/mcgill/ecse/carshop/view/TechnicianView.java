@@ -132,39 +132,70 @@ public class TechnicianView extends JPanel {
 					//if one of the text fields is empty it freaks out D:
 					openingTime = CarShopController.stringToTime(txtSetNewOpening.getText());
 					closingTime = CarShopController.stringToTime(txtNewClosingTime.getText());
+					if(openingTime == null||(closingTime == null||openingTime.equals("") || closingTime.equals(""))) {
+						throw new InvalidInputException("Please fill in both fields");
+					}
 				} catch (InvalidInputException e1) {
-					// TODO Auto-generated catch block
 					error = e1.getMessage();
 				}
 				if(error!=null) {
 					errorMessage.setText(error);
 				}
-				String day = (String) comboBox.getSelectedItem();
-				
-				int columnToChange = 0;
-				if(day.equals("Monday")) {
-					columnToChange = 1;
-				}
-				if(day.equals("Tuesday")) {
-					columnToChange = 2;
-				}
-				if(day.equals("Wednesday")) {
-					columnToChange = 3;
-				}
-				if(day.equals("Thursday")) {
-					columnToChange = 4;
-				}
-				if(day.equals("Friday")) {
-					columnToChange = 5;
-				}
-				int rowToChange1 = 0;
-				int rowToChange2 = 0;
-				if(!openingTime.equals("")) {
-					rowToChange1 = 0;
-					scheduleModelTable.setValueAt(openingTime,rowToChange1,columnToChange);
+				if(!(openingTime == null||(closingTime == null||openingTime.equals("") || closingTime.equals("")))) {
+//					boolean inDateTimeRange = CarShopController.inDate
+					String day = (String) comboBox.getSelectedItem();
+					
+					int columnToChange = 0;
+					if(day.equals("Monday")) {
+						columnToChange = 1;
+					}
+					if(day.equals("Tuesday")) {
+						columnToChange = 2;
+					}
+					if(day.equals("Wednesday")) {
+						columnToChange = 3;
+					}
+					if(day.equals("Thursday")) {
+						columnToChange = 4;
+					}
+					if(day.equals("Friday")) {
+						columnToChange = 5;
+					}
+					int rowToChange1 = 0;
+					int rowToChange2 = 0;
+					if(!openingTime.equals("")) {
+						rowToChange1 = 0;
+						scheduleModelTable.setValueAt(openingTime,rowToChange1,columnToChange);
+						try {
+							error = "";
+							oldOpening = CarShopController.stringToTime(scheduleModelTable.getValueAt(rowToChange1, columnToChange).toString());
+						} catch (InvalidInputException e1) {
+							// TODO Auto-generated catch block
+							error = e1.getMessage();
+						}
+						if(error!=null) {
+							errorMessage.setText(error);
+						}
+					}
+					if(!closingTime.toString().equals("")) {
+						rowToChange2 = 1;
+						scheduleModelTable.setValueAt(closingTime, rowToChange2, columnToChange);
+						try {
+							error = "";
+							oldClosing = CarShopController.stringToTime(scheduleModelTable.getValueAt(rowToChange2, columnToChange).toString());
+						} catch (InvalidInputException e1) {
+							error = e1.getMessage();
+						}
+						if(error!=null) {
+							errorMessage.setText(error);
+						}
+					}
+					
+					
 					try {
 						error = "";
-						oldOpening = CarShopController.stringToTime(scheduleModelTable.getValueAt(rowToChange1, columnToChange).toString());
+						//it doesnt ever check that the garage business hours are inside the business hours of the car shop...
+						CarShopController.setGarageBusinessHours(day, openingTime.toString(), closingTime.toString(), oldOpening.toString(), oldClosing.toString(), CarShopApplication.getCarShop());
 					} catch (InvalidInputException e1) {
 						// TODO Auto-generated catch block
 						error = e1.getMessage();
@@ -172,28 +203,6 @@ public class TechnicianView extends JPanel {
 					if(error!=null) {
 						errorMessage.setText(error);
 					}
-				}
-				if(!closingTime.toString().equals("")) {
-					rowToChange2 = 1;
-					scheduleModelTable.setValueAt(closingTime, rowToChange2, columnToChange);
-					try {
-						error = "";
-						oldClosing = CarShopController.stringToTime(scheduleModelTable.getValueAt(rowToChange2, columnToChange).toString());
-					} catch (InvalidInputException e1) {
-						// TODO Auto-generated catch block
-						error = e1.getMessage();
-					}
-					if(error!=null) {
-						errorMessage.setText(error);
-					}
-				}
-				
-				try {
-					//it doesnt ever check that the garage business hours are inside the business hours of the car shop...
-					CarShopController.setGarageBusinessHours(day, openingTime.toString(), closingTime.toString(), oldOpening.toString(), oldClosing.toString(), CarShopApplication.getCarShop());
-				} catch (InvalidInputException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
 				}
 				labelNotification.setText("");
 				txtSetNewOpening.setText("");
@@ -246,15 +255,15 @@ public class TechnicianView extends JPanel {
 				if(error != null) {
 					errorMessage.setText(error);
 				}else {
-					labelNotification.setText("Password changed successfully");
-					//change successful. might add a notification for the technician 
-					//saying the pw change was successful
+					//change was successful. send notification
+					labelNotification.setText("Password changed successfully");	
 				}
 			}
 		});
 		btnNewButton_1.setBounds(379, 750, 130, 29);
 		add(btnNewButton_1);
 		
+		//separators
 		JSeparator separator = new JSeparator();
 		separator.setBounds(60, 417, 572, 12);
 		add(separator);
@@ -267,10 +276,12 @@ public class TechnicianView extends JPanel {
 		separator_1_1.setBounds(60, 288, 572, 12);
 		add(separator_1_1);
 		
+		//returns the username of the current user, which is also the string for technician type
 		JLabel lblNewLabel_4 = new JLabel(CarShopApplication.getCurrentUser());
 		lblNewLabel_4.setBounds(60, 77, 166, 16);
 		add(lblNewLabel_4);
 		
+		//new garage hours labels
 		JLabel lblNewLabel_5 = new JLabel("New Opening Time");
 		lblNewLabel_5.setBounds(215, 353, 119, 16);
 		add(lblNewLabel_5);
@@ -279,6 +290,7 @@ public class TechnicianView extends JPanel {
 		lblNewLabel_6.setBounds(215, 384, 140, 16);
 		add(lblNewLabel_6);
 		
+		//new password label
 		JLabel lblNewLabel_7 = new JLabel("New Password");
 		lblNewLabel_7.setBounds(60, 750, 97, 16);
 		add(lblNewLabel_7);
@@ -315,7 +327,7 @@ public class TechnicianView extends JPanel {
 		scrollTable.setVisible(true);
 		add(scrollTable);
 
-		
+		//initialize the error message with an empty message
 		errorMessage = new JLabel("");
 		errorMessage.setForeground(Color.RED);
 		errorMessage.setBounds(60, 250, 572, 29 );

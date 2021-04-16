@@ -2815,6 +2815,7 @@ public class CarShopController {
 		}
 		//need to remove the old business hour, but this is becoming a bit of an issue
 		//TODO
+		//i think this works correctly, but unsure...
 		Time newGarageStart = stringToTime(newStart);
 		Time newGarageEnd = stringToTime(newEnd);
 		BusinessHour newBusinessHour = new BusinessHour(weekday, newGarageStart, newGarageEnd, cs);
