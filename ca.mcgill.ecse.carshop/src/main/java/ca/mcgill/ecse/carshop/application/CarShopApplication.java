@@ -203,86 +203,135 @@ public class CarShopApplication {
 //			Technician technician4 = new Technician("Electronics-Technician", "Electronics-Technician", TechnicianType.Electronics, cs);
 //			Technician technician5 = new Technician("Fluids-Technician", "Fluids-Technician", TechnicianType.Fluids, cs);
 
-			CarShopController.newAccount("owner",  "owner", cs);
-			CarShopController.newAccount("Tire-Technician", "Tire-Technician", cs);
-			CarShopController.newAccount("Engine-Technician", "Engine-Technician", cs);
-			CarShopController.newAccount("Transmission-Technician", "Transmission-Technician", cs);
-			CarShopController.newAccount("Electronics-Technician", "Electronics-Technician", cs);
-			CarShopController.newAccount("Fluids-Technician", "Fluids-Technician", cs);
-			
-			for(Technician t : cs.getTechnicians()) {
-				t.setGarage(new Garage(cs, t));// create a new object
+			if(cs.getOwner() == null) {
+				CarShopController.newAccount("owner",  "owner", cs);
+//				CarShopController.signUpUser("owner", "owner", AccountType.Owner);
 			}
+//			System.out.println(cs.getOwner().getUsername());
+//			System.out.println(cs.getOwner().getPassword());
+			List<Technician> technicians = cs.getTechnicians();
 			
-			//			cs.setOwner(owner); // unnecessary step
-			// a business exists in the system
-			Business bs = new Business("car-shop", "montreal", "5141234567", "xyz@mcgill.ca", cs);// create a new object
-//			cs.setBusiness(bs); // unnecessary step
-			// create a customer in the system
-			cs.addCustomer("customer1", "12345678");
-			
-//			createTechniciansWithGarages(cs);
-			setUpBusinessHours(cs);
-			
-			// adds the one holiday
-			Date startDate = CarShopController.stringToDate("2021-04-18"); // dateFormat.parse(columns.get("startDate"));
-			// uses method in the controller
-			Date endDate = CarShopController.stringToDate("2021-12-18"); // dateFormat.parse(columns.get("endDate"));
-			// converts from string to time with method in the controller
-			Time startTime = CarShopController.stringToTime("10:00"); // (Time)
-			// timeFormat.parse(columns.get("startTime"));
-			Time endTime = CarShopController.stringToTime("23:59"); // (Time)
-			// timeFormat.parse(columns.get("endtime"));
-			bs.addHoliday(new TimeSlot(startDate, startTime, endDate, endTime, cs));
-			
-			
-			addSpecificTimeSlot("vacation","2021-04-14","12:00","2021-04-16","13:00",cs);
-			
-			// the following services exist ...
-			int toPut1 = cs.getTechnicianWithString("tire-change");
-			cs.addBookableService(new Service("tire-change", cs, 10, // create a new object
-					cs.getTechnician(toPut1).getGarage()));
-			
-			int toPut2 = cs.getTechnicianWithString("transmission-check");
-			cs.addBookableService(new Service("transmission-check", cs, 75, // create a new object
-					cs.getTechnician(toPut2).getGarage()));
-			
-			int toPut3 = cs.getTechnicianWithString("engine-check");
-			cs.addBookableService(new Service("engine-check", cs, 20, // create a new object
-					cs.getTechnician(toPut3).getGarage()));
-			
-			int toPut4 = cs.getTechnicianWithString("electronics-repair");
-			cs.addBookableService(new Service("electronics-repair", cs, 10, // create a new object
-					cs.getTechnician(toPut4).getGarage()));
-			
-			// the following service combo exists ...
-			accountType = accountType.Owner;
-			OwnerDefinesServiceCombo("owner","transmission-check-combo", "transmission-check", "tire-change,transmission-check,electronics-repair,engine-check","false,true,true,false",cs);
-		
-			accountType = accountType.Customer;
-			String customer = "customer1";
-			String serviceName = "transmission-check-combo";
-			String optServices = "tire-change,electronics-repair,engine-check";
-			String date = "2021-04-08";
-			String timeSlots = "13:00-14:15,14:20-14:30,14:40-14:50,15:00-15:20";
-			String[] ts1 = timeSlots.split(",");
+			if(technicians.size() != 5) {
+				if(technicians.size() == 0) {
+					CarShopController.newAccount("Tire-Technician", "Tire-Technician", cs);
+					CarShopController.newAccount("Engine-Technician", "Engine-Technician", cs);
+					CarShopController.newAccount("Transmission-Technician", "Transmission-Technician", cs);
+					CarShopController.newAccount("Electronics-Technician", "Electronics-Technician", cs);
+					CarShopController.newAccount("Fluids-Technician", "Fluids-Technician", cs);
+				
+					for(Technician t : cs.getTechnicians()) {
+						t.setGarage(new Garage(cs, t));// create a new object
+					}
+				}else {
+					for(Technician t:technicians) {
+						if(CarShopController.findTechnician("Tire-Technician",cs)==null) {
+							CarShopController.newAccount("Tire-Technician", "Tire-Technician", cs);
+						}
+						if(CarShopController.findTechnician("Engine-Technician",cs)==null) {
+							CarShopController.newAccount("Engine-Technician", "Engine-Technician", cs);
+						}
+						if(CarShopController.findTechnician("Transmission-Technician",cs)==null) {
+							CarShopController.newAccount("Transmission-Technician", "Transmission-Technician", cs);
+						}
+						if(CarShopController.findTechnician("Electronics-Technician",cs)==null) {
+							CarShopController.newAccount("Electronics-Technician", "Electronics-Technician", cs);
+						}
+						if(CarShopController.findTechnician("Fluids-Technician",cs)==null) {
+							CarShopController.newAccount("Fluids-Technician", "Fluids-Technician", cs);
+						}
+						for(Technician tech : cs.getTechnicians()) {
+							tech.setGarage(new Garage(cs, t));// create a new object
+						}
 
-			//store the start times in a string
-			String startTimeString = "";
-			for(int i = 0; i < ts1.length; i++) {
-				String timeSlot = ts1[i];
-				//add colon in front of each item except the first one
-				if (i != 0) {
-					startTimeString += ",";
+					}
 				}
-				String[] timeStrings = timeSlot.split("-");
-				startTimeString += timeStrings[0];
 			}
-			//can have more than 2 startTimes
-			CarShopController.CreateAppointmentWithOptServices(customer, serviceName, startTimeString , date, cs, optServices, false);
+			
+			for(Technician t: technicians) {
+				if(t.getGarage() == null) {
+					t.setGarage(new Garage(cs, t));// create a new object
+				}
+			}
+			
+			
+//			Business bs = new Business("", "", "", "", cs);
+			
+			
+
+			
+//			//			cs.setOwner(owner); // unnecessary step
+//			// a business exists in the system
+//			Business bs = new Business("car-shop", "montreal", "5141234567", "xyz@mcgill.ca", cs);// create a new object
+////			cs.setBusiness(bs); // unnecessary step
+//			// create a customer in the system
+//			cs.addCustomer("customer1", "12345678");
+//			
+////			createTechniciansWithGarages(cs);
+//			setUpBusinessHours(cs);
+//			
+//			// adds the one holiday
+//			Date startDate = CarShopController.stringToDate("2021-04-18"); // dateFormat.parse(columns.get("startDate"));
+//			// uses method in the controller
+//			Date endDate = CarShopController.stringToDate("2021-12-18"); // dateFormat.parse(columns.get("endDate"));
+//			// converts from string to time with method in the controller
+//			Time startTime = CarShopController.stringToTime("10:00"); // (Time)
+//			// timeFormat.parse(columns.get("startTime"));
+//			Time endTime = CarShopController.stringToTime("23:59"); // (Time)
+//			// timeFormat.parse(columns.get("endtime"));
+//			bs.addHoliday(new TimeSlot(startDate, startTime, endDate, endTime, cs));
+//			
+//			
+//			addSpecificTimeSlot("vacation","2021-04-14","12:00","2021-04-16","13:00",cs);
+//			
+//			// the following services exist ...
+//			int toPut1 = cs.getTechnicianWithString("tire-change");
+//			cs.addBookableService(new Service("tire-change", cs, 10, // create a new object
+//					cs.getTechnician(toPut1).getGarage()));
+//			
+//			int toPut2 = cs.getTechnicianWithString("transmission-check");
+//			cs.addBookableService(new Service("transmission-check", cs, 75, // create a new object
+//					cs.getTechnician(toPut2).getGarage()));
+//			
+//			int toPut3 = cs.getTechnicianWithString("engine-check");
+//			cs.addBookableService(new Service("engine-check", cs, 20, // create a new object
+//					cs.getTechnician(toPut3).getGarage()));
+//			
+//			int toPut4 = cs.getTechnicianWithString("electronics-repair");
+//			cs.addBookableService(new Service("electronics-repair", cs, 10, // create a new object
+//					cs.getTechnician(toPut4).getGarage()));
+//			
+//			// the following service combo exists ...
+//			accountType = accountType.Owner;
+//			OwnerDefinesServiceCombo("owner","transmission-check-combo", "transmission-check", "tire-change,transmission-check,electronics-repair,engine-check","false,true,true,false",cs);
+//		
+//			accountType = accountType.Customer;
+//			String customer = "customer1";
+//			String serviceName = "transmission-check-combo";
+//			String optServices = "tire-change,electronics-repair,engine-check";
+//			String date = "2021-04-08";
+//			String timeSlots = "13:00-14:15,14:20-14:30,14:40-14:50,15:00-15:20";
+//			String[] ts1 = timeSlots.split(",");
+//
+//			//store the start times in a string
+//			String startTimeString = "";
+//			for(int i = 0; i < ts1.length; i++) {
+//				String timeSlot = ts1[i];
+//				//add colon in front of each item except the first one
+//				if (i != 0) {
+//					startTimeString += ",";
+//				}
+//				String[] timeStrings = timeSlot.split("-");
+//				startTimeString += timeStrings[0];
+//			}
+//			//can have more than 2 startTimes
+//			CarShopController.CreateAppointmentWithOptServices(customer, serviceName, startTimeString , date, cs, optServices, false);
 		
 			return cs;
 		}
+
+
+
+
 
 		// helper methods for set up
 		private static void OwnerDefinesServiceCombo(String owner, String name, String mainservice, 
