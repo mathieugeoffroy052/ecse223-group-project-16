@@ -34,6 +34,7 @@ public class TechnicianView extends JPanel {
 	private JLabel labelNotification;
 	private JButton logout;
 	private CarShopPage csPage;
+	private JButton btnNewButton, btnNewButton_1;
 	
 
 	/**
@@ -54,33 +55,16 @@ public class TechnicianView extends JPanel {
 		logout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				CarShopApplication.logOut();
-//				java.awt.EventQueue.invokeLater(new Runnable() {
-//					public void run() {
-//						new CarShopPage().setVisible(true);
-//					}
-//				});
-//				System.exit(0);
-
-				// initialize the login form
-//				removeAll();
-				setVisible(false);				
-				
-//				setVisible(false);
-
-
-				
-//				setLayout(csPage);
-//				setContentPane(csPage);
-//				revalidate();
-//				repaint(); 
-				System.out.println("logging out"); 
+				btnNewButton.setVisible(false);
+				btnNewButton_1.setVisible(false);
+				labelNotification.setText("You are logged out. Close this window and relaunch the application");
 			}
 		});
 		logout.setBounds(520, 800, 100, 20);
 		add(logout);
 		
 		labelNotification = new JLabel();
-		labelNotification.setBounds(206, 775, 300, 29);
+		labelNotification.setBounds(206, 775, 500, 29);
 		labelNotification.setForeground(Color.green);
 		add(labelNotification);
 		
@@ -136,7 +120,7 @@ public class TechnicianView extends JPanel {
 		
 		
 		//changing garage opening hours
-		JButton btnNewButton = new JButton("Confirm Changes");
+		btnNewButton = new JButton("Confirm Changes");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Time openingTime = null;
@@ -256,7 +240,7 @@ public class TechnicianView extends JPanel {
 		add(txtNewPassword);
 		txtNewPassword.setColumns(10);
 		
-		JButton btnNewButton_1 = new JButton("Confirm Change");
+		btnNewButton_1 = new JButton("Confirm Change");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String username = CarShopApplication.getCurrentUser();
