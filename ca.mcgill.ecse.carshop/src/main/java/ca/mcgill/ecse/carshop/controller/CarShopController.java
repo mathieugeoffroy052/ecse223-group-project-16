@@ -37,12 +37,15 @@ public class CarShopController {
 	public CarShopController() {
 	}
 	
+	@SuppressWarnings("static-access")
 	public static List<TOComboItem> getOptServicesWithName(String apptName) throws Exception {
 
 		List<ComboItem> list1 = CarShopApplication.getCarShop().getBookableService(0).getWithName(apptName).getMainService().getServiceCombo().getServices();
 		List<TOComboItem> toReturn = new ArrayList<>();
+		String mainService = CarShopApplication.getCarShop().getBookableService(0).getWithName(apptName).getMainService().getService().toString();
 		for(ComboItem ci : list1) {
-			toReturn.add(new TOComboItem(ci.getMandatory(),ci.getService().getName()));
+			if(ci.getService().toString().equals(mainService) || ci.getMandatory()==true) continue;
+			else toReturn.add(new TOComboItem(ci.getMandatory(),ci.getService().getName()));
 		}
 		return toReturn;
 
@@ -2741,6 +2744,81 @@ public class CarShopController {
 		String address = CarShopApplication.getCarShop().getBusiness().getAddress();
 		return address;
 	}
+
+	@SuppressWarnings("static-access")
+	public static String getStartTimesWithServices(String apptName, String optServices, String startTime) throws InvalidInputException {
+		try {	// if it's a service then don't mind it
+			CarShopApplication.getCarShop().getBookableService(0).getWithName(apptName).getMainService();
+		} catch(Exception e) {
+			return startTime;
+		}
+		String toReturn = "";
+		String[] toCheck = optServices.split(",");
+		ArrayList<String> startTimes = new ArrayList<>();
+		startTimes.add(startTime);
+		ServiceCombo sb = CarShopApplication.getCarShop().getBookableService(0).getWithName(apptName).getMainService().getServiceCombo();
+		for(int i = 0; i < sb.getServices().size(); i++) {	// add all mandatory services first
+			ComboItem ci = sb.getService(i);
+			if(ci.getMandatory()==true) {
+				String tempStartTime = startTimes.get(startTimes.size()-1);
+				Time startTime1 = stringToTime(tempStartTime);
+				int duration = ci.getService().getDuration();
+				int minutes = duration%60;
+				int hours = duration/60;
+					
+				LocalTime localtime = startTime1.toLocalTime();
+				localtime = localtime.plusMinutes(minutes+10);
+				localtime = localtime.plusHours(hours);
+				Time endTime = Time.valueOf(localtime);
+				String endTimeString = endTime.toString().substring(0, 5);
+				startTimes.add(endTimeString);
+			}
+		}
+		for(int i = 0; i < toCheck.length; i++) {
+			String toExamine = toCheck[i];
+			String tempStartTime = startTimes.get(startTimes.size()-1);
+			Time startTime1 = stringToTime(tempStartTime);
+			int duration = CarShopApplication.getCarShop().getBookableService(0).getWithName(toExamine).getDuration();
+			int minutes = duration%60;
+			int hours = duration/60;
+				
+			LocalTime localtime = startTime1.toLocalTime();
+			localtime = localtime.plusMinutes(minutes+10);
+			localtime = localtime.plusHours(hours);
+			Time endTime = Time.valueOf(localtime);
+			String endTimeString = endTime.toString().substring(0, 5);
+			startTimes.add(endTimeString);
+		}
+		for(int i = 0; i < startTimes.size()-1; i++) {
+			toReturn+=startTimes.get(i)+",";
+		}
+		return toReturn;
+	}
+
+	public static void updateAppointmentCase1(String username, TOAppointment prevServName, String serviceName,
+			String timeOfChange) throws InvalidInputException {
+		Appointment toPassIn = findAppointment(prevServName);
+		changeServiceAt(toPassIn, username, serviceName, timeOfChange);
+	}
+
+	public static void updateAppointmentCase2(String username, TOAppointment prevTOAppt, String dateString, String time,
+			String timeOfChange) throws InvalidInputException {
+		Appointment toPassIn = findAppointment(prevTOAppt);
+		CarShopController.updateDateAndTimeAt(toPassIn, username, dateString, time, timeOfChange);
+		
+	}
+
+	public static void updateAppointmentCase3(String username, TOAppointment prevTOAppt, String optServices,
+			String time, String timeOfChange) throws InvalidInputException {
+		Appointment toPassIn = findAppointment(prevTOAppt);
+		CarShopController.addOptServiceAt(toPassIn, username, optServices, time, timeOfChange);
+		
+	}
+
+	public static void cancelAppointmentCase1(TOAppointment prevTOAppt, String customer, String currentDateAndTime) throws InvalidInputException {
+		Appointment toPassIn = findAppointment(prevTOAppt);
+		CarShopController.cancelAppointmentAt(toPassIn, customer, currentDateAndTime);
+	}
 	
 	
 
@@ -2859,6 +2937,8 @@ public class CarShopController {
 		}
 	}
 	
+
+
 	public static List<TOCarshopService> getCarshopServices() {
 		List<TOCarshopService> toReturn = new ArrayList<>();
 		CarShop carShop = CarShopApplication.getCarShop();
@@ -2908,5 +2988,95 @@ public class CarShopController {
 		}
 		return toReturn;
 	}
+
+	public static void changeGarageBusinessHour(String day, String startTime, String endTime, String type, CarShop cs) throws InvalidInputException {
+
+
+		DayOfWeek dayOfWeek = CarShopController.getWeekDay(day);
+		int toCheck = 0;
+		List<BusinessHour> businessHours = cs.getBusiness().getBusinessHours();
+		for(int i=0; i<businessHours.size();i++) {
+			BusinessHour bh = businessHours.get(i);
+			if(bh.getDayOfWeek().toString().equals(day)) {
+				if(bh.getEndTime().before(stringToTime(endTime))) {
+					throw new IllegalArgumentException("Garage opening hours must be within weekly business hours");
+				}
+				if(bh.getStartTime().after(stringToTime(startTime))) {
+					throw new IllegalArgumentException("Garage opening hours must be within weekly business hours");
+				}
+				if(stringToTime(startTime).after(stringToTime(endTime))){
+					throw new IllegalArgumentException("Opening time must be before end time");
+				}
+				
+				//need to check if the hours im trying to set are vacation days, maybe....
+				if(dayOfWeek.equals(BusinessHour.DayOfWeek.Monday)) toCheck = 0; 
+				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Tuesday)) toCheck = 1;
+				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Wednesday)) toCheck = 2;
+				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Thursday)) toCheck = 3;
+				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Friday)) toCheck = 4;
+				else throw new InvalidInputException("The opening hours are not within the opening hours of the business");
+				// converts from string to time with method in the controller
+				Time ourStartTime = CarShopController.stringToTime(startTime);
+				Time ourEndTime = CarShopController.stringToTime(endTime);
+				Technician technician = CarShopController.findTechnician(type, cs);		
+				// "The opening hours cannot overlap"
+				Garage garage = technician.getGarage();
+				
+				garage.getBusinessHour(toCheck).setStartTime(ourStartTime);
+				//persistence
+				try {
+					CarShopPersistence.save(cs);
+				}catch(RuntimeException e) {
+					throw new InvalidInputException(e.getMessage());
+				}
+				garage.getBusinessHour(toCheck).setEndTime(ourEndTime);
+				//persistence
+				try {
+					CarShopPersistence.save(cs);
+				}catch(RuntimeException e) {
+					throw new InvalidInputException(e.getMessage());
+				}
+				break;				
+			}
+		}
+	}
+
+	public static boolean checkIfPasswordCorrect(String newUsername, String newPassword) throws InvalidInputException {
+		// TODO Auto-generated method stub
+		Customer c = (Customer) Customer.getWithUsername(newUsername);
+		if(c.getUsername().equals(newUsername) && !c.getPassword().equals(newPassword)) throw new InvalidInputException("Password is incorrect!");
+
+		return c.getPassword().equals(newPassword);
+	}
+
+	public static void getCustomerByUsername(String newUsername) throws InvalidInputException {
+		// TODO Auto-generated method stub
+		try {
+			Customer.getWithUsername(newUsername);
+		} catch (Exception e) {
+			throw new InvalidInputException("Username does not exist!");
+		}
+	}
+
+	public static void deleteCustomerAccount(String newUsername) {
+		// TODO Auto-generated method stub
+		for(Customer c : CarShopApplication.getCarShop().getCustomers()) {
+			if(c.getUsername().equals(newUsername)) {
+				c.delete();
+			}
+		}
+	}
+
+	public static void updatePassword(String currentUser, String text) {
+		// TODO Auto-generated method stub
+		Customer.getWithUsername(currentUser).setPassword(text);
+	}
+
+	public static void updateUsername(String currentUser, String text) {
+		// TODO Auto-generated method stub
+		Customer.getWithUsername(currentUser).setUsername(text);
+
+	}
+
 
 }

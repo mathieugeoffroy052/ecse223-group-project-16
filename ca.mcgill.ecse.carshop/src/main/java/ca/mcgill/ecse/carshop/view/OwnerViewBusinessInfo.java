@@ -8,6 +8,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
+import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -19,12 +20,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DateFormatter;
 
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
@@ -48,43 +51,37 @@ public class OwnerViewBusinessInfo extends JPanel {
     //weekly business hours
 
     private static JLabel businessHoursTitle;
-    private static JList weeklySchedule; //list to hold weekly schedule (no scrolling)
+    private static JList<String> weeklySchedule; //list to hold weekly schedule (no scrolling)
     private static TOBusinessHour[] weeklyHours = new TOBusinessHour[1]; //transfer object for business hours TODO
     private static List<TOBusinessHour> TOBusinessHoursCS;
     private static String[] stringBusinessHours;
+    private static DefaultListModel<String> bhm;
     private static JButton addWeeklyHours;
     private static JButton updateWeeklyHours;
     //holidays
     private static JLabel holidayTitle;
-    private static JList upcomingHolidays; //list to show all the upcoming holidays
+    private static JList<String> upcomingHolidays; //list to show all the upcoming holidays
     private static TOTimeSlot[] carshopHolidays = new TOTimeSlot[0]; //TO for holidays TODO
     private static List<TOTimeSlot> TOHolidaysCS;
     private static String[] stringHolidays;
+    private static DefaultListModel<String> hm;
     private static JScrollPane holidayScroller;
     private static JButton addHoliday;
     private static JButton updateHoliday;
     //vacations
     private static JLabel vacationTitle;
-    private static JList upcomingVacations; //list to show all upcoming vacations
+    private static JList<String> upcomingVacations; //list to show all upcoming vacations
     private static TOTimeSlot[] carshopVacations = new TOTimeSlot[0]; //TO for vacations TODO
     private static List<TOTimeSlot> TOVacationsCS;
     private static String[] stringVacations;
+    private static DefaultListModel<String> vm;
     private static JScrollPane vacationScroller;
     private static JButton addVacation;
     private static JButton updateVacation;
 
     
     public OwnerViewBusinessInfo() {
-    	
-    	TOBusinessHoursCS = CarShopController.getBusinessHours();
-    	stringBusinessHours = listBHToString(TOBusinessHoursCS);
-    	TOHolidaysCS = CarShopController.getHolidays();
-    	stringHolidays = listTSToString(TOHolidaysCS);
-    	
-    	
-    	TOVacationsCS = CarShopController.getVacations();
-    	stringVacations = listTSToString(TOVacationsCS); 	
-    	
+
 		//set up components
     	errorLabel = new JLabel(errorMessage);
     	errorLabel.setForeground(Color.RED);
@@ -99,7 +96,8 @@ public class OwnerViewBusinessInfo extends JPanel {
 	    
 	    businessHoursTitle = new JLabel("Weekly Business Hours");
 	    businessHoursTitle.setFont(new Font("Arial", Font.BOLD, 22));
-	    weeklySchedule = new JList(stringBusinessHours);
+	    bhm = new DefaultListModel<String>();
+	    weeklySchedule = new JList<String>(bhm);
 	    weeklySchedule.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 	    weeklySchedule.setLayoutOrientation(JList.VERTICAL);
 	    weeklySchedule.setVisibleRowCount(7); //for 7 days in a week
@@ -108,7 +106,8 @@ public class OwnerViewBusinessInfo extends JPanel {
 	    
 	    holidayTitle = new JLabel("Holidays");
 	    holidayTitle.setFont(new Font("Arial", Font.BOLD, 22));
-	    upcomingHolidays = new JList(stringHolidays); 
+	    hm = new DefaultListModel<String>();
+	    upcomingHolidays = new JList<String>(hm); 
 	    upcomingHolidays.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 	    upcomingHolidays.setLayoutOrientation(JList.VERTICAL);
 	    upcomingHolidays.setVisibleRowCount(10); //to change later
@@ -121,7 +120,8 @@ public class OwnerViewBusinessInfo extends JPanel {
 	    
 	    vacationTitle = new JLabel("Vacations");
 	    vacationTitle.setFont(new Font("Arial", Font.BOLD, 22));
-	    upcomingVacations = new JList(stringVacations); 
+	    vm = new DefaultListModel<String>();
+	    upcomingVacations = new JList<String>(vm); 
 	    upcomingVacations.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 	    upcomingVacations.setLayoutOrientation(JList.VERTICAL);
 	    upcomingVacations.setVisibleRowCount(10); //to change later
@@ -136,8 +136,6 @@ public class OwnerViewBusinessInfo extends JPanel {
 		JSeparator horizontalLineMiddle2 = new JSeparator();
 		JSeparator horizontalLineBottom = new JSeparator();
 		JSeparator verticalLineLine = new JSeparator(SwingConstants.VERTICAL);
-
-		refreshData();
 		
 	    this.add(businessInfoTitle);
 
@@ -147,18 +145,15 @@ public class OwnerViewBusinessInfo extends JPanel {
 	    this.add(updateBusinessInfo);
 	    
 	    this.add(businessHoursTitle);
-	    this.add(weeklySchedule);
 	    this.add(addWeeklyHours);
 	    this.add(updateWeeklyHours);
 	    
 	    this.add(holidayTitle);
-	    this.add(upcomingHolidays);
 	    this.add(holidayScroller);
 	    this.add(addHoliday);
 	    this.add(updateHoliday);
 	    
 	    this.add(vacationTitle);
-	    this.add(upcomingVacations);
 	    this.add(vacationScroller);
 	    this.add(addVacation);
 	    this.add(updateVacation);
@@ -304,14 +299,25 @@ public class OwnerViewBusinessInfo extends JPanel {
     	stringBusinessHours = listBHToString(TOBusinessHoursCS);
     	TOHolidaysCS = CarShopController.getHolidays();
     	stringHolidays = listTSToString(TOHolidaysCS);
-    	
-    	
     	TOVacationsCS = CarShopController.getVacations();
     	stringVacations = listTSToString(TOVacationsCS);
+    	
+    	bhm.clear();
+    	hm.clear();
+    	vm.clear();
+    	
+    	for (String s : stringBusinessHours) {
+    		bhm.addElement(s);
+    	}
+    	
+    	for (String s : stringHolidays) {
+    		hm.addElement(s);
+    	}
+    	
+    	for (String s : stringVacations) {
+    		vm.addElement(s);
+    	}
 
-//    	weeklySchedule.setListData(stringBusinessHours);
-//    	upcomingHolidays.setListData(stringHolidays);
-//    	upcomingVacations.setListData(stringVacations);
     }
     
     //action methods
