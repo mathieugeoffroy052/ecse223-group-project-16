@@ -3056,26 +3056,49 @@ public class CarShopController {
 		} catch (Exception e) {
 			throw new InvalidInputException("Username does not exist!");
 		}
+		//Persistence
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 
-	public static void deleteCustomerAccount(String newUsername) {
+	public static void deleteCustomerAccount(String newUsername) throws InvalidInputException {
 		// TODO Auto-generated method stub
 		for(Customer c : CarShopApplication.getCarShop().getCustomers()) {
 			if(c.getUsername().equals(newUsername)) {
 				c.delete();
 			}
 		}
+		//Persistence
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 
-	public static void updatePassword(String currentUser, String text) {
+	public static void updatePassword(String currentUser, String text) throws InvalidInputException {
 		// TODO Auto-generated method stub
 		Customer.getWithUsername(currentUser).setPassword(text);
+		//Persistence
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 
-	public static void updateUsername(String currentUser, String text) {
+	public static void updateUsername(String currentUser, String text) throws InvalidInputException {
 		// TODO Auto-generated method stub
 		Customer.getWithUsername(currentUser).setUsername(text);
-
+		//Persistence
+		try {
+			CarShopPersistence.save(CarShopApplication.getCarShop());
+		}catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 	}
 
 
