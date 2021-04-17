@@ -112,6 +112,7 @@ public class OwnerViewProfile extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				CarShopPage frame = (CarShopPage) SwingUtilities.windowForComponent(thisPanel);
+				CarShopController.logOut();
 				frame.returnToLogInPanel();
 			}
 		});
