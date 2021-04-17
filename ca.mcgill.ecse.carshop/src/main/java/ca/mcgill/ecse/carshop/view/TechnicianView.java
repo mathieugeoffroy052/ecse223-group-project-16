@@ -17,9 +17,11 @@ import java.util.List;
 
 
 public class TechnicianView extends JPanel {
-
+	// UI elements
 	private static final long serialVersionUID = -3425184928730692407L;
+
 //	private JFrame frame;
+	private JPanel thisPanel = this;
 	private JTable table;
 	private JTextField txtSetNewOpening;
 	private JTextField txtNewClosingTime;
@@ -31,7 +33,6 @@ public class TechnicianView extends JPanel {
 	private static List<TOBusinessHour> garageBusinessHours = CarShopController.getGarageTOBusinessHours();
 	private JLabel labelNotification;
 	private JButton logout;
-//	private CarShopPage csPage;
 	private JButton btnNewButton, btnNewButton_1;
 	
 
@@ -53,10 +54,9 @@ public class TechnicianView extends JPanel {
 		logout = new JButton("Log out");
 		logout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				CarShopPage frame = (CarShopPage) SwingUtilities.windowForComponent(thisPanel);
 				CarShopController.logOut();
-				btnNewButton.setVisible(false);
-				btnNewButton_1.setVisible(false);
-				labelNotification.setText("You are logged out. Close this window and relaunch the application");
+				frame.returnToLogInPanel();
 			}
 		});
 		logout.setBounds(520, 800, 100, 20);
@@ -124,8 +124,6 @@ public class TechnicianView extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				Time openingTime = null;
 				Time closingTime = null;
-//				Time oldOpening = null;
-//				Time oldClosing = null;
 				try {
 					error = "";
 					//works properly as long as proper times are inputted and no errors are thrown...
@@ -173,7 +171,6 @@ public class TechnicianView extends JPanel {
 						rowToChange2 = 1;
 						scheduleModelTable.setValueAt(closingTime, rowToChange2, columnToChange);
 
-//						oldClosing = CarShopController.stringToTime(scheduleModelTable.getValueAt(rowToChange2, columnToChange).toString());
 					} catch (Exception e1) {
 						error = e1.getMessage();
 					}
@@ -181,8 +178,6 @@ public class TechnicianView extends JPanel {
 						errorMessage.setText(error);
 					}
 					if(!openingTime.equals("")) {
-//						rowToChange1 = 0;
-//						scheduleModelTable.setValueAt(openingTime,rowToChange1,columnToChange);
 						try {
 							error = "";
 							String op = openingTime.toString();

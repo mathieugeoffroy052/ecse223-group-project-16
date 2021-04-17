@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 import ca.mcgill.ecse.carshop.controller.CarShopController;
@@ -44,6 +45,7 @@ public class CustomerView extends JPanel {
 	// *** PRIVATE FIELDS *** //
 	
 	// error message
+	private JPanel thisPanel = this;
 	private JLabel errorMessage;
 	private String error = "";
 	
@@ -868,9 +870,9 @@ public class CustomerView extends JPanel {
 	
 	private void logOutButtonActionPerformed(ActionEvent evt) {
 		error = "";
+		CarShopPage frame = (CarShopPage) SwingUtilities.windowForComponent(thisPanel);
 		CarShopController.logOut();
-		error += "Now logged out. Close application and log in again to continue.";
-		errorMessage.setText(error);
+		frame.returnToLogInPanel();
 		for(int i = 0; i < modelTable.getRowCount(); i++) {
 			modelTable.removeRow(i);
 		}
