@@ -12,18 +12,24 @@ import java.awt.event.KeyListener;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 
 
 @SuppressWarnings("serial")
 public class OwnerViewProfile extends JPanel{
-	// UI elements
+
+	
+	private JPanel thisPanel = this;
 	private JLabel titleJLabel;
+	private JButton logOutButton;
 	
 	private JLabel usernameJLabel;
 	private JLabel passwordLabel;
@@ -35,6 +41,7 @@ public class OwnerViewProfile extends JPanel{
 	private JLabel prompt;
 	
 	private String error;
+  
 	
 	public OwnerViewProfile() {
 		// Initializing UI elements
@@ -61,6 +68,8 @@ public class OwnerViewProfile extends JPanel{
 		
 		editPasswordButton = new JButton("Edit password");
 		
+		logOutButton = new JButton("Log Out");
+		
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setAutoCreateGaps(true);
@@ -69,7 +78,9 @@ public class OwnerViewProfile extends JPanel{
 		// horizontal group
 		layout.setHorizontalGroup(
 				layout.createParallelGroup()
-				.addComponent(titleJLabel)
+				.addGroup(layout.createSequentialGroup()
+						.addComponent(titleJLabel)
+						.addComponent(logOutButton))
 				.addComponent(errorLabel)
 				.addComponent(usernameJLabel)
 				.addComponent(usernameTextField)
@@ -82,7 +93,9 @@ public class OwnerViewProfile extends JPanel{
 		// vertical group
 		layout.setVerticalGroup(
 				layout.createSequentialGroup()
-				.addComponent(titleJLabel)
+				.addGroup(layout.createParallelGroup()
+						.addComponent(titleJLabel)
+						.addComponent(logOutButton))
 				.addComponent(errorLabel)
 				.addComponent(usernameJLabel)
 				.addComponent(usernameTextField)
@@ -94,7 +107,17 @@ public class OwnerViewProfile extends JPanel{
 		
 		layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {usernameJLabel, usernameTextField, passwordLabel, passwordTextField, prompt});
 		layout.linkSize(SwingConstants.VERTICAL, new java.awt.Component[] {usernameJLabel, usernameTextField, passwordLabel, passwordTextField, editPasswordButton, prompt});
-				
+		
+		logOutButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CarShopPage frame = (CarShopPage) SwingUtilities.windowForComponent(thisPanel);
+				CarShopController.logOut();
+				frame.returnToLogInPanel();
+			}
+		});
+		
 		editPasswordButton.addActionListener(new ActionListener() {
 			
 			@Override

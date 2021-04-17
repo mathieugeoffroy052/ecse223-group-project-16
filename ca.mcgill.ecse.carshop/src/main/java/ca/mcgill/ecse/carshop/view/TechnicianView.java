@@ -19,6 +19,9 @@ import java.util.List;
 public class TechnicianView extends JPanel {
 	// UI elements
 	private static final long serialVersionUID = -3425184928730692407L;
+
+//	private JFrame frame;
+	private JPanel thisPanel = this;
 	private JTable table;
 	private JTextField txtSetNewOpening;
 	private JTextField txtNewClosingTime;
@@ -51,10 +54,9 @@ public class TechnicianView extends JPanel {
 		logout = new JButton("Log out");
 		logout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				CarShopPage frame = (CarShopPage) SwingUtilities.windowForComponent(thisPanel);
 				CarShopController.logOut();
-				btnNewButton.setVisible(false);
-				btnNewButton_1.setVisible(false);
-				labelNotification.setText("You are logged out. Close this window and relaunch the application");
+				frame.returnToLogInPanel();
 			}
 		});
 		logout.setBounds(520, 800, 100, 20);
