@@ -194,7 +194,7 @@ public class CarShopPage extends JFrame {
 
 
 		//layout
-		labelWindow.setText("Car Shop Login");
+		labelWindow.setText("CarShop Login");
 
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setSize(screenSize.width, screenSize.height);
@@ -285,6 +285,14 @@ public class CarShopPage extends JFrame {
 		// set the content pane to technician view
 		setContentPane(technicianView);
 
+		revalidate();
+		repaint();    
+	}
+	
+	public void returnToLogInPanel(JPanel panel){
+		
+		//get back to log in somehow
+		
 		revalidate();
 		repaint();    
 	}
