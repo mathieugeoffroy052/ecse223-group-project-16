@@ -6,7 +6,9 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Properties;
 
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -29,6 +31,10 @@ import javax.swing.SpinnerDateModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DateFormatter;
+
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.SqlDateModel;
 
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
@@ -98,7 +104,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 	    businessHoursTitle.setFont(new Font("Arial", Font.BOLD, 22));
 	    bhm = new DefaultListModel<String>();
 	    weeklySchedule = new JList<String>(bhm);
-	    weeklySchedule.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+	    weeklySchedule.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	    weeklySchedule.setLayoutOrientation(JList.VERTICAL);
 	    weeklySchedule.setVisibleRowCount(7); //for 7 days in a week
 	    addWeeklyHours = new JButton("Add");
@@ -169,6 +175,18 @@ public class OwnerViewBusinessInfo extends JPanel {
 	    addWeeklyHours.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				addWeeklyHoursActionPerformed(evt);
+			}
+		});
+	    
+	    updateWeeklyHours.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				updateWeeklyHoursActionPerformed(evt);
+			}
+		});
+	    
+	    addHoliday.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				addHolidayActionPerformed(evt);
 			}
 		});
 	    
@@ -250,45 +268,132 @@ public class OwnerViewBusinessInfo extends JPanel {
 		refreshData();
     }
     
-    //helper methods
-    public static void centerWindow(Window frame) {
-        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-        int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-        frame.setLocation(x, y);
+    private void addHolidayActionPerformed(ActionEvent evt) {
+    	JFrame addHolidayFrame = new JFrame();
+    	LocalDate now = LocalDate.now();
+		smallErrorLabel = new JLabel();
+		smallErrorLabel.setForeground(Color.RED);
+		JLabel addTitle = new JLabel("Add Holiday");
+		addTitle.setFont(new Font("Arial", Font.BOLD, 22));
+		JLabel startDate = new JLabel("Start Date:");
+		JTextField startDateText = new JTextField(businessName.getText());
+		JLabel startTime = new JLabel("Start Time:");
+		JTextField startTimeText = new JTextField("08:00");
+		JLabel endDate = new JLabel("End Date:");
+		JFormattedTextField endDateText = new JFormattedTextField(this.phoneNum.getText());
+		JLabel endTime = new JLabel("End Time:");
+		JTextField endTimeText = new JTextField("09:00");
+		JButton addHol = new JButton("Add");
+		
+		
 
-    }
-    
-    public static String[] listBHToString(List<TOBusinessHour> list) {
-    	String[] newStringArray = new String[list.size()];
-    	int index = 0;
-    	if (list.get(0) == null) return null;
-    	for (TOBusinessHour bh : list) {
-    		String info = bh.getDayOfWeek() 
-    				+ ": " + CarShopController.timeToString(bh.getStartTime()) 
-    				+ " - " + CarShopController.timeToString(bh.getEndTime());
-    		newStringArray[index++] = info;
-    	}		    	
-    	return newStringArray;
-    }
+		SqlDateModel startDateModel;
+		Properties startDateDisplay;
+		JDatePickerImpl startDatePicker;
+		SqlDateModel endDateModel;
+		Properties endDateDisplay;
+		JDatePickerImpl endDatePicker;
+		// create appointment calendar
+		startDateModel = new SqlDateModel();
+		startDateModel.setDate(now.getYear(), now.getMonthValue() - 1, now.getDayOfMonth());
+		startDateModel.setSelected(true);
+		startDateDisplay = new Properties();
+		startDateDisplay.put("text.today", "Today");
+		startDateDisplay.put("text.month", "Month");
+		startDateDisplay.put("text.year", "Year");
+		JDatePanelImpl overviewStartDatePanel = new JDatePanelImpl(startDateModel, startDateDisplay);
+		startDatePicker = new JDatePickerImpl(overviewStartDatePanel, new DateLabelFormatter());
+		startDatePicker.setBounds(513, 41, 145, 26);//513, 41, 130, 26
+		addHolidayFrame.add(startDatePicker);
+		
+		
+		// create appointment calendar
+		endDateModel = new SqlDateModel();
+		endDateModel.setDate(now.getYear(), now.getMonthValue() - 1, now.getDayOfMonth());
+		endDateModel.setSelected(true);
+		endDateDisplay = new Properties();
+		endDateDisplay.put("text.today", "Today");
+		endDateDisplay.put("text.month", "Month");
+		endDateDisplay.put("text.year", "Year");
+		JDatePanelImpl overviewEndDatePanel = new JDatePanelImpl(endDateModel, endDateDisplay);
+		endDatePicker = new JDatePickerImpl(overviewEndDatePanel, new DateLabelFormatter());
+		endDatePicker.setBounds(513, 41, 145, 26);//513, 41, 130, 26
+		addHolidayFrame.add(endDatePicker);
+		
+		addHolidayFrame.add(addTitle);
+		addHolidayFrame.add(startDate);
+		addHolidayFrame.add(startDateText);
+		addHolidayFrame.add(startTime);
+		addHolidayFrame.add(startTimeText);
+		addHolidayFrame.add(endDate);
+		addHolidayFrame.add(endDateText);
+		addHolidayFrame.add(endTime);
+		addHolidayFrame.add(endTimeText);
+		addHolidayFrame.add(addHol);
+		
+		GroupLayout layout = new GroupLayout(addHolidayFrame.getContentPane());
+		addHolidayFrame.getContentPane().setLayout(layout);
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+		
+		//horizontal
+		layout.setHorizontalGroup(
+				layout.createParallelGroup()
+					.addComponent(smallErrorLabel)
+					.addComponent(addTitle)
+					.addGroup(layout.createSequentialGroup()
+							.addGroup(layout.createParallelGroup()
+									.addComponent(startDate)
+									.addComponent(startTime)
+									.addComponent(endDate)
+									.addComponent(endTime))
+							.addGroup(layout.createParallelGroup()
+									.addComponent(startDatePicker)
+									.addComponent(startTimeText)
+									.addComponent(endDatePicker)
+									.addComponent(endTimeText)))
+							.addComponent(addHol));
+		
 
-    public static String[] listTSToString(List<TOTimeSlot> list) {
-    	String[] newStringArray = new String[list.size()];
-    	int index = 0;
-    	if (list.get(0) == null) return null;	
-    	for (TOTimeSlot ts : list) {
-    		String info = "From " + CarShopController.dateToString(ts.getStartDate()) 
-	    		+ " at " + CarShopController.timeToString(ts.getStartTime()) 
-	    		+ " to " + CarShopController.dateToString(ts.getEndDate()) 
-	    		+ " at " + CarShopController.timeToString(ts.getEndTime());
-    		newStringArray[index++] = info;
-    	}
-    	return newStringArray;
+		
+		//vertical 
+		layout.setVerticalGroup(
+				layout.createSequentialGroup()
+					.addComponent(smallErrorLabel)
+					.addComponent(addTitle)
+					.addGroup(layout.createParallelGroup()
+							.addComponent(startDate)
+							.addComponent(startDatePicker))
+					.addGroup(layout.createParallelGroup()
+							.addComponent(startTime)
+							.addComponent(startTimeText))
+					.addGroup(layout.createParallelGroup()
+							.addComponent(endDate)
+							.addComponent(endDatePicker))
+					.addGroup(layout.createParallelGroup()
+							.addComponent(endTime)
+							.addComponent(endTimeText))
+					.addComponent(addHol));
+				
+		addHolidayFrame.pack();
+		centerWindow(addHolidayFrame);
+		addHolidayFrame.setVisible(true);
+		
+		addHol.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				String newName = startDateText.getText();
+				String newEmail = startTimeText.getText();
+				String newAddress = endDateText.getText();
+				String newPhoneNum = endTimeText.getText();
+				updateInfoActionPerformed(evt, newName, newPhoneNum, newEmail, newAddress, addHolidayFrame);
+			}
+		});
+		
+	}
 
-    }
-    
-    public static void refreshData() {
+	public static void refreshData() {
     	if (errorMessage != null) errorLabel.setText(errorMessage);
+    	else errorLabel.setText(errorMessage);
     	if (smallErrorMessage != null) smallErrorLabel.setText(smallErrorMessage);
     	businessName.setText(CarShopController.getBusinessName());
     	email.setText(CarShopController.getBusinessEmail());
@@ -319,6 +424,175 @@ public class OwnerViewBusinessInfo extends JPanel {
     	}
 
     }
+    
+    
+    
+private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
+
+    	JFrame updateWeeklyHours = new JFrame();
+    	try {
+    	int selectedIndex = weeklySchedule.getSelectedIndex();
+    	errorMessage = null;
+    	TOBusinessHour updatingBH = TOBusinessHoursCS.get(selectedIndex);
+		smallErrorLabel = new JLabel();
+		smallErrorLabel.setForeground(Color.RED);
+		JLabel addTitle = new JLabel("Update Weekly Hour");
+		addTitle.setFont(new Font("Arial", Font.BOLD, 22));
+		JLabel day = new JLabel("Day:");
+		String [] dayNames = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+		JComboBox dayPicker = new JComboBox(dayNames);
+		dayPicker.setSelectedItem(updatingBH.getDayOfWeek());
+		JLabel startTime = new JLabel("Strat Time:");
+
+		//START TIME
+		SpinnerDateModel model = new SpinnerDateModel();
+		model.setValue(updatingBH.getStartTime());
+		
+		JSpinner startTimePicker = new JSpinner(model);
+		JSpinner.DateEditor editor = new JSpinner.DateEditor(startTimePicker, "HH:mm:ss");
+		DateFormatter formatter = (DateFormatter) editor.getTextField().getFormatter();
+		formatter.setAllowsInvalid(false); 
+		formatter.setOverwriteMode(true);
+		
+		startTimePicker.setEditor(editor);
+		
+		JLabel endTime = new JLabel("End Time:");
+		//END TIME
+		SpinnerDateModel model2 = new SpinnerDateModel();
+		model2.setValue(updatingBH.getEndTime());
+		
+		JSpinner endTimePicker = new JSpinner(model2);
+		JSpinner.DateEditor editor2 = new JSpinner.DateEditor(endTimePicker, "HH:mm:ss");
+		DateFormatter formatter2 = (DateFormatter) editor2.getTextField().getFormatter();
+		formatter2.setAllowsInvalid(false); 
+		formatter2.setOverwriteMode(true);
+		
+		endTimePicker.setEditor(editor2);
+		JButton updateWeeklyHoursButton = new JButton("Update");
+		
+		updateWeeklyHours.add(smallErrorLabel);
+		updateWeeklyHours.add(addTitle);
+		updateWeeklyHours.add(day);
+		updateWeeklyHours.add(dayPicker);
+		updateWeeklyHours.add(startTime);
+		updateWeeklyHours.add(startTimePicker);
+		updateWeeklyHours.add(endTime);
+		updateWeeklyHours.add(endTimePicker);
+		updateWeeklyHours.add(updateWeeklyHoursButton);
+		
+		GroupLayout layout = new GroupLayout(updateWeeklyHours.getContentPane());
+		updateWeeklyHours.getContentPane().setLayout(layout);
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+		
+		layout.setHorizontalGroup(
+				layout.createParallelGroup()
+					.addComponent(smallErrorLabel)
+					.addComponent(addTitle)
+					.addGroup(layout.createSequentialGroup()
+							.addGroup(layout.createParallelGroup()
+									.addComponent(day)
+									.addComponent(startTime)
+									.addComponent(endTime))
+							.addGroup(layout.createParallelGroup()
+									.addComponent(dayPicker)
+									.addComponent(startTimePicker)
+									.addComponent(endTimePicker)))
+					.addComponent(updateWeeklyHoursButton));
+		
+		layout.setVerticalGroup(
+				layout.createSequentialGroup()
+					.addComponent(smallErrorLabel)
+					.addComponent(addTitle)
+					.addGroup(layout.createParallelGroup()
+							.addComponent(day)
+							.addComponent(dayPicker))
+					.addGroup(layout.createParallelGroup()
+							.addComponent(startTime)
+							.addComponent(startTimePicker))
+					.addGroup(layout.createParallelGroup()
+							.addComponent(endTime)
+							.addComponent(endTimePicker))
+					.addComponent(updateWeeklyHoursButton));
+		
+		updateWeeklyHours.pack();
+		centerWindow(updateWeeklyHours);
+		updateWeeklyHours.setVisible(true);
+		
+		updateWeeklyHoursButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				String dayOfWeek = (String)(dayPicker.getSelectedItem());
+				String startTime = CarShopController.dateToString( new java.sql.Date(model.getDate().getTime()));
+				String endTime = CarShopController.dateToString(new java.sql.Date(model2.getDate().getTime()));
+				String oldDay = updatingBH.getDayOfWeek();
+				String oldStartTime = CarShopController.timeToString(updatingBH.getStartTime());
+				updateWeeklyHoursButtonActionPerformed(evt, oldDay, oldStartTime, dayOfWeek, startTime, endTime, updateWeeklyHours);
+			}
+		});
+		
+		refreshData();
+    	} catch (Exception e) {
+    		errorMessage = "Select a business hour first";
+    		refreshData();
+    	}
+	}
+    
+
+	private void updateWeeklyHoursButtonActionPerformed(ActionEvent evt, String oldDay, String oldStartTime, String dayOfWeek, String startTime,
+			String endTime, JFrame frame) {
+		try {
+			CarShopController.modifyBusinessHour(oldDay, oldStartTime, dayOfWeek, startTime, endTime);
+			smallErrorMessage = null;
+			frame.setVisible(false);
+		} catch (Exception e) {
+			smallErrorMessage = e.getMessage();
+		}
+		refreshData();
+		frame.pack();
+	}
+
+	//helper methods
+    
+	public static void centerWindow(Window frame) {
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
+        int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
+        frame.setLocation(x, y);
+
+    }
+    
+    
+	public static String[] listBHToString(List<TOBusinessHour> list) {
+    	String[] newStringArray = new String[list.size()];
+    	int index = 0;
+    	if (list.get(0) == null) return null;
+    	for (TOBusinessHour bh : list) {
+    		String info = bh.getDayOfWeek() 
+    				+ ": " + CarShopController.timeToString(bh.getStartTime()) 
+    				+ " - " + CarShopController.timeToString(bh.getEndTime());
+    		newStringArray[index++] = info;
+    	}		    	
+    	return newStringArray;
+    }
+
+    
+	public static String[] listTSToString(List<TOTimeSlot> list) {
+    	String[] newStringArray = new String[list.size()];
+    	int index = 0;
+    	if (list.get(0) == null) return null;	
+    	for (TOTimeSlot ts : list) {
+    		String info = "From " + CarShopController.dateToString(ts.getStartDate()) 
+	    		+ " at " + CarShopController.timeToString(ts.getStartTime()) 
+	    		+ " to " + CarShopController.dateToString(ts.getEndDate()) 
+	    		+ " at " + CarShopController.timeToString(ts.getEndTime());
+    		newStringArray[index++] = info;
+    	}
+    	return newStringArray;
+
+    }
+    
+    
+    
     
     //action methods
     private void updateBusinessInfoActionPerformed(ActionEvent evt) {
@@ -421,6 +695,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 		frame.pack();
 	}
     
+    
     private void addWeeklyHoursActionPerformed(ActionEvent evt) {
     	JFrame addWeeklyHours = new JFrame();
 		smallErrorLabel = new JLabel();
@@ -518,7 +793,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 	}
 
 
-	protected void addWeeklyHoursButtonActionPerformed(ActionEvent evt, String dayOfWeek, String startTime,
+	private void addWeeklyHoursButtonActionPerformed(ActionEvent evt, String dayOfWeek, String startTime,
 			String endTime, JFrame frame) {
 		try {
 			CarShopController.createBusinessHour(dayOfWeek, startTime, endTime);
