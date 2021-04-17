@@ -32,7 +32,7 @@ import ca.mcgill.ecse.carshop.controller.TOCarshopCombo;
 import ca.mcgill.ecse.carshop.controller.TOCarshopService;
 
 public class OwnerViewServices extends JPanel {
-	
+	// UI elements 
 	private JLabel errorLabel;
 
 	private JLabel servicesLabel;
@@ -79,6 +79,7 @@ public class OwnerViewServices extends JPanel {
 	}
 	
 	private void initView() {
+		//Initializing UI elements
 		errorLabel = new JLabel(errorString);
 		errorLabel.setForeground(Color.RED);
 
@@ -163,9 +164,6 @@ public class OwnerViewServices extends JPanel {
 		
 		groupLayout.linkSize(SwingConstants.VERTICAL,
 				new java.awt.Component[] { servicesLabel, serviceCombosLabel });
-		
-//		groupLayout.linkSize(SwingConstants.HORIZONTAL,
-//				new java.awt.Component[] { serviceJScrollPane, comboJScrollPane });
 		
 		groupLayout.linkSize(SwingConstants.VERTICAL,
 				new java.awt.Component[] { serviceJScrollPane, comboJScrollPane });
@@ -494,7 +492,7 @@ public class OwnerViewServices extends JPanel {
 		refreshData();
 	}
 	
-	
+	// Update info and action listeners
 	public void addComboButtonPerformed(ActionEvent event) {
 		if (serviceList.size() == 0) {
 			errorMessage = "The carshop doesn't have any services!";

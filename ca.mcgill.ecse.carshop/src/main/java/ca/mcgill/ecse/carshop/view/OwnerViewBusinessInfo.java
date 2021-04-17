@@ -45,7 +45,7 @@ import ca.mcgill.ecse.carshop.controller.TOTimeSlot;
 
 @SuppressWarnings("serial")
 public class OwnerViewBusinessInfo extends JPanel {
-	
+	// UI elements and variables
 	private static String errorMessage = null;
 	private static String smallErrorMessage = null;
 	private static JLabel smallErrorLabel;
@@ -299,6 +299,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 		refreshData();
     }
     
+    // Action listeners and update methods
     private void updateHolidayActionPerformed(ActionEvent e) {
     	try {
         	JFrame updateHolidayFrame = new JFrame();

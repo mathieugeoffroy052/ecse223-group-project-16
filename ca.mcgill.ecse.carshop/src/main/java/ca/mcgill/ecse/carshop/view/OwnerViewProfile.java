@@ -22,7 +22,7 @@ import ca.mcgill.ecse.carshop.controller.CarShopController;
 
 @SuppressWarnings("serial")
 public class OwnerViewProfile extends JPanel{
-	
+	// UI elements
 	private JLabel titleJLabel;
 	
 	private JLabel usernameJLabel;
@@ -35,11 +35,9 @@ public class OwnerViewProfile extends JPanel{
 	private JLabel prompt;
 	
 	private String error;
-//	private String username;
-//	private String password;
-	
 	
 	public OwnerViewProfile() {
+		// Initializing UI elements
 		this.setLayout(new GridBagLayout());
 		titleJLabel = new JLabel("Profile");
 		titleJLabel.setFont(new Font("Arial", Font.BOLD, 22));
@@ -130,6 +128,7 @@ public class OwnerViewProfile extends JPanel{
 		
 	}
 	
+	// Methods tp update informations 
 	private void editPasswordActionPerformed(ActionEvent event) {
 		prompt.setVisible(true);
 		passwordTextField.setEditable(true);

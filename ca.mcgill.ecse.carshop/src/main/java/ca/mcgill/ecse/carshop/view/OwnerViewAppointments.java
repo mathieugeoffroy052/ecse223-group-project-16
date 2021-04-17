@@ -54,6 +54,7 @@ public class OwnerViewAppointments extends JPanel {
 	}
 	
 	public void initComponents() {
+		// Initializing the elements for the UI
 		selectDateLabel = new JLabel("Select Date (YYYY-MM-dd)");
 		selectDateTxt = new JTextField(dateString);
 		dateButton = new JButton("Refresh"); 
@@ -165,6 +166,7 @@ public class OwnerViewAppointments extends JPanel {
 		
 	}
 	
+	// Update/Refresh the program data
 	private void refreshData() {
 		appointments = null;
 		appointmentNodes.clear();
