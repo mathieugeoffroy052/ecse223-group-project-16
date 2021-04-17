@@ -8,6 +8,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.GroupLayout;
@@ -60,12 +61,13 @@ public class OwnerViewServices extends JPanel {
 	private String selectedServiceGarage;
 	
 	private String serviceColumnNames[] = { "Service", "Garage", "Duration"};
-	private String comboColumnNames[] = { "", "Service", "Garage", "Duration", "Optional"};
-	private String comboHeaderNames[] = { "Combo Name", "Service", "Garage", "Duration", "Optional"};
+	private String comboColumnNames[] = { "", "Service", "Garage", "Duration", "mandatory"};
+	private String comboHeaderNames[] = { "Combo Name", "Service", "Garage", "Duration", "mandatory"};
 	private String errorMessage;
 	private List<TOCarshopService> services;
 	private List<TOCarshopCombo> combos;
 	private List<String> serviceList;
+	private List<String> comboList;
 
 	private static final int HEIGHT_TABLE = 400;
 
@@ -85,6 +87,7 @@ public class OwnerViewServices extends JPanel {
 		selectedServiceGarage = "";
 		
 		serviceList = new ArrayList<>();
+		comboList = new ArrayList<>();
 		
 		servicesLabel = new JLabel("Services");
 		servicesLabel.setFont(new Font("Arial", Font.BOLD, 22));
@@ -194,6 +197,14 @@ public class OwnerViewServices extends JPanel {
 			}
 		});
 		
+		btnEditCombo.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updateComboButtonPerformed(e);
+				
+			}
+		});
 		
 		refreshServiceTable();
 		refreshComboTable();
@@ -229,6 +240,7 @@ public class OwnerViewServices extends JPanel {
 	
 	private void refreshComboTable() {
 		errorLabel.setText(errorMessage);
+		comboList = new ArrayList<>();
 		
 		if (errorMessage == null || errorMessage.length() == 0) {
 			combosDTM = new DefaultTableModel(0, 0);
@@ -239,6 +251,9 @@ public class OwnerViewServices extends JPanel {
 			
 			for(TOCarshopCombo toCarshopCombo : combos) {
 				String name = toCarshopCombo.getComboName();
+				
+				comboList.add(name);
+				
 				String main = toCarshopCombo.getMainService();
 				List<String> services = toCarshopCombo.getServices();
 				List<String> garages = toCarshopCombo.getGarages();
@@ -481,138 +496,307 @@ public class OwnerViewServices extends JPanel {
 	
 	
 	public void addComboButtonPerformed(ActionEvent event) {
-		errorMessage = "";
-		JFrame addServiceFrame = new JFrame();
-		JLabel smallErrorLabel;
-		smallErrorLabel = new JLabel();
-		smallErrorLabel.setForeground(Color.RED);
-		JLabel updateTitle = new JLabel("Add new service combo");
-		updateTitle.setFont(new Font("Arial", Font.BOLD, 22));
-		JLabel name = new JLabel("Name:");
-		JTextField nameText = new JTextField();
-		JLabel mainService = new JLabel("Main Service:");
-		String[] services = new String[serviceList.size()];
-		for (int i = 0; i < serviceList.size(); i++) {
-			services[i] = serviceList.get(i);
-		}
-		
-		JComboBox<String> mainComboBox = new JComboBox<String>(services);
-		
-		JTable comboServiceTable;
-		
-		if (errorMessage == null || errorMessage.length() == 0) {
-			DefaultTableModel defaultTableModel = new DefaultTableModel(0, 0);
-			String[] tableCol = {"Service", "Add", "Optional"};
-			
-			defaultTableModel.setColumnIdentifiers(tableCol);
-			
-			comboServiceTable = new JTable(defaultTableModel) {
-				 @Override
-		            public Class getColumnClass(int column) {
-		                switch (column) {
-		                    case 0:
-		                        return String.class;
-		                    case 1:
-		                        return Boolean.class;
-		                    case 2:
-		                        return Boolean.class;
-		                    default:
-		                        return String.class;
-		                }
-				 }
-			};
-			for(String service: serviceList) {
-				
-				Object[] obj = { service, false, false};
-				defaultTableModel.addRow(obj);
+		if (serviceList.size() == 0) {
+			errorMessage = "The carshop doesn't have any services!";
+		} else {
+			errorMessage = "";
+			JFrame addServiceFrame = new JFrame();
+			JLabel smallErrorLabel;
+			smallErrorLabel = new JLabel();
+			smallErrorLabel.setForeground(Color.RED);
+			JLabel updateTitle = new JLabel("Add new service combo");
+			updateTitle.setFont(new Font("Arial", Font.BOLD, 22));
+			JLabel name = new JLabel("Name:");
+			JTextField nameText = new JTextField();
+			JLabel mainService = new JLabel("Main Service:");
+			String[] services = new String[serviceList.size()];
+			for (int i = 0; i < serviceList.size(); i++) {
+				services[i] = serviceList.get(i);
 			}
-		
 
-			JScrollPane comboServiceScrollPane = new JScrollPane(comboServiceTable);
-		Dimension d1 = comboServiceTable.getPreferredSize();
-		comboServiceScrollPane.setPreferredSize(new Dimension(d1.width, HEIGHT_TABLE / 2));
+			JComboBox<String> mainComboBox = new JComboBox<String>(services);
 
-		comboServiceScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+			JTable comboServiceTable;
 
-		addServiceFrame.add(comboServiceScrollPane);
-		JButton addService = new JButton("Add");
-		
-		
-		GroupLayout layout = new GroupLayout(addServiceFrame.getContentPane());
-		addServiceFrame.getContentPane().setLayout(layout);
-		layout.setAutoCreateGaps(true);
-		layout.setAutoCreateContainerGaps(true);
-		
-		//horizontal
-		layout.setHorizontalGroup(
-				layout.createParallelGroup()
-					.addComponent(smallErrorLabel)
-					.addComponent(updateTitle)
-					.addGroup(layout.createSequentialGroup()
-							.addComponent(name)
-							.addComponent(nameText)
-							.addComponent(addService))
-					.addGroup(layout.createSequentialGroup()
-							.addComponent(mainService)
-							.addComponent(mainComboBox))
-					.addComponent(comboServiceScrollPane));
-		
+			if (errorMessage == null || errorMessage.length() == 0) {
+				DefaultTableModel defaultTableModel = new DefaultTableModel(0, 0);
+				String[] tableCol = { "Service", "Add", "mandatory" };
 
-		
-		//vertical 
-		layout.setVerticalGroup(
-				layout.createSequentialGroup()
-					.addComponent(smallErrorLabel)
-					.addComponent(updateTitle)
-					.addGroup(layout.createParallelGroup()
-							.addComponent(name)
-							.addComponent(nameText)
-							.addComponent(addService))
-					.addGroup(layout.createParallelGroup()
-							.addComponent(mainService)
-							.addComponent(mainComboBox))
-					.addComponent(comboServiceScrollPane));
-				
-		layout.linkSize(SwingConstants.HORIZONTAL,
-				new java.awt.Component[] { name, nameText, addService, mainService, mainComboBox});
-		layout.linkSize(SwingConstants.VERTICAL,
-				new java.awt.Component[] { name, nameText, addService, mainService, mainComboBox });
+				defaultTableModel.setColumnIdentifiers(tableCol);
 
-		
-		
-		
-		addServiceFrame.pack();
-		centerWindow(addServiceFrame);
-		addServiceFrame.setVisible(true);
-		
-		smallErrorLabel.setText(errorMessage);
-		
-		addService.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				String newName = nameText.getText();
-				String mainService = (String)mainComboBox.getSelectedItem();
-				
-				
-				
-//				try {
-////					CarShopController.ownerDefinesService(CarShopApplication.getCurrentUser(), newName, newDuration, newGarage, CarShopApplication.getCarShop());
-//					errorMessage = null;
-//					addServiceFrame.setVisible(false);
-//				} catch (InvalidInputException e) {
-//					errorMessage = e.getMessage();
-//				}
-				
-				if (errorMessage!= null && errorMessage != "") {
-					smallErrorLabel.setText(errorMessage);
-					errorMessage = "";
+				comboServiceTable = new JTable(defaultTableModel) {
+					@Override
+					public Class getColumnClass(int column) {
+						switch (column) {
+						case 0:
+							return String.class;
+						case 1:
+							return Boolean.class;
+						case 2:
+							return Boolean.class;
+						default:
+							return String.class;
+						}
+					}
+				};
+				for (String service : serviceList) {
+
+					Object[] obj = { service, false, false };
+					defaultTableModel.addRow(obj);
 				}
-				refreshData();
+
+				JScrollPane comboServiceScrollPane = new JScrollPane(comboServiceTable);
+				Dimension d1 = comboServiceTable.getPreferredSize();
+				comboServiceScrollPane.setPreferredSize(new Dimension(d1.width, HEIGHT_TABLE / 2));
+
+				comboServiceScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+				addServiceFrame.add(comboServiceScrollPane);
+				JButton addService = new JButton("Add");
+
+				GroupLayout layout = new GroupLayout(addServiceFrame.getContentPane());
+				addServiceFrame.getContentPane().setLayout(layout);
+				layout.setAutoCreateGaps(true);
+				layout.setAutoCreateContainerGaps(true);
+
+				// horizontal
+				layout.setHorizontalGroup(layout.createParallelGroup().addComponent(smallErrorLabel)
+						.addComponent(updateTitle)
+						.addGroup(layout.createSequentialGroup().addComponent(name).addComponent(nameText)
+								.addComponent(addService))
+						.addGroup(layout.createSequentialGroup().addComponent(mainService).addComponent(mainComboBox))
+						.addComponent(comboServiceScrollPane));
+
+				// vertical
+				layout.setVerticalGroup(
+						layout.createSequentialGroup().addComponent(smallErrorLabel).addComponent(updateTitle)
+								.addGroup(layout.createParallelGroup().addComponent(name).addComponent(nameText)
+										.addComponent(addService))
+								.addGroup(layout.createParallelGroup().addComponent(mainService).addComponent(mainComboBox))
+								.addComponent(comboServiceScrollPane));
+
+				layout.linkSize(SwingConstants.HORIZONTAL,
+						new java.awt.Component[] { name, nameText, addService, mainService, mainComboBox });
+				layout.linkSize(SwingConstants.VERTICAL,
+						new java.awt.Component[] { name, nameText, addService, mainService, mainComboBox });
+
 				addServiceFrame.pack();
+				centerWindow(addServiceFrame);
+				addServiceFrame.setVisible(true);
+
+				smallErrorLabel.setText(errorMessage);
+
+				addService.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						String newName = nameText.getText();
+						String mainService = (String) mainComboBox.getSelectedItem();
+
+						List<Boolean> selected = new ArrayList<>();
+						List<Boolean> mandatory = new ArrayList<>();
+
+						String serviceString = "";
+						String mandatoryString = "";
+
+						for (int i = 0; i < comboServiceTable.getRowCount(); i++) {
+							Boolean selectedBoolean = (Boolean) comboServiceTable.getValueAt(i, 1);
+							Boolean mandatoryBoolean = (Boolean) comboServiceTable.getValueAt(i, 2);
+
+							selected.add(selectedBoolean);
+							mandatory.add(mandatoryBoolean);
+						}
+
+						serviceString += mainService;
+						mandatoryString += true;
+
+						for (int i = 0; i < serviceList.size(); i++) {
+							if (selected.get(i).equals(true) && !serviceList.get(i).equals(mainService)) {
+								serviceString = serviceString + "," + serviceList.get(i);
+								mandatoryString = mandatoryString + "," + (mandatory.get(i));
+							}
+						}
+
+						try {
+							String owner = CarShopApplication.getCurrentUser();
+							CarShopController.OwnerDefinesServiceCombo(owner, newName, mainService, serviceString,
+									mandatoryString, CarShopApplication.getCarShop());
+							errorMessage = null;
+							addServiceFrame.setVisible(false);
+						} catch (InvalidInputException e) {
+							errorMessage = e.getMessage();
+						}
+
+						if (errorMessage != null && errorMessage != "") {
+							smallErrorLabel.setText(errorMessage);
+							errorMessage = "";
+						}
+						refreshData();
+						addServiceFrame.pack();
+					}
+				});
 			}
-		});
 		}
+		refreshData();
 	}
 	
+	public void updateComboButtonPerformed(ActionEvent event) {
+		if (comboList.size() == 0) {
+			errorMessage = "The carshop doesn't have any service combos!";
+		} else {
+			errorMessage = "";
+			JFrame addServiceFrame = new JFrame();
+			JLabel smallErrorLabel;
+			smallErrorLabel = new JLabel();
+			smallErrorLabel.setForeground(Color.RED);
+			JLabel updateTitle = new JLabel("Update service combo");
+			JLabel selectCombo = new JLabel("Select Combo");
+			
+			String[] combosArray = new String[comboList.size()];
+			
+			for(int i = 0; i < comboList.size(); i++) {
+				combosArray[i] = comboList.get(i);
+			}
+			
+			JComboBox<String> selectComboBox = new JComboBox<>(combosArray);
+			updateTitle.setFont(new Font("Arial", Font.BOLD, 22));
+			JLabel name = new JLabel("Name:");
+			JTextField nameText = new JTextField();
+			JLabel mainService = new JLabel("Main Service:");
+			String[] services = new String[serviceList.size()];
+			for (int i = 0; i < serviceList.size(); i++) {
+				services[i] = serviceList.get(i);
+			}
+
+			JComboBox<String> mainComboBox = new JComboBox<String>(services);
+
+			JTable comboServiceTable;
+
+			if (errorMessage == null || errorMessage.length() == 0) {
+				DefaultTableModel defaultTableModel = new DefaultTableModel(0, 0);
+				String[] tableCol = { "Service", "Add", "mandatory" };
+
+				defaultTableModel.setColumnIdentifiers(tableCol);
+
+				comboServiceTable = new JTable(defaultTableModel) {
+					@Override
+					public Class getColumnClass(int column) {
+						switch (column) {
+						case 0:
+							return String.class;
+						case 1:
+							return Boolean.class;
+						case 2:
+							return Boolean.class;
+						default:
+							return String.class;
+						}
+					}
+				};
+				for (String service : serviceList) {
+
+					Object[] obj = { service, false, false };
+					defaultTableModel.addRow(obj);
+				}
+
+				JScrollPane comboServiceScrollPane = new JScrollPane(comboServiceTable);
+				Dimension d1 = comboServiceTable.getPreferredSize();
+				comboServiceScrollPane.setPreferredSize(new Dimension(d1.width, HEIGHT_TABLE / 2));
+
+				comboServiceScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+				addServiceFrame.add(comboServiceScrollPane);
+				JButton addService = new JButton("Add");
+
+				GroupLayout layout = new GroupLayout(addServiceFrame.getContentPane());
+				addServiceFrame.getContentPane().setLayout(layout);
+				layout.setAutoCreateGaps(true);
+				layout.setAutoCreateContainerGaps(true);
+
+				// horizontal
+				layout.setHorizontalGroup(layout.createParallelGroup().addComponent(smallErrorLabel)
+						.addComponent(updateTitle)
+						.addGroup(layout.createSequentialGroup()
+								.addComponent(selectCombo)
+								.addComponent(selectComboBox))
+						.addGroup(layout.createSequentialGroup().addComponent(name).addComponent(nameText)
+								.addComponent(addService))
+						.addGroup(layout.createSequentialGroup().addComponent(mainService).addComponent(mainComboBox))
+						.addComponent(comboServiceScrollPane));
+
+				// vertical
+				layout.setVerticalGroup(
+						layout.createSequentialGroup().addComponent(smallErrorLabel).addComponent(updateTitle)
+							.addGroup(layout.createParallelGroup()
+								.addComponent(selectCombo)
+								.addComponent(selectComboBox))
+								.addGroup(layout.createParallelGroup().addComponent(name).addComponent(nameText)
+										.addComponent(addService))
+								.addGroup(layout.createParallelGroup().addComponent(mainService).addComponent(mainComboBox))
+								.addComponent(comboServiceScrollPane));
+
+				layout.linkSize(SwingConstants.HORIZONTAL,
+						new java.awt.Component[] { name, nameText, addService, mainService, mainComboBox, selectCombo, selectComboBox });
+				layout.linkSize(SwingConstants.VERTICAL,
+						new java.awt.Component[] { name, nameText, addService, mainService, mainComboBox, selectCombo, selectComboBox });
+
+				addServiceFrame.pack();
+				centerWindow(addServiceFrame);
+				addServiceFrame.setVisible(true);
+
+				smallErrorLabel.setText(errorMessage);
+
+				addService.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						String newName = nameText.getText();
+						String mainService = (String) mainComboBox.getSelectedItem();
+
+						String oldName = (String) selectComboBox.getSelectedItem();
+						
+						List<Boolean> selected = new ArrayList<>();
+						List<Boolean> mandatory = new ArrayList<>();
+
+						String serviceString = "";
+						String mandatoryString = "";
+
+						for (int i = 0; i < comboServiceTable.getRowCount(); i++) {
+							Boolean selectedBoolean = (Boolean) comboServiceTable.getValueAt(i, 1);
+							Boolean mandatoryBoolean = (Boolean) comboServiceTable.getValueAt(i, 2);
+
+							selected.add(selectedBoolean);
+							mandatory.add(mandatoryBoolean);
+						}
+
+						serviceString += mainService;
+						mandatoryString += true;
+
+						for (int i = 0; i < serviceList.size(); i++) {
+							if (selected.get(i).equals(true) && !serviceList.get(i).equals(mainService)) {
+								serviceString = serviceString + "," + serviceList.get(i);
+								mandatoryString = mandatoryString + "," + (mandatory.get(i));
+							}
+						}
+
+						try {
+							String owner = CarShopApplication.getCurrentUser();
+							CarShopController.updateServiceCombo(owner,oldName, newName, mainService, serviceString,
+									mandatoryString, CarShopApplication.getCarShop());
+							errorMessage = null;
+							addServiceFrame.setVisible(false);
+						} catch (InvalidInputException e) {
+							errorMessage = e.getMessage();
+						}
+
+						if (errorMessage != null && errorMessage != "") {
+							smallErrorLabel.setText(errorMessage);
+							errorMessage = "";
+						}
+						refreshData();
+						addServiceFrame.pack();
+					}
+				});
+			}
+		}
+		refreshData();
+	}
 	
 	public void refreshData() {
 		errorLabel.setText(errorMessage);
@@ -630,20 +814,6 @@ public class OwnerViewServices extends JPanel {
     }
 	
 	
-	public void editServiceButtonPerformed() {
-		
-	}
-	public void editComboButtonPerformed() {
-		
-	}
-	
-	public void deleteServiceButtonPerformed() {
-		
-	}
-	
-	public void deleteComboButtonPerformed() {
-		
-	}
 	
 	//helper methods
     public static void centerWindow(Window frame) {
