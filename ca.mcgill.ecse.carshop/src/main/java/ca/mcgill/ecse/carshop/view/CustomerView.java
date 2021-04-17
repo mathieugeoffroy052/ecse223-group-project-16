@@ -115,7 +115,7 @@ public class CustomerView extends JPanel {
 	private JScrollPane scrollTable;
 	
 	// lists
-	private HashMap<Integer, String> appointments;
+//	private HashMap<Integer, String> appointments;
 	private List<TOAppointment> TOAppointments;
 
 	// for the update scenarios
@@ -372,6 +372,18 @@ public class CustomerView extends JPanel {
 		updatePasswordButton.setBounds(1170, 194, 153, 29);
 		add(updatePasswordButton);
 		
+		JLabel lblNewLabel_3 = new JLabel("Welcome to the Appointment System! As a customer, you can make an appointment, update and cancel an appointment. To keep track of anything you choose in the Combo Box, press \"log\" once you've selected an option.");
+		lblNewLabel_3.setBounds(13, 677, 1500, 16);
+		add(lblNewLabel_3);
+		
+		JLabel lblNewLabel_4 = new JLabel("Updating each appointment contains three scenarios: updating the time of a single appointment (in which only the service and new date be entered), updating the appointment's servicebooking to a new servicebooking,");
+		lblNewLabel_4.setBounds(13, 705, 1390, 16);
+		add(lblNewLabel_4);
+		
+		JLabel lblNewLabel_4_1 = new JLabel("(in which only the two combo boxes need be changed), and adding optional services. Once you have selected these options, click \"Update\" and your table will be successfully updated.");
+		lblNewLabel_4_1.setBounds(13, 733, 1500, 16);
+		add(lblNewLabel_4_1);
+		
 
 		// *** Action Listeners *** //
 
@@ -483,20 +495,20 @@ public class CustomerView extends JPanel {
 	
 	private void refreshInit() {
 		
-		appointments = new HashMap<Integer, String>();
+//		appointments = new HashMap<Integer, String>();
 		if(name1.getSelectedIndex()==-1) {
 			name1.removeAllItems();
 		}
-		Integer index = 0;
+//		Integer index = 0;
 		name2.addItem("Select...");
 		name4.addItem("Select...");
 		TOAppointments = new ArrayList<>();
 		for (TOAppointment appt : CarShopController.getCustomerAppointments(CarShopApplication.getCurrentUser())) {
-			appointments.put(index, appt.getServiceName());
+//			appointments.put(index, appt.getServiceName());
 			TOAppointments.add(appt);
 			name2.addItem(appt.getServiceName());
 			name4.addItem(appt.getServiceName());
-			index++;
+//			index++;
 		};
 		
 		// get all the services in the carshop's services
@@ -540,17 +552,20 @@ public class CustomerView extends JPanel {
 			name3.addItem("Select...");
 			name4.addItem("Select...");
 			
-			Integer index = 0;
-			appointments = new HashMap<Integer, String>();
+//			Integer index = 0;
+//			appointments = new HashMap<Integer, String>();
 			if(TOAppointments!=null) {
-				TOAppointments.removeAll(TOAppointments);
+				for(int i = TOAppointments.size()-1; i >= 0; i--) {
+					TOAppointments.remove(i);
+				}
+//				TOAppointments.removeAll(TOAppointments);
 				for (TOAppointment appt : CarShopController.getCustomerAppointments(CarShopApplication.getCurrentUser())) {
-					if(appointments.put(index, appt.getServiceName())==null) {
+//					if(appointments.put(index, appt.getServiceName())==null) {
 						name2.addItem(appt.getServiceName());
 						name4.addItem(appt.getServiceName());
 						TOAppointments.add(appt);
-					}
-					index++;
+//					}
+//					index++;
 				};
 			}
 			
@@ -759,6 +774,11 @@ public class CustomerView extends JPanel {
 					}
 				}
 				CarShopController.updateAppointmentCase1(username, prevTOAppt, serviceName, timeOfChange);
+				System.out.println("\n--------------------------\n\n\n");
+				for(int i = 0; i < TOAppointments.size(); i++) {
+					System.out.println(TOAppointments.get(i));
+
+				}
 			}
 			else if(updateStatusCode == 2) {	// time1 -> time2
 				String timeOfChange = CarShopApplication.getSystemDateTime();
@@ -780,7 +800,11 @@ public class CustomerView extends JPanel {
 					time = "0"+updateApptEnterNewTimeTextField.getText();
 				}
 				CarShopController.updateAppointmentCase2(username, prevTOAppt, dateString, time, timeOfChange);
-				
+				System.out.println("\\n--------------------------\\n\\n\\n");
+				for(int i = 0; i < TOAppointments.size(); i++) {
+					System.out.println(TOAppointments.get(i));
+
+				}
 			} 
 			else if(updateStatusCode == 3) {	// addOptServices
 				String timeOfChange = CarShopApplication.getSystemDateTime();
@@ -802,7 +826,11 @@ public class CustomerView extends JPanel {
 					}
 				}
 				CarShopController.updateAppointmentCase3(username, prevTOAppt, optServices, time, timeOfChange);
-				
+				System.out.println("\\n--------------------------\\n\\n\\n");
+				for(int i = 0; i < TOAppointments.size(); i++) {
+					System.out.println(TOAppointments.get(i));
+
+				}
 			}
 							
 		} catch (Exception e) {
