@@ -2959,7 +2959,7 @@ public class CarShopController {
 		return toReturn;
 	}
 	
-	public static List<TOCarshopCombo> getCarshopServiceCOmbos() {
+	public static List<TOCarshopCombo> getCarshopServiceCombos() {
 		List<TOCarshopCombo> toReturn = new ArrayList<>();
 		CarShop carShop = CarShopApplication.getCarShop();
 		
