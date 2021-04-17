@@ -132,7 +132,7 @@ public class TechnicianView extends JPanel {
 					//if one of the text fields is empty it freaks out D:
 					openingTime = CarShopController.stringToTime(txtSetNewOpening.getText());
 					closingTime = CarShopController.stringToTime(txtNewClosingTime.getText());
-					if(openingTime == null||(closingTime == null||openingTime.equals("") || closingTime.equals(""))) {
+					if(openingTime == null||(closingTime == null)) {
 						throw new InvalidInputException("Please fill in both fields");
 					}
 				} catch (Exception e1) {
@@ -141,7 +141,7 @@ public class TechnicianView extends JPanel {
 				if(error!=null) {
 					errorMessage.setText(error);
 				}
-				if(!(openingTime == null||(closingTime == null||openingTime.equals("") || closingTime.equals("")))) {
+				if(!(openingTime == null||(closingTime == null))) {
 					String day = (String) comboBox.getSelectedItem();
 					
 					int columnToChange = 0;

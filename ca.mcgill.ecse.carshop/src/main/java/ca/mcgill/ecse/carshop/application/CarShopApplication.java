@@ -182,7 +182,7 @@ public class CarShopApplication {
 			// TODO Auto-generated method stub
 			// getting the carshop loads it
 			CarShop cs = getCarShop();
-			cs.delete();
+//			cs.delete();
 			
 			// sets to current date and time
 	        long millis=System.currentTimeMillis();  
@@ -240,6 +240,8 @@ public class CarShopApplication {
 			}
 			
 			return cs;
+			
+
 		}
 
 		private static void setCurrentDateAndTime(String date) throws ParseException {

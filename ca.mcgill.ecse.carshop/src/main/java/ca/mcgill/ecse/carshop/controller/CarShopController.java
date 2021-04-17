@@ -3076,6 +3076,20 @@ public class CarShopController {
 				// "The opening hours cannot overlap"
 				Garage garage = technician.getGarage();
 				
+				if(garage.getBusinessHours().size()!=businessHours.size()) {
+					if(garage.getBusinessHours().size()==0) {
+						for(int i1= 0; i1 < businessHours.size(); i1++) {
+							BusinessHour bh1 = businessHours.get(i1);
+							garage.addBusinessHour(bh1);
+						}
+					} else {
+						for(int i1 = garage.getBusinessHours().size(); i1 < businessHours.size(); i1++) {
+							BusinessHour bh1 = businessHours.get(i1);
+							garage.addBusinessHour(bh1);
+						}
+					}
+		
+				}
 				garage.getBusinessHour(toCheck).setStartTime(ourStartTime);
 				//persistence
 				try {
