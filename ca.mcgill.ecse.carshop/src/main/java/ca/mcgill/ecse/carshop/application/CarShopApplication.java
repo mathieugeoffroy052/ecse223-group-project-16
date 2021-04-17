@@ -207,7 +207,7 @@ public class CarShopApplication {
 			}
 
 			List<Technician> technicians = cs.getTechnicians();
-			if(technicians.size() != 0) {
+			if(technicians.size() != 5) {
 				if(technicians.size() == 0) {
 					CarShopController.newAccount("Tire-Technician", "Tire-Technician", cs);
 					CarShopController.newAccount("Engine-Technician", "Engine-Technician", cs);

@@ -70,6 +70,7 @@ public class OwnerViewServices extends JPanel {
 	public OwnerViewServices() {
 		
 		initView();
+		refreshData();
 		
 	}
 	
