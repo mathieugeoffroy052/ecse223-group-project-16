@@ -216,7 +216,7 @@ public class CarShopApplication {
 					CarShopController.newAccount("Fluids-Technician", "Fluids-Technician", cs);
 				
 					for(Technician t : cs.getTechnicians()) {
-						t.setGarage(new Garage(cs, t));// create a new object
+						t.setGarage(new Garage(cs, t));
 					}
 				}else {
 					for(Technician t:technicians) {
@@ -236,7 +236,7 @@ public class CarShopApplication {
 							CarShopController.newAccount("Fluids-Technician", "Fluids-Technician", cs);
 						}
 						for(Technician tech : cs.getTechnicians()) {
-							tech.setGarage(new Garage(cs, t));// create a new object
+							tech.setGarage(new Garage(cs, t));
 						}
 
 					}
@@ -246,7 +246,7 @@ public class CarShopApplication {
 			// fills up garages
 			for(Technician t: technicians) {
 				if(t.getGarage() == null) {
-					t.setGarage(new Garage(cs, t));// create a new object
+					t.setGarage(new Garage(cs, t));
 				}
 			}
 			
@@ -270,9 +270,6 @@ public class CarShopApplication {
 			CarShopApplication.setSystemTime(newTime);
 		}
 
-		// end helper methods for set up
-
-		
 
 }
 
