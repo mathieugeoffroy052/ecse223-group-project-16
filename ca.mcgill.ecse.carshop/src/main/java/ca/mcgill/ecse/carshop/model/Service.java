@@ -202,5 +202,13 @@ public class Service extends BookableService implements Serializable
     return super.toString() + "["+
             "duration" + ":" + getDuration()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "garage = "+(getGarage()!=null?Integer.toHexString(System.identityHashCode(getGarage())):"null");
-  }
+  }  
+  //------------------------
+  // DEVELOPER CODE - PROVIDED AS-IS
+  //------------------------
+  
+  // line 86 "../../../../../CarShopPersistence.ump"
+  private static final long serialVersionUID = -7403802774454467836L ;
+
+  
 }

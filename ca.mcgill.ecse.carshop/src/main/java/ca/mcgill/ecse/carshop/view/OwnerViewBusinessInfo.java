@@ -23,26 +23,26 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
-import javax.swing.JTable;
+//import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableModel;
+//import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DateFormatter;
 
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.SqlDateModel;
 
-import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 import ca.mcgill.ecse.carshop.controller.TOBusinessHour;
 import ca.mcgill.ecse.carshop.controller.TOTimeSlot;
 
+@SuppressWarnings("serial")
 public class OwnerViewBusinessInfo extends JPanel {
 	
 	private static String errorMessage = null;
@@ -59,7 +59,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 
     private static JLabel businessHoursTitle;
     private static JList<String> weeklySchedule; //list to hold weekly schedule (no scrolling)
-    private static TOBusinessHour[] weeklyHours = new TOBusinessHour[1]; //transfer object for business hours TODO
+//    private static TOBusinessHour[] weeklyHours = new TOBusinessHour[1]; //transfer object for business hours TODO
     private static List<TOBusinessHour> TOBusinessHoursCS;
     private static String[] stringBusinessHours;
     private static DefaultListModel<String> bhm;
@@ -68,7 +68,7 @@ public class OwnerViewBusinessInfo extends JPanel {
     //holidays
     private static JLabel holidayTitle;
     private static JList<String> upcomingHolidays; //list to show all the upcoming holidays
-    private static TOTimeSlot[] carshopHolidays = new TOTimeSlot[0]; //TO for holidays TODO
+//    private static TOTimeSlot[] carshopHolidays = new TOTimeSlot[0]; //TO for holidays TODO
     private static List<TOTimeSlot> TOHolidaysCS;
     private static String[] stringHolidays;
     private static DefaultListModel<String> hm;
@@ -78,7 +78,7 @@ public class OwnerViewBusinessInfo extends JPanel {
     //vacations
     private static JLabel vacationTitle;
     private static JList<String> upcomingVacations; //list to show all upcoming vacations
-    private static TOTimeSlot[] carshopVacations = new TOTimeSlot[0]; //TO for vacations TODO
+//    private static TOTimeSlot[] carshopVacations = new TOTimeSlot[0]; //TO for vacations TODO
     private static List<TOTimeSlot> TOVacationsCS;
     private static String[] stringVacations;
     private static DefaultListModel<String> vm;
@@ -281,6 +281,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 		JLabel startTime = new JLabel("Start Time:");
 		JTextField startTimeText = new JTextField("08:00");
 		JLabel endDate = new JLabel("End Date:");
+		@SuppressWarnings("static-access")
 		JFormattedTextField endDateText = new JFormattedTextField(this.phoneNum.getText());
 		JLabel endTime = new JLabel("End Time:");
 		JTextField endTimeText = new JTextField("09:00");
@@ -396,38 +397,60 @@ public class OwnerViewBusinessInfo extends JPanel {
     	if (errorMessage != null) errorLabel.setText(errorMessage);
     	else errorLabel.setText(errorMessage);
     	if (smallErrorMessage != null) smallErrorLabel.setText(smallErrorMessage);
-    	businessName.setText("Name:\t" + CarShopController.getBusinessName());
-    	email.setText("Email:\t" + CarShopController.getBusinessEmail());
-    	phoneNum.setText("Phone #:\t" + CarShopController.getBusinessPhone());
-    	address.setText("Address:\t" + CarShopController.getBusinessAddress());
+    	try {
+    		// all throw exceptions if business is null
+			businessName.setText("Name:\t" + CarShopController.getBusinessName());
+	    	email.setText("Email:\t" + CarShopController.getBusinessEmail());
+	    	phoneNum.setText("Phone #:\t" + CarShopController.getBusinessPhone());
+	    	address.setText("Address:\t" + CarShopController.getBusinessAddress());
 
-    	TOBusinessHoursCS = CarShopController.getBusinessHours();
-    	stringBusinessHours = listBHToString(TOBusinessHoursCS);
-    	TOHolidaysCS = CarShopController.getHolidays();
-    	stringHolidays = listTSToString(TOHolidaysCS);
-    	TOVacationsCS = CarShopController.getVacations();
-    	stringVacations = listTSToString(TOVacationsCS);
-    	
+	    	// get all TO business hours
+	    	TOBusinessHoursCS = CarShopController.getBusinessHours();
+	    	// put them all into a string
+	    	stringBusinessHours = listBHToString(TOBusinessHoursCS);
+	    	
+	    	// get all TO holidays
+	    	TOHolidaysCS = CarShopController.getHolidays();
+	    	// convert all holidays to a string
+	    	stringHolidays = listTSToString(TOHolidaysCS);
+	    	
+	    	// get all TO vacations
+	    	TOVacationsCS = CarShopController.getVacations();
+	    	// convert them all to a string (same method as before)
+	    	stringVacations = listTSToString(TOVacationsCS);
+	    	
+		} catch (Exception e) {
+			errorLabel.setText(e.getMessage());
+		}
+
     	bhm.clear();
     	hm.clear();
     	vm.clear();
     	
-    	for (String s : stringBusinessHours) {
-    		bhm.addElement(s);
+    	// condition check
+    	if(stringBusinessHours!=null) {
+	    	for (String s : stringBusinessHours) {
+	    		bhm.addElement(s);
+	    	}
     	}
     	
-    	for (String s : stringHolidays) {
-    		hm.addElement(s);
+    	if(stringHolidays!=null) {
+	    	for (String s : stringHolidays) {
+	    		hm.addElement(s);
+	    	}
     	}
     	
-    	for (String s : stringVacations) {
-    		vm.addElement(s);
+    	if(stringVacations!=null) {
+	    	for (String s : stringVacations) {
+	    		vm.addElement(s);
+	    	}
     	}
 
     }
     
     
     
+@SuppressWarnings({ "rawtypes", "unchecked" })
 private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
 
     	JFrame updateWeeklyHours = new JFrame();
@@ -566,7 +589,7 @@ private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
 	public static String[] listBHToString(List<TOBusinessHour> list) {
     	String[] newStringArray = new String[list.size()];
     	int index = 0;
-    	if (list.get(0) == null) return null;
+    	if (list.size()==0) return newStringArray;
     	for (TOBusinessHour bh : list) {
     		String info = bh.getDayOfWeek() 
     				+ ": " + CarShopController.timeToString(bh.getStartTime()) 
@@ -580,7 +603,7 @@ private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
 	public static String[] listTSToString(List<TOTimeSlot> list) {
     	String[] newStringArray = new String[list.size()];
     	int index = 0;
-    	if (list.get(0) == null) return null;	
+    	if (list.size() == 0) return newStringArray;	
     	for (TOTimeSlot ts : list) {
     		String info = "From " + CarShopController.dateToString(ts.getStartDate()) 
 	    		+ " at " + CarShopController.timeToString(ts.getStartTime()) 
@@ -593,23 +616,40 @@ private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
     }
     
     
-    
+    public static String splitBasedOnTab(String str) {
+    	String[] arr = str.split("\t");
+    	if(arr.length>1) {
+    		return arr[1];
+    	}
+    	return "";
+    }
     
     //action methods
-    private void updateBusinessInfoActionPerformed(ActionEvent evt) {
+    @SuppressWarnings("static-access")
+	private void updateBusinessInfoActionPerformed(ActionEvent evt) {
 		JFrame updateBusinessInfo = new JFrame();
 		smallErrorLabel = new JLabel();
 		smallErrorLabel.setForeground(Color.RED);
 		JLabel updateTitle = new JLabel("Update Business Information");
 		updateTitle.setFont(new Font("Arial", Font.BOLD, 22));
+		
+		// have to split the string
 		JLabel name = new JLabel("Name:");
-		JTextField nameText = new JTextField(businessName.getText());
+		JTextField nameText = new JTextField(splitBasedOnTab(this.businessName.getText()));
+		
+		// have to split the string
 		JLabel address = new JLabel("Address:");
-		JTextField addressText = new JTextField(this.address.getText());
+		JTextField addressText = new JTextField(splitBasedOnTab(this.address.getText()));
+
+		// have to split the string
 		JLabel phoneNum = new JLabel("Phone Number:");
-		JFormattedTextField phoneNumText = new JFormattedTextField(this.phoneNum.getText());
+		JFormattedTextField phoneNumText = new JFormattedTextField(splitBasedOnTab(this.phoneNum.getText()));
+
+		// have to split the string
 		JLabel email = new JLabel("Email:");
-		JTextField emailText = new JTextField(this.email.getText());
+		JTextField emailText = new JTextField(splitBasedOnTab(this.email.getText()));
+
+
 		JButton updateInfo = new JButton("Update");
 		
 		updateBusinessInfo.add(updateTitle);
@@ -697,7 +737,8 @@ private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
 	}
     
     
-    private void addWeeklyHoursActionPerformed(ActionEvent evt) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	private void addWeeklyHoursActionPerformed(ActionEvent evt) {
     	JFrame addWeeklyHours = new JFrame();
 		smallErrorLabel = new JLabel();
 		smallErrorLabel.setForeground(Color.RED);
@@ -710,7 +751,7 @@ private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
 		
 		//START TIME
 		SpinnerDateModel model = new SpinnerDateModel();
-		model.setValue(CarShopApplication.getSystemTime());
+		model.setValue(CarShopController.getSystemTime());
 		
 		JSpinner startTimePicker = new JSpinner(model);
 		JSpinner.DateEditor editor = new JSpinner.DateEditor(startTimePicker, "HH:mm:ss");
@@ -723,7 +764,7 @@ private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
 		JLabel endTime = new JLabel("End Time:");
 		//END TIME
 		SpinnerDateModel model2 = new SpinnerDateModel();
-		model2.setValue(CarShopApplication.getSystemTime());
+		model2.setValue(CarShopController.getSystemTime());
 		
 		JSpinner endTimePicker = new JSpinner(model2);
 		JSpinner.DateEditor editor2 = new JSpinner.DateEditor(endTimePicker, "HH:mm:ss");

@@ -7,9 +7,7 @@ import java.util.Vector;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 
-import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 import ca.mcgill.ecse.carshop.controller.TOBusinessHour;
@@ -29,26 +27,13 @@ public class TechnicianView extends JPanel {
 	private String error;
 	private JLabel errorMessage;
 	private DefaultTableModel modelTable;
-	private JComboBox comboBox;
+	private JComboBox<String> comboBox;
 	private static List<TOBusinessHour> garageBusinessHours = CarShopController.getGarageTOBusinessHours();
 	private JLabel labelNotification;
+	private JButton logout;
+//	private CarShopPage csPage;
+	private JButton btnNewButton, btnNewButton_1;
 	
-	/**
-	 * Launch the application.
-	 * remove this later when the constructor gets called from elsewhere upon a technician successfully logging in.
-	 */
-//	public static void main(String[] args) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					TechnicianWindow window = new TechnicianWindow();
-//					window.frame.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
 
 	/**
 	 * Create the application.
@@ -60,11 +45,25 @@ public class TechnicianView extends JPanel {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	@SuppressWarnings({ "serial", "unchecked", "rawtypes" })
 	private void initializeTechnicianView() {
 		
+
 		
-		labelNotification = new JLabel();
-		labelNotification.setBounds(206, 775, 300, 29);
+		logout = new JButton("Log out");
+		logout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CarShopController.logOut();
+				btnNewButton.setVisible(false);
+				btnNewButton_1.setVisible(false);
+				labelNotification.setText("You are logged out. Close this window and relaunch the application");
+			}
+		});
+		logout.setBounds(520, 800, 100, 20);
+		add(logout);
+		
+		labelNotification = new JLabel();	//here
+		labelNotification.setBounds(206, 725, 500, 29);
 		labelNotification.setForeground(Color.green);
 		add(labelNotification);
 		
@@ -79,7 +78,7 @@ public class TechnicianView extends JPanel {
 		table = new JTable();
 		table.setBounds(60, 177, 572, 57);
 		add(table);
-		JTable scheduleTable = new JTable();
+//		JTable scheduleTable = new JTable();
 		//make the table non editable (for the user. the table will still get updated):
 		DefaultTableModel scheduleModelTable = new DefaultTableModel() {
 			@Override
@@ -105,7 +104,7 @@ public class TechnicianView extends JPanel {
 		closing.addElement("Closing");
 
 		//set the garage business hours
-		for(int i=0; i<5;i++) {
+		for(int i=0; i<garageBusinessHours.size();i++) {
 			opening.addElement(garageBusinessHours.get(i).getStartTime().toString());
 			closing.addElement(garageBusinessHours.get(i).getEndTime().toString());
 		}
@@ -120,13 +119,13 @@ public class TechnicianView extends JPanel {
 		
 		
 		//changing garage opening hours
-		JButton btnNewButton = new JButton("Confirm Changes");
+		btnNewButton = new JButton("Confirm Changes");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Time openingTime = null;
 				Time closingTime = null;
-				Time oldOpening = null;
-				Time oldClosing = null;
+//				Time oldOpening = null;
+//				Time oldClosing = null;
 				try {
 					error = "";
 					//works properly as long as proper times are inputted and no errors are thrown...
@@ -167,8 +166,8 @@ public class TechnicianView extends JPanel {
 						error = "";
 						String op = openingTime.toString();
 						String cl = closingTime.toString();
-						String user = CarShopApplication.getCurrentUser();
-						CarShopController.changeGarageBusinessHour(day, op, cl,user , CarShopApplication.getCarShop());
+						String user = CarShopController.getCurrentUser();
+						CarShopController.changeGarageBusinessHour(day, op, cl,user , CarShopController.getCarShop());
 						rowToChange1 = 0;
 						scheduleModelTable.setValueAt(openingTime,rowToChange1,columnToChange);
 						rowToChange2 = 1;
@@ -188,10 +187,9 @@ public class TechnicianView extends JPanel {
 							error = "";
 							String op = openingTime.toString();
 							String cl = closingTime.toString();
-							String user = CarShopApplication.getCurrentUser();
-							CarShopController.changeGarageBusinessHour(day, op, cl,user , CarShopApplication.getCarShop());
+							String user = CarShopController.getCurrentUser();
+							CarShopController.changeGarageBusinessHour(day, op, cl,user , CarShopController.getCarShop());
 						} catch (Exception e1) {
-							// TODO Auto-generated catch block
 							error = e1.getMessage();
 						}
 						if(error!=null) {
@@ -240,14 +238,14 @@ public class TechnicianView extends JPanel {
 		add(txtNewPassword);
 		txtNewPassword.setColumns(10);
 		
-		JButton btnNewButton_1 = new JButton("Confirm Change");
+		btnNewButton_1 = new JButton("Confirm Change");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String username = CarShopApplication.getCurrentUser();
+				String username = CarShopController.getCurrentUser();
 				String password = txtNewPassword.getText();
 				try {
 					error = null;
-					CarShopController.setTechnicianPassword(username, password, CarShopApplication.getCarShop());
+					CarShopController.setTechnicianPassword(username, password, CarShopController.getCarShop());
 					txtNewPassword.setText("");
 				} catch (InvalidInputException e1) {
 					error = e1.getMessage();
@@ -277,7 +275,7 @@ public class TechnicianView extends JPanel {
 		add(separator_1_1);
 		
 		//returns the username of the current user, which is also the string for technician type
-		JLabel lblNewLabel_4 = new JLabel(CarShopApplication.getCurrentUser());
+		JLabel lblNewLabel_4 = new JLabel(CarShopController.getCurrentUser());
 		lblNewLabel_4.setBounds(60, 77, 166, 16);
 		add(lblNewLabel_4);
 		

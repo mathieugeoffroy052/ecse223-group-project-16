@@ -109,7 +109,10 @@ public abstract class User implements Serializable
   // DEVELOPER CODE - PROVIDED AS-IS
   //------------------------
   
-  // line 41 "../../../../../carshop.ump"
+  // line 118 "../../../../../CarShopPersistence.ump"
+  private static final long serialVersionUID = -5802051254033924453L ;
+
+// line 41 "../../../../../carshop.ump"
   public static Map<String, User> getUsersByUsername () 
   {
     return usersByUsername;

@@ -5,8 +5,8 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+//import java.awt.event.FocusEvent;
+//import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -17,10 +17,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 
 
+@SuppressWarnings("serial")
 public class OwnerViewProfile extends JPanel{
 	
 	private JLabel titleJLabel;
@@ -35,8 +35,8 @@ public class OwnerViewProfile extends JPanel{
 	private JLabel prompt;
 	
 	private String error;
-	private String username;
-	private String password;
+//	private String username;
+//	private String password;
 	
 	
 	public OwnerViewProfile() {
@@ -53,8 +53,8 @@ public class OwnerViewProfile extends JPanel{
 		usernameJLabel = new JLabel("Username");
 		passwordLabel = new JLabel("Password");
 		
-		String username = CarShopApplication.getCurrentUser();
-		String password = CarShopApplication.getUser().getPassword();
+		String username = CarShopController.getCurrentUser();
+		String password = CarShopController.getUser().getPassword();
 		
 		usernameTextField = new JTextField(username);
 		passwordTextField = new JTextField(password);
@@ -110,13 +110,13 @@ public class OwnerViewProfile extends JPanel{
 			
 			@Override
 			public void keyTyped(KeyEvent e) {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 				
 			}
 			
 			@Override
 			public void keyReleased(KeyEvent e) {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 				
 			}
 			
@@ -153,7 +153,7 @@ public class OwnerViewProfile extends JPanel{
 		errorLabel.setText(error);
 		
 		if (error == null || error.length() == 0) {
-			String password = CarShopApplication.getUser().getPassword();
+			String password = CarShopController.getUser().getPassword();
 			passwordTextField.setText(password);
 		}
 		passwordTextField.setEditable(false);

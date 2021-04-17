@@ -124,5 +124,13 @@ public class ServiceBooking implements Serializable
       placeholderAppointment.removeServiceBooking(this);
     }
   }
+  
+  //------------------------
+  // DEVELOPER CODE - PROVIDED AS-IS
+  //------------------------
+  
+  // line 92 "../../../../../CarShopPersistence.ump"
+  private static final long serialVersionUID = 6960047333527719982L ;
 
+  
 }
