@@ -12,6 +12,7 @@ import javax.swing.JTabbedPane;
  * @author Group 16
  *
  */
+@SuppressWarnings("serial")
 public class OwnerView extends JPanel {
 	
 	public OwnerView() {

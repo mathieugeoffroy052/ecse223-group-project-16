@@ -1,6 +1,5 @@
 package ca.mcgill.ecse.carshop.view;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -21,11 +20,11 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
-import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.TOAppointment;
 import ca.mcgill.ecse.carshop.controller.TOServiceBooking;
 
+@SuppressWarnings("serial")
 public class ServiceSelectionNode extends JPanel {
 
 	// UI elements
@@ -168,7 +167,7 @@ public class ServiceSelectionNode extends JPanel {
 		error = "";
 
 		try {
-			CarShopController.startAppointmentAt(CarShopController.findAppointment(toAppointment), CarShopApplication.getSystemDateTime());
+			CarShopController.startAppointmentAt(CarShopController.findAppointment(toAppointment), CarShopController.getSystemDateTime());
 		} catch (Exception e) {
 			error = e.getMessage();
 		}
@@ -184,7 +183,7 @@ public class ServiceSelectionNode extends JPanel {
 		error = "";
 
 		try {
-			CarShopController.endAppointmentAt(CarShopController.findAppointment(toAppointment), CarShopApplication.getSystemDateTime());
+			CarShopController.endAppointmentAt(CarShopController.findAppointment(toAppointment), CarShopController.getSystemDateTime());
 		} catch (Exception e) {
 			error = e.getMessage();
 		}
@@ -201,7 +200,7 @@ public class ServiceSelectionNode extends JPanel {
 		error = "";
 
 		try {
-			CarShopController.updateNoShowAt(CarShopController.findAppointment(toAppointment), CarShopApplication.getSystemDateTime());
+			CarShopController.updateNoShowAt(CarShopController.findAppointment(toAppointment), CarShopController.getSystemDateTime());
 		} catch (Exception e) {
 			error = e.getMessage();
 		}

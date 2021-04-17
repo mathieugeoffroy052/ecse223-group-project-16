@@ -23,11 +23,11 @@ public class TechnicianWindow {
 	private JLabel lblNewLabel_5;
 	private JLabel lblNewLabel_6;
 	private JLabel lblNewLabel_7;
-	private JComboBox comboBox;
+	private JComboBox<String> comboBox;
 	private JButton btnNewButton;
 	private JLabel lblNewLabel_2;
-	private JTable overviewTable;
-	private JScrollPane overviewScrollPane;
+//	private JTable overviewTable;
+//	private JScrollPane overviewScrollPane;
 	private JLabel errorMessage;
 
 	/**
@@ -57,6 +57,7 @@ public class TechnicianWindow {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	@SuppressWarnings({ "serial", "unchecked", "rawtypes" })
 	private void initializeTechnicianView() {
 		frame = new JFrame();
 		frame.setBounds(400, 400, 1000, 1000);
@@ -78,7 +79,7 @@ public class TechnicianWindow {
 		frame.getContentPane().add(table);
 		
 		
-		JTable scheduleTable = new JTable();
+//		JTable scheduleTable = new JTable();	// just commented out
 		//make the table non editable (for the user. the table will still get updated):
 		DefaultTableModel scheduleModelTable = new DefaultTableModel() {
 			@Override
@@ -123,7 +124,7 @@ public class TechnicianWindow {
 		lblNewLabel_2.setBounds(60, 321, 153, 16);
 		frame.getContentPane().add(lblNewLabel_2);
 		
-		comboBox = new JComboBox();
+		comboBox = new JComboBox<String>();
 		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"}));
 		comboBox.setBounds(60, 349, 130, 27);
 		frame.getContentPane().add(comboBox);

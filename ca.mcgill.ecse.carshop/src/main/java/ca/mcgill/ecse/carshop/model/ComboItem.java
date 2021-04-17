@@ -130,5 +130,13 @@ public class ComboItem implements Serializable
             "mandatory" + ":" + getMandatory()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "service = "+(getService()!=null?Integer.toHexString(System.identityHashCode(getService())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "serviceCombo = "+(getServiceCombo()!=null?Integer.toHexString(System.identityHashCode(getServiceCombo())):"null");
-  }
+  }  
+  //------------------------
+  // DEVELOPER CODE - PROVIDED AS-IS
+  //------------------------
+  
+  // line 54 "../../../../../CarShopPersistence.ump"
+  private static final long serialVersionUID = -7403802774454467836L ;
+
+  
 }

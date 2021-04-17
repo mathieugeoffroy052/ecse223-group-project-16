@@ -934,10 +934,6 @@ public class CarShop implements Serializable
     
   }
 
-
-  /**
-   * private static final long serialVersionUID = 2045406856025012133L;
-   */
   // line 45 "../../../../../CarShopPersistence.ump"
    public void reinitialize(){
     BookableService.reinitializeBookableServiceList(this.getBookableServices());
@@ -960,5 +956,13 @@ public class CarShop implements Serializable
 		}
 		return -1;
   }
+  
+  //------------------------
+  // DEVELOPER CODE - PROVIDED AS-IS
+  //------------------------
+  
+  // line 42 "../../../../../CarShopPersistence.ump"
+  private static final long serialVersionUID = 2045406856025012133L ;
 
+  
 }

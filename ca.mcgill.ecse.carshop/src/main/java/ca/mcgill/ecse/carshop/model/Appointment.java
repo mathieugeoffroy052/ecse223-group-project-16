@@ -324,7 +324,7 @@ public class Appointment implements Serializable
     return wasEventProcessed;
   }
 
-  private boolean __autotransition9__()
+  private boolean __autotransition10__()
   {
     boolean wasEventProcessed = false;
     
@@ -353,7 +353,7 @@ public class Appointment implements Serializable
         delete();
         break;
       case HasEnded:
-        __autotransition9__();
+        __autotransition10__();
         break;
     }
   }
@@ -738,5 +738,13 @@ public class Appointment implements Serializable
 		}
 		return false;
   }
+  
+  //------------------------
+  // DEVELOPER CODE - PROVIDED AS-IS
+  //------------------------
+  
+  // line 6 "../../../../../CarShopPersistence.ump"
+  private static final long serialVersionUID = -2683593616927798071L ;
 
+  
 }

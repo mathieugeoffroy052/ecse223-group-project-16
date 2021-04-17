@@ -23,26 +23,26 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
-import javax.swing.JTable;
+//import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableModel;
+//import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DateFormatter;
 
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.SqlDateModel;
 
-import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 import ca.mcgill.ecse.carshop.controller.TOBusinessHour;
 import ca.mcgill.ecse.carshop.controller.TOTimeSlot;
 
+@SuppressWarnings("serial")
 public class OwnerViewBusinessInfo extends JPanel {
 	
 	private static String errorMessage = null;
@@ -59,7 +59,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 
     private static JLabel businessHoursTitle;
     private static JList<String> weeklySchedule; //list to hold weekly schedule (no scrolling)
-    private static TOBusinessHour[] weeklyHours = new TOBusinessHour[1]; //transfer object for business hours TODO
+//    private static TOBusinessHour[] weeklyHours = new TOBusinessHour[1]; //transfer object for business hours TODO
     private static List<TOBusinessHour> TOBusinessHoursCS;
     private static String[] stringBusinessHours;
     private static DefaultListModel<String> bhm;
@@ -68,7 +68,7 @@ public class OwnerViewBusinessInfo extends JPanel {
     //holidays
     private static JLabel holidayTitle;
     private static JList<String> upcomingHolidays; //list to show all the upcoming holidays
-    private static TOTimeSlot[] carshopHolidays = new TOTimeSlot[0]; //TO for holidays TODO
+//    private static TOTimeSlot[] carshopHolidays = new TOTimeSlot[0]; //TO for holidays TODO
     private static List<TOTimeSlot> TOHolidaysCS;
     private static String[] stringHolidays;
     private static DefaultListModel<String> hm;
@@ -78,7 +78,7 @@ public class OwnerViewBusinessInfo extends JPanel {
     //vacations
     private static JLabel vacationTitle;
     private static JList<String> upcomingVacations; //list to show all upcoming vacations
-    private static TOTimeSlot[] carshopVacations = new TOTimeSlot[0]; //TO for vacations TODO
+//    private static TOTimeSlot[] carshopVacations = new TOTimeSlot[0]; //TO for vacations TODO
     private static List<TOTimeSlot> TOVacationsCS;
     private static String[] stringVacations;
     private static DefaultListModel<String> vm;
@@ -281,6 +281,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 		JLabel startTime = new JLabel("Start Time:");
 		JTextField startTimeText = new JTextField("08:00");
 		JLabel endDate = new JLabel("End Date:");
+		@SuppressWarnings("static-access")
 		JFormattedTextField endDateText = new JFormattedTextField(this.phoneNum.getText());
 		JLabel endTime = new JLabel("End Time:");
 		JTextField endTimeText = new JTextField("09:00");
@@ -449,6 +450,7 @@ public class OwnerViewBusinessInfo extends JPanel {
     
     
     
+@SuppressWarnings({ "rawtypes", "unchecked" })
 private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
 
     	JFrame updateWeeklyHours = new JFrame();
@@ -623,7 +625,8 @@ private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
     }
     
     //action methods
-    private void updateBusinessInfoActionPerformed(ActionEvent evt) {
+    @SuppressWarnings("static-access")
+	private void updateBusinessInfoActionPerformed(ActionEvent evt) {
 		JFrame updateBusinessInfo = new JFrame();
 		smallErrorLabel = new JLabel();
 		smallErrorLabel.setForeground(Color.RED);
@@ -734,7 +737,8 @@ private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
 	}
     
     
-    private void addWeeklyHoursActionPerformed(ActionEvent evt) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	private void addWeeklyHoursActionPerformed(ActionEvent evt) {
     	JFrame addWeeklyHours = new JFrame();
 		smallErrorLabel = new JLabel();
 		smallErrorLabel.setForeground(Color.RED);
@@ -747,7 +751,7 @@ private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
 		
 		//START TIME
 		SpinnerDateModel model = new SpinnerDateModel();
-		model.setValue(CarShopApplication.getSystemTime());
+		model.setValue(CarShopController.getSystemTime());
 		
 		JSpinner startTimePicker = new JSpinner(model);
 		JSpinner.DateEditor editor = new JSpinner.DateEditor(startTimePicker, "HH:mm:ss");
@@ -760,7 +764,7 @@ private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
 		JLabel endTime = new JLabel("End Time:");
 		//END TIME
 		SpinnerDateModel model2 = new SpinnerDateModel();
-		model2.setValue(CarShopApplication.getSystemTime());
+		model2.setValue(CarShopController.getSystemTime());
 		
 		JSpinner endTimePicker = new JSpinner(model2);
 		JSpinner.DateEditor editor2 = new JSpinner.DateEditor(endTimePicker, "HH:mm:ss");

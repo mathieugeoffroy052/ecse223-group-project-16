@@ -2,22 +2,10 @@ package ca.mcgill.ecse.carshop.view;
 
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.*;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Properties;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-
-
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,9 +14,9 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
+import ca.mcgill.ecse.carshop.application.CarShopApplication.AccountType;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
-import ca.mcgill.ecse.carshop.model.CarShop;
 
 
 
@@ -38,10 +26,10 @@ public class CarShopPage extends JFrame {
 
 	// Variables declaration
 	private JButton buttonLogin; 			//login button
-	private JButton signUpButton;			//sign up button
 	private JLabel labelWindow;				
 	private JLabel labelUsername;			//username label
 	private JLabel labelPassword;			//password label
+	@SuppressWarnings("unused")
 	private JPanel panelName;				
 	private JPasswordField textPassword;	//password text box
 	private JTextField textUsername;		//username text box
@@ -54,8 +42,8 @@ public class CarShopPage extends JFrame {
 	private JLabel labelApplication;
 	private JLabel labelInstructions1;
 	private JLabel labelInstructions2;
+	@SuppressWarnings("unused")
 	private JLabel labelError;
-	//TODO
 	//need to add the error message to the display, and send a confirmation that the user is logged in if it's successful.
 
 
@@ -74,6 +62,7 @@ public class CarShopPage extends JFrame {
 
 		// Sign up button - will automatically log in a new customer if no errors are raised
 		buttonSignup.addActionListener(new ActionListener() {
+			@SuppressWarnings({ "deprecation", "static-access" })
 			@Override
 			public void actionPerformed(ActionEvent evt) {
 				//TODO 
@@ -115,13 +104,13 @@ public class CarShopPage extends JFrame {
 
 			@Override
 			public void keyTyped(KeyEvent e) {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 
 			}
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 
 			}
 
@@ -156,7 +145,7 @@ public class CarShopPage extends JFrame {
 		//if user is logged in correctly, transition to a new window 
 		//(either customer or owner perspective)  
 
-		if (CarShopApplication.getCurrentUser() != null && CarShopApplication.getAccountType().equals(CarShopApplication.accountType.Owner)) {
+		if (CarShopApplication.getCurrentUser() != null && CarShopApplication.getAccountType().equals(AccountType.Owner)) {
 			System.out.println("logging in as owner...");
 			//    		CarShopApplication.logIn(username, password);
 
@@ -165,7 +154,7 @@ public class CarShopPage extends JFrame {
 
 		}
 
-		if (CarShopApplication.getCurrentUser() != null && CarShopApplication.getAccountType().equals(CarShopApplication.accountType.Customer)) {
+		if (CarShopApplication.getCurrentUser() != null && CarShopApplication.getAccountType().equals(AccountType.Customer)) {
 			System.out.println("Logging in as customer...");
 			//    		CarShopApplication.logIn(username, password);
 
@@ -210,7 +199,7 @@ public class CarShopPage extends JFrame {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setSize(screenSize.width, screenSize.height);
 
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+//		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (screenSize.width)/2;
 		int y = (screenSize.height)/2;
 

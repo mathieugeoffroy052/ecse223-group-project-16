@@ -19,6 +19,7 @@ import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.TOAppointment;
 import ca.mcgill.ecse.carshop.controller.TOServiceBooking;
 
+@SuppressWarnings("serial")
 public class OwnerViewAppointments extends JPanel {
 	
 	//UI elements

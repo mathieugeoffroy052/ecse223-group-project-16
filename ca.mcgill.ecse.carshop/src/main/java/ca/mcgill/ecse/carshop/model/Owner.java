@@ -78,5 +78,13 @@ public class Owner extends User implements Serializable
     }
     super.delete();
   }
+  
+  //------------------------
+  // DEVELOPER CODE - PROVIDED AS-IS
+  //------------------------
+  
+  // line 80 "../../../../../CarShopPersistence.ump"
+  private static final long serialVersionUID = -7896006206681027357L ;
 
+  
 }
