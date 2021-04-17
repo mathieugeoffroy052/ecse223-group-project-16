@@ -632,7 +632,7 @@ private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
 		
 		// have to split the string
 		JLabel name = new JLabel("Name:");
-		JTextField nameText = new JTextField(splitBasedOnTab(businessName.getText()));
+		JTextField nameText = new JTextField(splitBasedOnTab(this.businessName.getText()));
 		
 		// have to split the string
 		JLabel address = new JLabel("Address:");
