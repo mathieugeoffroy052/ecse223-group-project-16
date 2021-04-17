@@ -1808,7 +1808,7 @@ public class CarShopController {
 
 				for (BookableService bookableService : bookableServiceList) {	//find service and change parameters
 					if (bookableService instanceof Service) {
-						if (bookableService.hasWithName(service)) {
+						if (bookableService.getName().equals(service)) {
 							((Service) bookableService).setName(name);
 							((Service) bookableService).setDuration(newIntDuration);
 							((Service) bookableService).setGarage(currentGar);
@@ -3070,9 +3070,9 @@ public class CarShopController {
 		int toCheck = 0;
 		if(cs.getBusiness()==null) throw new InvalidInputException("No business has been created yet!");
 		List<BusinessHour> businessHours = cs.getBusiness().getBusinessHours();
+		boolean found = false;
 		for(int i=0; i<businessHours.size();i++) {
 			BusinessHour bh = businessHours.get(i);
-			boolean found = false;
 			if(bh.getDayOfWeek().toString().equals(day)) {
 				found = true;
 				if(bh.getEndTime().before(stringToTime(endTime))) {
@@ -3098,21 +3098,23 @@ public class CarShopController {
 				Technician technician = CarShopController.findTechnician(type, cs);		
 				// "The opening hours cannot overlap"
 				Garage garage = technician.getGarage();
-				
-				if(garage.getBusinessHours().size()!=businessHours.size()) {
-					if(garage.getBusinessHours().size()==0) {
-						for(int i1= 0; i1 < businessHours.size(); i1++) {
-							BusinessHour bh1 = businessHours.get(i1);
-							garage.addBusinessHour(bh1);
-						}
-					} else {
-						for(int i1 = garage.getBusinessHours().size(); i1 < businessHours.size(); i1++) {
-							BusinessHour bh1 = businessHours.get(i1);
-							garage.addBusinessHour(bh1);
-						}
-					}
-		
+				if(garage.getBusinessHours().size()==0) {
+					BusinessHour bh1 = new BusinessHour(DayOfWeek.Monday, null, null, cs);
+					garage.addBusinessHour(bh1);
+					
+					BusinessHour bh2 = new BusinessHour(DayOfWeek.Tuesday, null, null, cs);
+					garage.addBusinessHour(bh2);
+					
+					BusinessHour bh3 = new BusinessHour(DayOfWeek.Wednesday, null, null, cs);
+					garage.addBusinessHour(bh3);
+					
+					BusinessHour bh4 = new BusinessHour(DayOfWeek.Thursday, null, null, cs);
+					garage.addBusinessHour(bh4);
+					
+					BusinessHour bh5 = new BusinessHour(DayOfWeek.Friday, null, null, cs);
+					garage.addBusinessHour(bh5);		
 				}
+
 				garage.getBusinessHour(toCheck).setStartTime(ourStartTime);
 				//persistence
 				try {
@@ -3129,8 +3131,9 @@ public class CarShopController {
 				}
 				break;				
 			}
-			if(found == false) throw new InvalidInputException("Garage opening hours must be within weekly business hours");
 		}
+		if(found == false) throw new InvalidInputException("Garage opening hours must be within weekly business hours");
+
 	}
 
 	public static boolean checkIfPasswordCorrect(String newUsername, String newPassword) throws InvalidInputException {
