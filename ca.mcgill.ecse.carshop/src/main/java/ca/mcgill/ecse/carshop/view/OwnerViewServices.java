@@ -7,10 +7,12 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,7 +23,6 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
-
 
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
@@ -64,6 +65,7 @@ public class OwnerViewServices extends JPanel {
 	private String errorMessage;
 	private List<TOCarshopService> services;
 	private List<TOCarshopCombo> combos;
+	private List<String> serviceList;
 
 	private static final int HEIGHT_TABLE = 400;
 
@@ -81,6 +83,8 @@ public class OwnerViewServices extends JPanel {
 		selectedServiceName = "";
 		selectedServiceDuration = "";
 		selectedServiceGarage = "";
+		
+		serviceList = new ArrayList<>();
 		
 		servicesLabel = new JLabel("Services");
 		servicesLabel.setFont(new Font("Arial", Font.BOLD, 22));
@@ -181,6 +185,15 @@ public class OwnerViewServices extends JPanel {
 			}
 		});
 		
+		btnAddCombo.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addComboButtonPerformed(e);
+				
+			}
+		});
+		
 		
 		refreshServiceTable();
 		refreshComboTable();
@@ -188,6 +201,7 @@ public class OwnerViewServices extends JPanel {
 
 	private void refreshServiceTable() {
 		errorLabel.setText(errorMessage);
+		serviceList = new ArrayList<>();
 		
 		if (errorMessage == null || errorMessage.length() == 0) {
 			servicesDTM = new DefaultTableModel(0, 0);
@@ -198,6 +212,7 @@ public class OwnerViewServices extends JPanel {
 			
 			for(TOCarshopService toCarshopService : services) {
 				String service = toCarshopService.getName();
+				serviceList.add(service);
 				String garage = toCarshopService.getGarage();
 				String duration = String.valueOf(toCarshopService.getDuration());
 				Object[] obj = { service, garage, duration};
@@ -464,6 +479,140 @@ public class OwnerViewServices extends JPanel {
 	}
 	
 	
+	public void addComboButtonPerformed(ActionEvent event) {
+		errorMessage = "";
+		JFrame addServiceFrame = new JFrame();
+		JLabel smallErrorLabel;
+		smallErrorLabel = new JLabel();
+		smallErrorLabel.setForeground(Color.RED);
+		JLabel updateTitle = new JLabel("Add new service combo");
+		updateTitle.setFont(new Font("Arial", Font.BOLD, 22));
+		JLabel name = new JLabel("Name:");
+		JTextField nameText = new JTextField();
+		JLabel mainService = new JLabel("Main Service:");
+		String[] services = new String[serviceList.size()];
+		for (int i = 0; i < serviceList.size(); i++) {
+			services[i] = serviceList.get(i);
+		}
+		
+		JComboBox<String> mainComboBox = new JComboBox<String>(services);
+		
+		JTable comboServiceTable;
+		
+		if (errorMessage == null || errorMessage.length() == 0) {
+			DefaultTableModel defaultTableModel = new DefaultTableModel(0, 0);
+			String[] tableCol = {"Service", "Add", "Optional"};
+			
+			defaultTableModel.setColumnIdentifiers(tableCol);
+			
+			comboServiceTable = new JTable(defaultTableModel) {
+				 @Override
+		            public Class getColumnClass(int column) {
+		                switch (column) {
+		                    case 0:
+		                        return String.class;
+		                    case 1:
+		                        return Boolean.class;
+		                    case 2:
+		                        return Boolean.class;
+		                    default:
+		                        return String.class;
+		                }
+				 }
+			};
+			for(String service: serviceList) {
+				
+				Object[] obj = { service, false, false};
+				defaultTableModel.addRow(obj);
+			}
+		
+
+			JScrollPane comboServiceScrollPane = new JScrollPane(comboServiceTable);
+		Dimension d1 = comboServiceTable.getPreferredSize();
+		comboServiceScrollPane.setPreferredSize(new Dimension(d1.width, HEIGHT_TABLE / 2));
+
+		comboServiceScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+		addServiceFrame.add(comboServiceScrollPane);
+		JButton addService = new JButton("Add");
+		
+		
+		GroupLayout layout = new GroupLayout(addServiceFrame.getContentPane());
+		addServiceFrame.getContentPane().setLayout(layout);
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+		
+		//horizontal
+		layout.setHorizontalGroup(
+				layout.createParallelGroup()
+					.addComponent(smallErrorLabel)
+					.addComponent(updateTitle)
+					.addGroup(layout.createSequentialGroup()
+							.addComponent(name)
+							.addComponent(nameText)
+							.addComponent(addService))
+					.addGroup(layout.createSequentialGroup()
+							.addComponent(mainService)
+							.addComponent(mainComboBox))
+					.addComponent(comboServiceScrollPane));
+		
+
+		
+		//vertical 
+		layout.setVerticalGroup(
+				layout.createSequentialGroup()
+					.addComponent(smallErrorLabel)
+					.addComponent(updateTitle)
+					.addGroup(layout.createParallelGroup()
+							.addComponent(name)
+							.addComponent(nameText)
+							.addComponent(addService))
+					.addGroup(layout.createParallelGroup()
+							.addComponent(mainService)
+							.addComponent(mainComboBox))
+					.addComponent(comboServiceScrollPane));
+				
+		layout.linkSize(SwingConstants.HORIZONTAL,
+				new java.awt.Component[] { name, nameText, addService, mainService, mainComboBox});
+		layout.linkSize(SwingConstants.VERTICAL,
+				new java.awt.Component[] { name, nameText, addService, mainService, mainComboBox });
+
+		
+		
+		
+		addServiceFrame.pack();
+		centerWindow(addServiceFrame);
+		addServiceFrame.setVisible(true);
+		
+		smallErrorLabel.setText(errorMessage);
+		
+		addService.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				String newName = nameText.getText();
+				String mainService = (String)mainComboBox.getSelectedItem();
+				
+				
+				
+//				try {
+////					CarShopController.ownerDefinesService(CarShopApplication.getCurrentUser(), newName, newDuration, newGarage, CarShopApplication.getCarShop());
+//					errorMessage = null;
+//					addServiceFrame.setVisible(false);
+//				} catch (InvalidInputException e) {
+//					errorMessage = e.getMessage();
+//				}
+				
+				if (errorMessage!= null && errorMessage != "") {
+					smallErrorLabel.setText(errorMessage);
+					errorMessage = "";
+				}
+				refreshData();
+				addServiceFrame.pack();
+			}
+		});
+		}
+	}
+	
+	
 	public void refreshData() {
 		errorLabel.setText(errorMessage);
 		
@@ -479,10 +628,6 @@ public class OwnerViewServices extends JPanel {
 
     }
 	
-	
-	public void addComboButtonPerformed() {
-		
-	}
 	
 	public void editServiceButtonPerformed() {
 		
@@ -508,4 +653,7 @@ public class OwnerViewServices extends JPanel {
 
     }
 	
+    
+    
+    
 }
