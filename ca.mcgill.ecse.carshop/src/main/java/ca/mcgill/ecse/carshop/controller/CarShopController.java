@@ -3071,7 +3071,9 @@ public class CarShopController {
 		List<BusinessHour> businessHours = cs.getBusiness().getBusinessHours();
 		for(int i=0; i<businessHours.size();i++) {
 			BusinessHour bh = businessHours.get(i);
+			boolean found = false;
 			if(bh.getDayOfWeek().toString().equals(day)) {
+				found = true;
 				if(bh.getEndTime().before(stringToTime(endTime))) {
 					throw new IllegalArgumentException("Garage opening hours must be within weekly business hours");
 				}
@@ -3126,6 +3128,7 @@ public class CarShopController {
 				}
 				break;				
 			}
+			if(found == false) throw new InvalidInputException("Garage opening hours must be within weekly business hours");
 		}
 	}
 

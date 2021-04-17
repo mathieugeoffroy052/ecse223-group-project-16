@@ -162,7 +162,7 @@ public class CarShopApplication {
 		
 		public static void main(String[] args) throws Exception {
 			//start UI
-			setUp();
+//			setUp();
 			java.awt.EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					try {
