@@ -47,104 +47,120 @@ public class OwnerViewAppointmentNode extends JPanel {
 	private String error;
 	private DefaultTableModel tableModel;
 	private String overviewColumnNames[] = { "Service", "Garage", "Duration", "Start Time", "End Time" };
-	private List<TOServiceBooking> toServiceBookings;
 	private TOAppointment toAppointment;
+	private String customer;
+	private String service;
+	private Date date;
+	private Time time;
+	private String status;
+	private List<TOServiceBooking> toServiceBookings;
 
 	public OwnerViewAppointmentNode(String customer, String service, Date date, Time time, String status,
 			List<TOServiceBooking> toServiceBookings, TOAppointment toAppt) {
-		// elements for error message
-		errorMessage = new JLabel();
-		errorMessage.setForeground(Color.RED);
-
-		txtCustomerName = new JLabel(customer);
-		txtServiceName = new JLabel(service);
-		txtDate = new JLabel(CarShopController.dateToString(date));
-		txtTime = new JLabel(CarShopController.timeToString(time));
-		txtStatus = new JLabel(status);
+		
+		this.customer = customer;
+		this.service = service;
+		this.date = date;
+		this.time = time;
+		this.status = status;
 		this.toServiceBookings = toServiceBookings;
 		this.toAppointment = toAppt;
-
-		tableServices = new JTable();
-		scrollPane = new JScrollPane(tableServices);
-		Dimension d = tableServices.getPreferredSize();
-		scrollPane.setPreferredSize(new Dimension(d.width, tableServices.getRowHeight() * (tableServices.getRowCount() + 2)));
-
-		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-		scrollPane.addMouseWheelListener(new MouseWheelListener() {
-			
-			@Override
-			public void mouseWheelMoved(MouseWheelEvent e) {
-				getParent().dispatchEvent(e);
-			}
-		});
-		this.add(scrollPane);
-
-		btnStartButton = new JButton("Start");
-		btnEndButton = new JButton("End");
-		btnNoShowButton = new JButton("No Show");
-
-		btnStartButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				startButtonActionPerformed(e);
-			}
-		});
 		
-		btnEndButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				endButtonActionPerformed(e);
-			}
-		});
-		
-		btnNoShowButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				noShowButtonActionPerformed(e);
-			}
-		});
-		
-		GroupLayout groupLayout = new GroupLayout(this);
-		this.setLayout(groupLayout);
-		groupLayout.setAutoCreateGaps(true);
-		groupLayout.setAutoCreateContainerGaps(true);
-
-		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup()
-			.addComponent(errorMessage)
-			.addGroup(groupLayout.createSequentialGroup()
-				.addGroup(groupLayout.createParallelGroup()
-					.addComponent(txtCustomerName)
-					.addComponent(txtServiceName)
-					.addComponent(txtDate)
-					.addComponent(txtTime)
-					.addComponent(txtStatus))
-				.addComponent(btnStartButton)
-				.addComponent(btnEndButton)
-				.addComponent(btnNoShowButton))
-			.addComponent(scrollPane));
-
-		groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
-			.addComponent(errorMessage)
-				.addGroup(groupLayout.createParallelGroup()
-					.addGroup(groupLayout.createSequentialGroup()
-						.addComponent(txtCustomerName)
-						.addComponent(txtServiceName)
-						.addComponent(txtDate)
-						.addComponent(txtTime)
-						.addComponent(txtStatus))
-				.addComponent(btnStartButton)
-				.addComponent(btnEndButton)
-				.addComponent(btnNoShowButton))
-			.addComponent(scrollPane));
-
-		// link elements
-		groupLayout.linkSize(SwingConstants.HORIZONTAL,
-				new java.awt.Component[] { txtCustomerName, txtServiceName, txtDate, txtTime, txtStatus });
-
-		groupLayout.linkSize(SwingConstants.HORIZONTAL,
-				new java.awt.Component[] { btnStartButton, btnEndButton, btnNoShowButton });
+		initView();
 		
 		refreshServiceList();
+	}
+	
+	private void initView() {
+		// elements for error message
+				errorMessage = new JLabel();
+				errorMessage.setForeground(Color.RED);
+
+				txtCustomerName = new JLabel(customer);
+				txtServiceName = new JLabel(service);
+				txtDate = new JLabel(CarShopController.dateToString(date));
+				txtTime = new JLabel(CarShopController.timeToString(time));
+				txtStatus = new JLabel(status);
+
+				tableServices = new JTable();
+				scrollPane = new JScrollPane(tableServices);
+				Dimension d = tableServices.getPreferredSize();
+				scrollPane.setPreferredSize(new Dimension(d.width, tableServices.getRowHeight() * (tableServices.getRowCount() + 2)));
+
+				scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+				scrollPane.addMouseWheelListener(new MouseWheelListener() {
+					
+					@Override
+					public void mouseWheelMoved(MouseWheelEvent e) {
+						getParent().dispatchEvent(e);
+					}
+				});
+				this.add(scrollPane);
+
+				btnStartButton = new JButton("Start");
+				btnEndButton = new JButton("End");
+				btnNoShowButton = new JButton("No Show");
+
+				btnStartButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						startButtonActionPerformed(e);
+					}
+				});
+				
+				btnEndButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						endButtonActionPerformed(e);
+					}
+				});
+				
+				btnNoShowButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						noShowButtonActionPerformed(e);
+					}
+				});
+				
+				GroupLayout groupLayout = new GroupLayout(this);
+				this.setLayout(groupLayout);
+				groupLayout.setAutoCreateGaps(true);
+				groupLayout.setAutoCreateContainerGaps(true);
+
+				groupLayout.setHorizontalGroup(groupLayout.createParallelGroup()
+					.addComponent(errorMessage)
+					.addGroup(groupLayout.createSequentialGroup()
+						.addGroup(groupLayout.createParallelGroup()
+							.addComponent(txtCustomerName)
+							.addComponent(txtServiceName)
+							.addComponent(txtDate)
+							.addComponent(txtTime)
+							.addComponent(txtStatus))
+						.addComponent(btnStartButton)
+						.addComponent(btnEndButton)
+						.addComponent(btnNoShowButton))
+					.addComponent(scrollPane));
+
+				groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
+					.addComponent(errorMessage)
+						.addGroup(groupLayout.createParallelGroup()
+							.addGroup(groupLayout.createSequentialGroup()
+								.addComponent(txtCustomerName)
+								.addComponent(txtServiceName)
+								.addComponent(txtDate)
+								.addComponent(txtTime)
+								.addComponent(txtStatus))
+						.addComponent(btnStartButton)
+						.addComponent(btnEndButton)
+						.addComponent(btnNoShowButton))
+					.addComponent(scrollPane));
+
+				// link elements
+				groupLayout.linkSize(SwingConstants.HORIZONTAL,
+						new java.awt.Component[] { txtCustomerName, txtServiceName, txtDate, txtTime, txtStatus });
+
+				groupLayout.linkSize(SwingConstants.HORIZONTAL,
+						new java.awt.Component[] { btnStartButton, btnEndButton, btnNoShowButton });
 	}
 
 	private void startButtonActionPerformed(ActionEvent event) {
