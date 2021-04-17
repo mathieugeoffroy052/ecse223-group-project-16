@@ -62,6 +62,7 @@ public class CarShopController {
 	}
 	
 	@SuppressWarnings("static-access")
+
 	public static List<TOComboItem> getOptServicesWithName(String apptName) throws Exception {
 
 		List<ComboItem> list1 = CarShopApplication.getCarShop().getBookableService(0).getWithName(apptName).getMainService().getServiceCombo().getServices();
@@ -74,7 +75,9 @@ public class CarShopController {
 		return toReturn;
 
 	}
-	
+	/**
+	 * method to get a lit of bookable services
+	 */
 	public static List<TOBookableService> getCarShopBookableServices() {
 		CarShop cs = CarShopApplication.getCarShop();
 		List<TOBookableService> toReturn = new ArrayList<TOBookableService>();
@@ -85,7 +88,9 @@ public class CarShopController {
 		}
 		return toReturn;
 	}
-	
+	/**
+	 * method to get a list of customer appointments
+	 */
 	public static List<TOAppointment> getCustomerAppointments(String username) {
 		for(Customer c : CarShopApplication.getCarShop().getCustomers()) {
 			if(c.getUsername().equals(username)) {
@@ -120,7 +125,14 @@ public class CarShopController {
 		}
 		return null;
 	}
-	
+	/**
+	 * method to remove individual business hours
+	 * @param day
+	 * @param startTime
+	 * @param endTime
+	 * @param type
+	 * @param cs
+	 */
 	public static void removeBusinessHourIndividually(String day, String startTime, String endTime, String type, CarShop cs) throws InvalidInputException {
 		if(CarShopApplication.getCurrentUser()!=null) {
 			TechnicianType technicianType = getTechnicianType(CarShopApplication.getCurrentUser());
@@ -163,7 +175,14 @@ public class CarShopController {
 		}
 
 	}
-
+	/**
+	 * method to add business hours individually
+	 * @param day
+	 * @param startTime
+	 * @param endTime
+	 * @param type
+	 * @param cs
+	 */
 	public static void addBusinessHourIndividually(String day, String startTime, String endTime, String type, CarShop cs) throws InvalidInputException {
 		if(CarShopApplication.getCurrentUser()!=null) {
 			TechnicianType technicianType = getTechnicianType(CarShopApplication.getCurrentUser());
@@ -252,7 +271,13 @@ public class CarShopController {
 			throw new InvalidInputException(e.getMessage());
 		}
 	}
-	
+	/**
+	 * method to change business hour
+	 * @param day
+	 * @param startTime
+	 * @param endTime
+	 * @param cs
+	 */
 	public static void changeBusinessHour(String day, String startTime, String endTime, String type, CarShop cs) throws InvalidInputException {
 
 		DayOfWeek dayOfWeek = CarShopController.getWeekDay(day);
@@ -290,6 +315,16 @@ public class CarShopController {
 //		CreateAppointmentWithOptServices(customer, serviceComboName, startTime, startDate, CarShopApplication.getCarShop(), optServices, true);
 //	}
 	// creating appointment method
+	/**
+	 * method to create appointment
+	 * @param customer
+	 * @param serviceComboName
+	 * @param startTime
+	 * @param startDate
+	 * @param cs
+	 * @param optServices
+	 * @param isTrue
+	 */
 	public static void CreateAppointmentWithOptServices(String customer, String serviceComboName, String startTime, String startDate, CarShop cs, String optServices, boolean isTrue) throws Exception {
 		if(customer.contains("owner") || customer.contains("Technician")) throw new InvalidInputException("Only customers can make an appointment");
 		String[] startTimes = startTime.split(","); // gets the start time of the first service
@@ -497,7 +532,7 @@ public class CarShopController {
 			}
 		}
 	}
-	
+	//checks the service booking per garage
 	private static boolean checkByGarageServiceBookings(CarShop cs, Service serv, Time startTime1, Time endTime, Date date) {
 		for(ServiceBooking sb : serv.getServiceBookings()) {
 			if(sb.getTimeSlot().getStartDate().equals(date)) {	// if the date is the same
@@ -579,7 +614,7 @@ public class CarShopController {
 		}
 		return toReturn;
 	}
-
+	//checks if the date works with the current time
 	private static void checkIfDateWorksWithCurrentTime(Date date, String time) throws Exception {
 		Time enteredTime = stringToTime(time);
 		Date currentDate = (Date) CarShopApplication.getSystemDate();
@@ -611,7 +646,7 @@ public class CarShopController {
 		}
 		return false;
 	}
-	
+	//checks if the time is available
 	public static boolean checkTimeAvailable(CarShop cs, Time startTime, Time endTime, Date day) {
 		// get the list of appointments in the carshop system
 		List<Appointment> appointment = cs.getAppointments();
@@ -1254,12 +1289,12 @@ public class CarShopController {
 		return foundSlot;
 	}
 
-
+	//checks if the time overlaps
 	private static boolean isTimeOverlap(Time start1, Time end1, Time start2, Time end2) {
 		return (start1.before(end2) && start2.before(end1));
 	}
 
-
+	//checks if email address is correct
 	private static boolean isProperEmailAddress(String emailAddress) throws InvalidInputException {
 		if (!emailAddress.contains("@") || !emailAddress.contains(".")
 				|| emailAddress.indexOf("@") > emailAddress.indexOf("@")) {
@@ -2701,7 +2736,10 @@ public class CarShopController {
 		return false;
 	}
 	
-	// method that finds an appointment given the TO appointment
+	/**
+	 * method to find appointment
+	 * @param toAppointmentment
+	 */
 	public static Appointment findAppointment(TOAppointment toAppointment) throws InvalidInputException{
 		List<Appointment> appointments = CarShopApplication.getCarShop().getAppointments();
 		Appointment appointment = null;
@@ -2726,7 +2764,9 @@ public class CarShopController {
 	
 	/** ** END APPOINTMENT MANAGEMENT ** **/
 	
-	// get appointments for owner view
+	/**
+	 * method get the owner of appointment
+	 */
 	public static List<TOAppointment> getAppointmentsOwner() {
 		CarShop carShop = CarShopApplication.getCarShop();
 		List<Appointment> appointments = carShop.getAppointments();
@@ -2821,6 +2861,12 @@ public class CarShopController {
 	}
 
 	@SuppressWarnings("static-access")
+	/**
+	 * method to get the start time with services
+	 * @param apptName as name of appointment
+	 * @param optServices as optional services
+	 * @param startTime as starting time
+	 */
 	public static String getStartTimesWithServices(String apptName, String optServices, String startTime) throws InvalidInputException {
 		try {	// if it's a service then don't mind it
 			CarShopApplication.getCarShop().getBookableService(0).getWithName(apptName).getMainService();
@@ -2869,34 +2915,60 @@ public class CarShopController {
 		}
 		return toReturn;
 	}
-
+	/**
+	 * method update service of appointment
+	 * @param username
+	 * @param prevServName as previous service name
+	 * @param serviceName as new service name
+	 */
 	public static void updateAppointmentCase1(String username, TOAppointment prevServName, String serviceName,
 			String timeOfChange) throws InvalidInputException {
 		Appointment toPassIn = findAppointment(prevServName);
 		changeServiceAt(toPassIn, username, serviceName, timeOfChange);
 	}
-
+	/**
+	 * method to update appointment
+	 * @param username
+	 * @param prevTOappt
+	 * @param dateString
+	 * @param time
+	 */
 	public static void updateAppointmentCase2(String username, TOAppointment prevTOAppt, String dateString, String time,
 			String timeOfChange) throws InvalidInputException {
 		Appointment toPassIn = findAppointment(prevTOAppt);
 		CarShopController.updateDateAndTimeAt(toPassIn, username, dateString, time, timeOfChange);
 		
 	}
-
+	/**
+	 * method to update appointment
+	 * @param username
+	 * @param prevTOappt
+	 * @param optServices as optional services
+	 */
 	public static void updateAppointmentCase3(String username, TOAppointment prevTOAppt, String optServices,
 			String time, String timeOfChange) throws InvalidInputException {
 		Appointment toPassIn = findAppointment(prevTOAppt);
 		CarShopController.addOptServiceAt(toPassIn, username, optServices, time, timeOfChange);
 		
 	}
-
+	/**
+	 * method to cancel appointment
+	 * @param prevTOAppt
+	 * @param customer
+	 * @param currentDateAndTime as current date and time
+	 */
 	public static void cancelAppointmentCase1(TOAppointment prevTOAppt, String customer, String currentDateAndTime) throws InvalidInputException {
 		Appointment toPassIn = findAppointment(prevTOAppt);
 		CarShopController.cancelAppointmentAt(toPassIn, customer, currentDateAndTime);
 	}
 	
 	
-
+	/**
+	 * method to set password for technician
+	 * @param username
+	 * @param password
+	 * @param cs
+	 */
 	public static void setTechnicianPassword(String username, String password, CarShop cs) throws InvalidInputException {
 		Technician technician = findTechnician(username, cs);
 		technician.setPassword(password);
@@ -2908,7 +2980,9 @@ public class CarShopController {
 		}
 	}
 	
-	
+	/**
+	 * method to get the list of business hours
+	 */
 	public static List<TOBusinessHour> getGarageTOBusinessHours() {
 		String username = CarShopApplication.getUser().getUsername();
 		Technician technician = findTechnician(username, CarShopApplication.getCarShop());
@@ -2924,6 +2998,9 @@ public class CarShopController {
 	
 	//returns the transfer objects for every appointment in a technician's garage
 	//the technician must be logged in for this to work
+	/**
+	 * method to get the transfer objects for every appointment in technician's garage
+	 */
 	public static List<TOAppointment> getGarageAppointments(){
 		String username = CarShopApplication.getUser().getUsername();
 		CarShop cs = CarShopApplication.getCarShop();
@@ -2969,7 +3046,9 @@ public class CarShopController {
 		}
 		return toGarageAppointments;
 	}
-	
+	/**
+	 * method to set the garage business hours
+	 */
 	//this method does not work yet!
 	public static void setGarageBusinessHours(String day, String newStart, String newEnd, String oldStart, String oldEnd, CarShop cs) throws InvalidInputException {
 		Technician technician = findTechnician(CarShopApplication.getCurrentUser(), cs);
@@ -3012,7 +3091,9 @@ public class CarShopController {
 	}
 	
 
-
+	/**
+	 * method to get list of services
+	 */
 	public static List<TOCarshopService> getCarshopServices() {
 		List<TOCarshopService> toReturn = new ArrayList<>();
 		CarShop carShop = CarShopApplication.getCarShop();
@@ -3038,7 +3119,7 @@ public class CarShopController {
 		CarShop carShop = CarShopApplication.getCarShop();
 		
 		List<BookableService> bookableServices = carShop.getBookableServices();
-		
+		//checks through all bookable services
 		for(BookableService bookableService : bookableServices) {
 			if (bookableService instanceof ServiceCombo) {
 				ServiceCombo serviceCombo = (ServiceCombo) bookableService;
@@ -3062,7 +3143,9 @@ public class CarShopController {
 		}
 		return toReturn;
 	}
-
+	/**
+	 * method to change the garage business hours
+	 */
 	public static void changeGarageBusinessHour(String day, String startTime, String endTime, String type, CarShop cs) throws InvalidInputException {
 
 
@@ -3135,14 +3218,19 @@ public class CarShopController {
 		if(found == false) throw new InvalidInputException("Garage opening hours must be within weekly business hours");
 
 	}
-
+	/**
+	 * method to check the password
+	 */
 	public static boolean checkIfPasswordCorrect(String newUsername, String newPassword) throws InvalidInputException {
 		Customer c = (Customer) Customer.getWithUsername(newUsername);
 		if(c.getUsername().equals(newUsername) && !c.getPassword().equals(newPassword)) throw new InvalidInputException("Password is incorrect!");
-
+		//password is equivalent
 		return c.getPassword().equals(newPassword);
 	}
-
+	/**
+	 * method to return the customer with only its name
+	 * @param newUsername
+	 */
 	public static void getCustomerByUsername(String newUsername) throws InvalidInputException {
 		try {
 			Customer.getWithUsername(newUsername);
@@ -3156,7 +3244,10 @@ public class CarShopController {
 			throw new InvalidInputException(e.getMessage());
 		}
 	}
-
+	/**
+	 * method to remove the customer with only its name
+	 * @param newUsername
+	 */
 	public static void deleteCustomerAccount(String newUsername) throws InvalidInputException {
 		for(Customer c : CarShopApplication.getCarShop().getCustomers()) {
 			if(c.getUsername().equals(newUsername)) {
@@ -3170,7 +3261,11 @@ public class CarShopController {
 			throw new InvalidInputException(e.getMessage());
 		}
 	}
-
+	/**
+	 * method to update the password
+	 * @param currentUser
+	 * @param text
+	 */
 	public static void updatePassword(String currentUser, String text) throws InvalidInputException {
 		Customer.getWithUsername(currentUser).setPassword(text);
 		//Persistence
@@ -3180,7 +3275,11 @@ public class CarShopController {
 			throw new InvalidInputException(e.getMessage());
 		}
 	}
-
+	/**
+	 * method to update the username
+	 * @param currentUser
+	 * @param text
+	 */
 	public static void updateUsername(String currentUser, String text) throws InvalidInputException {
 		Customer.getWithUsername(currentUser).setUsername(text);
 		//Persistence
