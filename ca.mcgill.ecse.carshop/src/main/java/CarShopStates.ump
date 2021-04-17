@@ -103,6 +103,11 @@ class Appointment {
 			this.getServiceBooking(0).setService(serviceName);
 			Time endTime = findEndTime(serviceName, this.getServiceBooking(0).getTimeSlot().getStartTime());
 			this.getServiceBooking(0).getTimeSlot().setEndTime(endTime);
+		} else {
+			this.setBookableService(serviceName);
+			this.getServiceBooking(0).setService(serviceName);
+			Time endTime = findEndTime(serviceName, this.getServiceBooking(0).getTimeSlot().getStartTime());
+			this.getServiceBooking(0).getTimeSlot().setEndTime(endTime);
 		}
 	}
 

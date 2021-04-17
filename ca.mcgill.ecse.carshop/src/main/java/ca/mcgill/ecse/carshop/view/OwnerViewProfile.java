@@ -2,6 +2,7 @@ package ca.mcgill.ecse.carshop.view;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -39,6 +40,7 @@ public class OwnerViewProfile extends JPanel{
 	
 	
 	public OwnerViewProfile() {
+		this.setLayout(new GridBagLayout());
 		titleJLabel = new JLabel("Profile");
 		titleJLabel.setFont(new Font("Arial", Font.BOLD, 22));
 		
@@ -65,7 +67,7 @@ public class OwnerViewProfile extends JPanel{
 		this.setLayout(layout);
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
-		
+				
 		// horizontal group
 		layout.setHorizontalGroup(
 				layout.createParallelGroup()
@@ -94,7 +96,7 @@ public class OwnerViewProfile extends JPanel{
 		
 		layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {usernameJLabel, usernameTextField, passwordLabel, passwordTextField, prompt});
 		layout.linkSize(SwingConstants.VERTICAL, new java.awt.Component[] {usernameJLabel, usernameTextField, passwordLabel, passwordTextField, editPasswordButton, prompt});
-		
+				
 		editPasswordButton.addActionListener(new ActionListener() {
 			
 			@Override
