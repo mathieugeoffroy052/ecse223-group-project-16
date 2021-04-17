@@ -9,11 +9,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -24,19 +22,15 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.SpinnerDateModel;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.DateFormatter;
 
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.TOAppointment;
 import ca.mcgill.ecse.carshop.controller.TOBookableService;
 import ca.mcgill.ecse.carshop.controller.TOComboItem;
-import ca.mcgill.ecse.carshop.model.Customer;
 
 import org.jdatepicker.impl.JDatePanelImpl;
 
@@ -137,6 +131,7 @@ public class CustomerView extends JPanel {
 
 
 
+	@SuppressWarnings("serial")
 	private void initialize() {
 
 		// *** Buttons *** //
@@ -552,20 +547,14 @@ public class CustomerView extends JPanel {
 			name3.addItem("Select...");
 			name4.addItem("Select...");
 			
-//			Integer index = 0;
-//			appointments = new HashMap<Integer, String>();
 			if(TOAppointments!=null) {
 				for(int i = TOAppointments.size()-1; i >= 0; i--) {
 					TOAppointments.remove(i);
 				}
-//				TOAppointments.removeAll(TOAppointments);
 				for (TOAppointment appt : CarShopController.getCustomerAppointments(CarShopApplication.getCurrentUser())) {
-//					if(appointments.put(index, appt.getServiceName())==null) {
-						name2.addItem(appt.getServiceName());
-						name4.addItem(appt.getServiceName());
-						TOAppointments.add(appt);
-//					}
-//					index++;
+					name2.addItem(appt.getServiceName());
+					name4.addItem(appt.getServiceName());
+					TOAppointments.add(appt);
 				};
 			}
 			
@@ -583,7 +572,7 @@ public class CustomerView extends JPanel {
 			
 			for(TOBookableService sb : CarShopController.getCarShopBookableServices()) {
 				name1.addItem(sb.getName());
-				name3.addItem(sb.getName());	// not sure if this one is the right box
+				name3.addItem(sb.getName());	
 
 			}
 			
