@@ -28,6 +28,7 @@ import javax.swing.table.DefaultTableModel;
 
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
+import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 import ca.mcgill.ecse.carshop.controller.TOAppointment;
 import ca.mcgill.ecse.carshop.controller.TOBookableService;
 import ca.mcgill.ecse.carshop.controller.TOComboItem;
@@ -860,9 +861,13 @@ public class CustomerView extends JPanel {
 	private void updateUsernameButtonActionPerformed(ActionEvent evt) {
 		// TODO Auto-generated method stub
 		error = "";
-		CarShopController.updateUsername(CarShopApplication.getCurrentUser(), newUsernameTextField.getText());
-		error += "New username is "+newUsernameTextField.getText();
-		errorMessage.setText(error);
+		try {
+			CarShopController.updateUsername(CarShopApplication.getCurrentUser(), newUsernameTextField.getText());
+		} catch (InvalidInputException e) {
+			error += "New username is "+newUsernameTextField.getText();
+			errorMessage.setText(error);
+		}
+
 	}
 	
 	
@@ -870,9 +875,13 @@ public class CustomerView extends JPanel {
 	private void updatePasswordButtonActionPerformed(ActionEvent evt) throws InterruptedException {
 		// TODO Auto-generated method stub
 		error = "";
-		CarShopController.updatePassword(CarShopApplication.getCurrentUser(), newPasswordTextField.getText());
-		error += "New password is "+newPasswordTextField.getText();
-		errorMessage.setText(error);
+		try {
+			CarShopController.updatePassword(CarShopApplication.getCurrentUser(), newPasswordTextField.getText());
+		} catch (InvalidInputException e) {
+			error += "New password is "+newPasswordTextField.getText();
+			errorMessage.setText(error);
+		}
+
 
 	}
 	
