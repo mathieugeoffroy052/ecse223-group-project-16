@@ -228,6 +228,7 @@ public class CarShopPage extends JFrame {
 //        labelError.setBounds(x-175, y+125, 273, 16);
 //        add(labelError);
         errorMessage.setBounds(x-175, y+125, 273, 16);
+        errorMessage.setForeground(Color.RED);
         add(errorMessage);
 
     }
@@ -266,22 +267,4 @@ public class CarShopPage extends JFrame {
 		revalidate();
 		repaint();    
 	}
-  
-    
-    //initialize business info
-    private void initComponentsOwnerViewBusinessInfo() {
-		
-	}
-    
-    //initialize services
-    private void initComponentsOwnerViewServices() {
-		
-	}
-    
-    //initialize appointments
-    private void initComponentsOwnerViewAppointments() {
-		
-	}
-
-
 }
