@@ -1,7 +1,10 @@
 package ca.mcgill.ecse.carshop.view;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Date;
@@ -10,11 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.GroupLayout;
+import javax.swing.JButton;
 import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
+import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.TOAppointment;
 import ca.mcgill.ecse.carshop.controller.TOServiceBooking;
@@ -26,31 +33,66 @@ public class OwnerViewAppointments extends JPanel {
 	private ArrayList<OwnerViewAppointmentNode> appointmentNodes;
 	private JLabel titleJLabel;
 	
+	private JLabel errorLabel;
+	
+	private JLabel selectDateLabel;
+	private JTextField selectDateTxt;
+	private JButton dateButton;
+	
 	private List<TOAppointment> appointments;
+	private String error;
+	
+	private String dateString;
+	private Date date;
 	
 	public OwnerViewAppointments() {
 		
-		initAppointments();
+		initComponents();
 		
 		
 		
 	}
 	
-	public void initAppointments() {
-		appointments = CarShopController.getAppointmentsOwner();
-		appointmentNodes = new ArrayList<>();
-		for (TOAppointment appt : appointments) {
-			String customer = appt.getCustomerName();
-			String service = appt.getServiceName();
-			Date date = appt.getDate();
-			Time startTime = appt.getStartTime();
-			String status = appt.getStatus();
-			List<TOServiceBooking> serviceBookings = appt.getServiceBookings();
-			
-			if (date != null && startTime != null) {
-				appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings, appt));
+	public void initComponents() {
+		selectDateLabel = new JLabel("Select Date (YYYY-MM-dd)");
+		selectDateTxt = new JTextField(dateString);
+		dateButton = new JButton("Refresh"); 
+		errorLabel = new JLabel();
+		errorLabel.setForeground(Color.RED);
+		error = "";
+		
+		if (date == null || dateString == null || dateString == "" || dateString.length() == 0) {
+			appointments = CarShopController.getAppointmentsOwner();
+			appointmentNodes = new ArrayList<>();
+			for (TOAppointment appt : appointments) {
+				String customer = appt.getCustomerName();
+				String service = appt.getServiceName();
+				Date date = appt.getDate();
+				Time startTime = appt.getStartTime();
+				String status = appt.getStatus();
+				List<TOServiceBooking> serviceBookings = appt.getServiceBookings();
+				
+				if (date != null && startTime != null) {
+					appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings, appt));
+				}
+				
 			}
-			
+		} else {
+			appointments = CarShopController.getAppointmentsOwner();
+			appointmentNodes = new ArrayList<>();
+			for (TOAppointment appt : appointments) {
+				String customer = appt.getCustomerName();
+				String service = appt.getServiceName();
+				Date date = appt.getDate();
+				Time startTime = appt.getStartTime();
+				String status = appt.getStatus();
+				List<TOServiceBooking> serviceBookings = appt.getServiceBookings();
+				
+				if (date != null && startTime != null && date.equals(this.date)) {
+					appointmentNodes.add(new OwnerViewAppointmentNode(customer, service, date, startTime, status, serviceBookings, appt));
+				}
+				
+			}
 		}
 		
 		titleJLabel = new JLabel("Appointments");
@@ -64,8 +106,19 @@ public class OwnerViewAppointments extends JPanel {
 		ParallelGroup parallelGroup = groupLayout.createParallelGroup();
 		SequentialGroup sequentialGroup = groupLayout.createSequentialGroup();
 		
-		parallelGroup.addComponent(titleJLabel);
-		sequentialGroup.addComponent(titleJLabel);
+		parallelGroup.addComponent(titleJLabel)
+						.addComponent(errorLabel)
+						.addGroup(groupLayout.createSequentialGroup()
+								.addComponent(selectDateLabel)
+								.addComponent(selectDateTxt)
+								.addComponent(dateButton));
+		
+		sequentialGroup.addComponent(titleJLabel)
+			.addComponent(errorLabel)
+			.addGroup(groupLayout.createParallelGroup()
+				.addComponent(selectDateLabel)
+				.addComponent(selectDateTxt)
+				.addComponent(dateButton));
 		
 		for(int i = 0; i < appointmentNodes.size(); i++) {
 			parallelGroup.addComponent(appointmentNodes.get(i));
@@ -76,6 +129,12 @@ public class OwnerViewAppointments extends JPanel {
 		
 		groupLayout.setVerticalGroup(sequentialGroup);
 		
+		
+		groupLayout.linkSize(SwingConstants.VERTICAL,
+				new java.awt.Component[] { selectDateLabel, selectDateTxt, dateButton });
+		
+		groupLayout.linkSize(SwingConstants.HORIZONTAL,
+				new java.awt.Component[] { selectDateLabel, selectDateTxt, dateButton });
 		
 		//add propertyChangeListener
 		for (int i = 0; i < appointmentNodes.size(); i++) {
@@ -94,21 +153,53 @@ public class OwnerViewAppointments extends JPanel {
 			});
 		}
 		
-		//create appointment components
-		Component[] components = new Component[appointmentNodes.size()];
-		for (int i = 0; i < components.length; i++) {
-			components[i] = appointmentNodes.get(i);
-		}
+		dateButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectDateActionPerformed(e);
+				
+			}
+		});
+		
+		
 	}
 	
-	public void refreshData() {
+	private void refreshData() {
 		appointments = null;
 		appointmentNodes.clear();
 		
 		removeAll();
-		initAppointments();
+		initComponents();
 		revalidate();
 		repaint();
+	}
+	
+	
+	private void selectDateActionPerformed(ActionEvent event) {
+		error = "";
+		dateString = selectDateTxt.getText();
+		if (dateString == null || dateString == "" || dateString.length() == 0) {
+			refreshData();
+		} else {
+			try {
+				System.out.println(dateString);
+				this.date = CarShopController.stringToDate(dateString);
+			} catch (Exception e) {
+				error = e.getMessage();
+			}
+			
+			if (error == null || error.length() == 0) {
+				refreshData();
+			} else {
+				errorLabel.setText(error);
+			}
+		}
+		
+		
+		revalidate();
+		repaint();
+		
 	}
 	
 }
