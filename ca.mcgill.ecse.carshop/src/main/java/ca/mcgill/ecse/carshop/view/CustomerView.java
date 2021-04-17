@@ -28,7 +28,6 @@ import javax.swing.table.DefaultTableModel;
 
 import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
-import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 import ca.mcgill.ecse.carshop.controller.TOAppointment;
 import ca.mcgill.ecse.carshop.controller.TOBookableService;
 import ca.mcgill.ecse.carshop.controller.TOComboItem;
@@ -548,13 +547,30 @@ public class CustomerView extends JPanel {
 			name3.addItem("Select...");
 			name4.addItem("Select...");
 			
+			if (modelTable.getRowCount() > 0) {
+			    for (int i = modelTable.getRowCount() - 1; i > -1; i--) {	// clear the table
+			    	modelTable.removeRow(i);
+			    }
+			}
+			
 			if(TOAppointments!=null) {
-				for(int i = TOAppointments.size()-1; i >= 0; i--) {
+				for(int i = TOAppointments.size()-1; i >= 0; i--) {	// remove all appointments
 					TOAppointments.remove(i);
 				}
-				for (TOAppointment appt : CarShopController.getCustomerAppointments(CarShopApplication.getCurrentUser())) {
+				for (TOAppointment appt : CarShopController.getCustomerAppointments(CarShopApplication.getCurrentUser())) {	// get all appointments from customer
+					// add to appointment selection (combo box)
 					name2.addItem(appt.getServiceName());
 					name4.addItem(appt.getServiceName());
+					
+					// add to table
+					Vector<String> r = new Vector<String>();
+					r.addElement(appt.getServiceName());
+					r.addElement(appt.getDate().toString());
+					r.addElement(appt.getStartTime().toString());
+					r.addElement(appt.getStatus());
+					modelTable.addRow(r);
+					
+					// add to TOAppointments list 
 					TOAppointments.add(appt);
 				};
 			}
@@ -576,20 +592,7 @@ public class CustomerView extends JPanel {
 				name3.addItem(sb.getName());	
 
 			}
-			
-			for(int i = 0; i < modelTable.getRowCount(); i++) {
-				modelTable.removeRow(i);
-			}
-			
-			for(TOAppointment TOApp: TOAppointments) {
-				
-				Vector<String> r = new Vector<String>();
-				r.addElement(TOApp.getServiceName());
-				r.addElement(TOApp.getDate().toString());
-				r.addElement(TOApp.getStartTime().toString());
-				r.addElement(TOApp.getStatus());
-				modelTable.addRow(r);
-			}		
+	
 		}
 	}
 	
@@ -862,12 +865,12 @@ public class CustomerView extends JPanel {
 		// TODO Auto-generated method stub
 		error = "";
 		try {
-			CarShopController.updateUsername(CarShopApplication.getCurrentUser(), newUsernameTextField.getText());
-		} catch (InvalidInputException e) {
-			error += "New username is "+newUsernameTextField.getText();
-			errorMessage.setText(error);
+		CarShopController.updateUsername(CarShopApplication.getCurrentUser(), newUsernameTextField.getText());
+		} catch (Exception e) {
+		
 		}
-
+		error += "New username is "+newUsernameTextField.getText();
+		errorMessage.setText(error);
 	}
 	
 	
@@ -876,12 +879,12 @@ public class CustomerView extends JPanel {
 		// TODO Auto-generated method stub
 		error = "";
 		try {
-			CarShopController.updatePassword(CarShopApplication.getCurrentUser(), newPasswordTextField.getText());
-		} catch (InvalidInputException e) {
-			error += "New password is "+newPasswordTextField.getText();
-			errorMessage.setText(error);
+		CarShopController.updatePassword(CarShopApplication.getCurrentUser(), newPasswordTextField.getText());
+		} catch (Exception e) {
+			
 		}
-
+		error += "New password is "+newPasswordTextField.getText();
+		errorMessage.setText(error);
 
 	}
 	
