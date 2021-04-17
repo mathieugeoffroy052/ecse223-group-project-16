@@ -694,6 +694,10 @@ public class CarShopController {
 	//method that sets up business enters information into system
 	public static void setUpBusinessInfo(String nameString, String address, String phoneNumber, String emailAddress) 
 			throws InvalidInputException {
+		
+		if (CarShopApplication.getCarShop().getBusiness() == null) {
+			throw new InvalidInputException("The business doesn't exist yet");
+		}
 		//checks if it's owner entering the information
 		if (!hasAuthorization()) {
 			throw new InvalidInputException("No permission to set up business information");
@@ -725,6 +729,10 @@ public class CarShopController {
 	//method that creates hours for business
 	public static void createBusinessHour(String day, String startTime, String endTime) throws InvalidInputException {
 		//checks if it's owner entering the information
+		if (CarShopApplication.getCarShop().getBusiness() == null) {
+			throw new InvalidInputException("The business doesn't exist yet");
+		}
+		
 		if (!hasAuthorization()) {
 			throw new InvalidInputException("No permission to update business information");
 		}
@@ -751,10 +759,15 @@ public class CarShopController {
 		}
 	}
 
-	//method to create holidays
+	//method to create holidays // doesnt have proper checks
 	public static void createHoliday(String startDate, String startTime, String endDate, String endTime)
 			throws InvalidInputException {
 		//checks if it's owner entering the information
+		
+		if (CarShopApplication.getCarShop().getBusiness() == null) {
+			throw new InvalidInputException("The business doesn't exist yet");
+		}
+		
 		if (!hasAuthorization()) {
 			throw new InvalidInputException("No permission to set up business information");
 		}
@@ -771,9 +784,13 @@ public class CarShopController {
 			throw new InvalidInputException(e.getMessage());
 		}
 	}
-	//method to create vacations
+	//method to create vacations // doesnt have proper checks
 	public static void createVacation(String startDate, String startTime, String endDate, String endTime)
 			throws InvalidInputException {
+		if (CarShopApplication.getCarShop().getBusiness() == null) {
+			throw new InvalidInputException("The business doesn't exist yet");
+		}
+		
 		//checks if it's owner entering the information
 		if (!hasAuthorization()) {
 			throw new InvalidInputException("No permission to set up business information");
@@ -795,6 +812,9 @@ public class CarShopController {
 	//method that creates time slots
 	public static void createTimeSlot(String type, String startDate, String startTime, String endDate, String endTime)
 			throws InvalidInputException {
+		if (CarShopApplication.getCarShop().getBusiness() == null) {
+			throw new InvalidInputException("The business doesn't exist yet");
+		}
 		//checks if it's owner entering the information
 		CarShop carShop = CarShopApplication.getCarShop();
 		if (!hasAuthorization()) {
@@ -1136,7 +1156,7 @@ public class CarShopController {
 
 	//making sure that the start date is before the end date
 	private static boolean startDateBeforeEndDate(Date startDate, Date endDate) {
-		return startDate.before(endDate);
+		return !startDate.after(endDate);
 	}
 
 	// check if business hour conflicts
