@@ -241,31 +241,33 @@ public class CarShopPage extends JFrame {
 		buttonLogin = new JButton("Log in");
 		buttonLogin.setBounds(x-60, y+175, 117, 29);
 		add(buttonLogin);
+        
+        labelApplication = new JLabel("Car shop application");
+        labelApplication.setBounds(x-175, y-20, 142, 16);
+        add(labelApplication);
+        
+        labelInstructions1 = new JLabel("Enter your username and password");
+        labelInstructions1.setBounds(x-175, y+5, 273, 16);
+        add(labelInstructions1);
+        
+        labelInstructions2 = new JLabel("To register a new account, select \"Sign up\"");
+        labelInstructions2.setBounds(x-175, y+30, 273, 16);
+        add(labelInstructions2);
+        
+        //error label - shown as a test for now. remove this later!
+//        labelError = new JLabel("error-area-remove-later-just-for-show----");
+//        labelError.setBounds(x-175, y+125, 273, 16);
+//        add(labelError);
+        errorMessage.setBounds(x-175, y+125, 273, 16);
+        errorMessage.setForeground(Color.RED);
+        add(errorMessage);
 
-		labelApplication = new JLabel("Car shop application");
-		labelApplication.setBounds(x-175, y-20, 142, 16);
-		add(labelApplication);
+    }
+    
+    //initialize the owner panel
+    private void initComponentsOwnerView() {
+    	//initialize the owner view
 
-		labelInstructions1 = new JLabel("Enter your username and password");
-		labelInstructions1.setBounds(x-175, y+5, 273, 16);
-		add(labelInstructions1);
-
-		labelInstructions2 = new JLabel("To register a new account, select \"Sign up\"");
-		labelInstructions2.setBounds(x-175, y+30, 273, 16);
-		add(labelInstructions2);
-
-		//error label - shown as a test for now. remove this later!
-		//        labelError = new JLabel("error-area-remove-later-just-for-show----");
-		//        labelError.setBounds(x-175, y+125, 273, 16);
-		//        add(labelError);
-		errorMessage.setBounds(x-175, y+125, 273, 16);
-		add(errorMessage);
-
-	}
-
-	//initialize the owner panel
-	private void initComponentsOwnerView() {
-		//initialize the owner view
 		ownerView = new OwnerView();
 
 		//set the content pane to owner view
@@ -297,8 +299,4 @@ public class CarShopPage extends JFrame {
 		revalidate();
 		repaint();    
 	}
-
-
-
-
 }

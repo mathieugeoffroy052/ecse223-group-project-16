@@ -32,23 +32,10 @@ public class TechnicianView extends JPanel {
 	private JComboBox comboBox;
 	private static List<TOBusinessHour> garageBusinessHours = CarShopController.getGarageTOBusinessHours();
 	private JLabel labelNotification;
+	private JButton logout;
+	private CarShopPage csPage;
+	private JButton btnNewButton, btnNewButton_1;
 	
-	/**
-	 * Launch the application.
-	 * remove this later when the constructor gets called from elsewhere upon a technician successfully logging in.
-	 */
-//	public static void main(String[] args) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					TechnicianWindow window = new TechnicianWindow();
-//					window.frame.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
 
 	/**
 	 * Create the application.
@@ -62,9 +49,22 @@ public class TechnicianView extends JPanel {
 	 */
 	private void initializeTechnicianView() {
 		
+
+		
+		logout = new JButton("Log out");
+		logout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CarShopApplication.logOut();
+				btnNewButton.setVisible(false);
+				btnNewButton_1.setVisible(false);
+				labelNotification.setText("You are logged out. Close this window and relaunch the application");
+			}
+		});
+		logout.setBounds(520, 800, 100, 20);
+		add(logout);
 		
 		labelNotification = new JLabel();
-		labelNotification.setBounds(206, 775, 300, 29);
+		labelNotification.setBounds(206, 775, 500, 29);
 		labelNotification.setForeground(Color.green);
 		add(labelNotification);
 		
@@ -120,7 +120,7 @@ public class TechnicianView extends JPanel {
 		
 		
 		//changing garage opening hours
-		JButton btnNewButton = new JButton("Confirm Changes");
+		btnNewButton = new JButton("Confirm Changes");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Time openingTime = null;
@@ -240,7 +240,7 @@ public class TechnicianView extends JPanel {
 		add(txtNewPassword);
 		txtNewPassword.setColumns(10);
 		
-		JButton btnNewButton_1 = new JButton("Confirm Change");
+		btnNewButton_1 = new JButton("Confirm Change");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String username = CarShopApplication.getCurrentUser();
