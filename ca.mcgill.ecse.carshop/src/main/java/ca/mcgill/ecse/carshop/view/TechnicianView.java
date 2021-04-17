@@ -63,8 +63,8 @@ public class TechnicianView extends JPanel {
 		logout.setBounds(520, 800, 100, 20);
 		add(logout);
 		
-		labelNotification = new JLabel();
-		labelNotification.setBounds(206, 775, 500, 29);
+		labelNotification = new JLabel();	//here
+		labelNotification.setBounds(206, 725, 500, 29);
 		labelNotification.setForeground(Color.green);
 		add(labelNotification);
 		
@@ -105,7 +105,7 @@ public class TechnicianView extends JPanel {
 		closing.addElement("Closing");
 
 		//set the garage business hours
-		for(int i=0; i<5;i++) {
+		for(int i=0; i<garageBusinessHours.size();i++) {
 			opening.addElement(garageBusinessHours.get(i).getStartTime().toString());
 			closing.addElement(garageBusinessHours.get(i).getEndTime().toString());
 		}

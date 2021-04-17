@@ -823,7 +823,8 @@ public class CarShopController {
 		CarShop carShop = CarShopApplication.getCarShop();
 		Business business = carShop.getBusiness();
 		if (business == null) {
-			throw new InvalidInputException("Set up a business first");
+			carShop.setBusiness(new Business("", "", "", "", carShop));
+			business = carShop.getBusiness();
 		}
 		//checks if the inputs are null or empty
 		if (nameString == null || nameString.length() == 0 || address == null || address.length() == 0
@@ -1016,8 +1017,9 @@ public class CarShopController {
 	}
 
 	//returning the business hours
-	public static List<TOBusinessHour> getBusinessHours(){
+	public static List<TOBusinessHour> getBusinessHours() throws Exception{
 		Business business = CarShopApplication.getCarShop().getBusiness();
+		if(business == null) throw new Exception("Business does not exist yet!");
 		List<BusinessHour> businessHours = business.getBusinessHours();
 		List<TOBusinessHour> toBusinessHours = new ArrayList<>();
 		for (BusinessHour businessHour : businessHours) {
@@ -1029,8 +1031,9 @@ public class CarShopController {
 	}
 	
 	//returning the holidays
-	public static List<TOTimeSlot> getHolidays() {
+	public static List<TOTimeSlot> getHolidays() throws Exception {
 		Business business = CarShopApplication.getCarShop().getBusiness();
+		if(business == null) throw new Exception("Business does not exist yet!");
 		List<TimeSlot> holidaySlots = business.getHolidays();
 		List<TOTimeSlot> toHolidays = new ArrayList<>();
 		for (TimeSlot holiday : holidaySlots) {
@@ -1042,8 +1045,9 @@ public class CarShopController {
 	}
 	
 	//returning the vacations
-	public static List<TOTimeSlot> getVacations() {
+	public static List<TOTimeSlot> getVacations() throws Exception {
 		Business business = CarShopApplication.getCarShop().getBusiness();
+		if(business == null) throw new Exception("Business does not exist yet!");
 		List<TimeSlot> vacationSlots = business.getVacations();
 		List<TOTimeSlot> toVacations = new ArrayList<>();
 		for (TimeSlot vacation : vacationSlots) {
@@ -2725,23 +2729,49 @@ public class CarShopController {
 	}
 	
 
-	public static String getBusinessName() {
-		String name = CarShopApplication.getCarShop().getBusiness().getName();
+	public static String getBusinessName() throws Exception {
+		String name = "";
+		try {
+			CarShopApplication.getCarShop().getBusiness().getName();
+		} catch (Exception e) {
+			throw new Exception("Business does not exist yet!");
+		}
+		name = CarShopApplication.getCarShop().getBusiness().getName();
 		return name;
 	}
 	
-	public static String getBusinessEmail() {
-		String email = CarShopApplication.getCarShop().getBusiness().getEmail();
+	public static String getBusinessEmail() throws Exception {
+		String email = "";
+		try {
+			CarShopApplication.getCarShop().getBusiness().getEmail();		
+		} catch (NullPointerException e) {
+			throw new Exception("Business does not exist yet!");
+		}
+		
+		email = CarShopApplication.getCarShop().getBusiness().getEmail();
 		return email;
 	}
 	
-	public static String getBusinessPhone() {
-		String phone = CarShopApplication.getCarShop().getBusiness().getPhoneNumber();
+	public static String getBusinessPhone() throws Exception {
+		String phone = "";
+		try {
+			CarShopApplication.getCarShop().getBusiness().getPhoneNumber();
+		} catch (NullPointerException e) {
+			throw new Exception("Business does not exist yet!");
+		}
+		phone = CarShopApplication.getCarShop().getBusiness().getPhoneNumber();
 		return phone;
 	}
 	
-	public static String getBusinessAddress() {
-		String address = CarShopApplication.getCarShop().getBusiness().getAddress();
+	public static String getBusinessAddress() throws Exception {
+		
+		String address = "";
+		try {
+		CarShopApplication.getCarShop().getBusiness().getAddress();
+		} catch (NullPointerException e) {
+			throw new Exception("Business does not exist yet!");
+		}
+		address = CarShopApplication.getCarShop().getBusiness().getAddress();
 		return address;
 	}
 
@@ -2994,6 +3024,7 @@ public class CarShopController {
 
 		DayOfWeek dayOfWeek = CarShopController.getWeekDay(day);
 		int toCheck = 0;
+		if(cs.getBusiness()==null) throw new InvalidInputException("No business has been created yet!");
 		List<BusinessHour> businessHours = cs.getBusiness().getBusinessHours();
 		for(int i=0; i<businessHours.size();i++) {
 			BusinessHour bh = businessHours.get(i);
