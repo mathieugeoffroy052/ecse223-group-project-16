@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.util.List;
@@ -188,6 +189,15 @@ public class OwnerViewBusinessInfo extends JPanel {
 	    addHoliday.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				addHolidayActionPerformed(evt);
+			}
+		});
+	    
+	    addVacation.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addVacationActionPerformed(e);
+				
 			}
 		});
 	    
@@ -383,15 +393,165 @@ public class OwnerViewBusinessInfo extends JPanel {
 		
 		addHol.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				String newName = startDateText.getText();
-				String newEmail = startTimeText.getText();
-				String newAddress = endDateText.getText();
-				String newPhoneNum = endTimeText.getText();
-				updateInfoActionPerformed(evt, newName, newPhoneNum, newEmail, newAddress, addHolidayFrame);
+				String startDate = startDatePicker.getJFormattedTextField().getText();
+				String startTime = startTimeText.getText();
+				String endDate = startDatePicker.getJFormattedTextField().getText();
+				String endTime = endTimeText.getText();
+				addHolidayButtonActionPerformed(startDate, startTime, endDate, endTime, addHolidayFrame);
 			}
 		});
 		
 	}
+    
+    private void addVacationActionPerformed(ActionEvent evt) {
+    	JFrame addHolidayFrame = new JFrame();
+    	LocalDate now = LocalDate.now();
+		smallErrorLabel = new JLabel();
+		smallErrorLabel.setForeground(Color.RED);
+		JLabel addTitle = new JLabel("Add Vacation");
+		addTitle.setFont(new Font("Arial", Font.BOLD, 22));
+		JLabel startDate = new JLabel("Start Date:");
+		JTextField startDateText = new JTextField(businessName.getText());
+		JLabel startTime = new JLabel("Start Time:");
+		JTextField startTimeText = new JTextField("08:00");
+		JLabel endDate = new JLabel("End Date:");
+		@SuppressWarnings("static-access")
+		JFormattedTextField endDateText = new JFormattedTextField(this.phoneNum.getText());
+		JLabel endTime = new JLabel("End Time:");
+		JTextField endTimeText = new JTextField("09:00");
+		JButton addHol = new JButton("Add");
+		
+		
+
+		SqlDateModel startDateModel;
+		Properties startDateDisplay;
+		JDatePickerImpl startDatePicker;
+		SqlDateModel endDateModel;
+		Properties endDateDisplay;
+		JDatePickerImpl endDatePicker;
+		// create appointment calendar
+		startDateModel = new SqlDateModel();
+		startDateModel.setDate(now.getYear(), now.getMonthValue() - 1, now.getDayOfMonth());
+		startDateModel.setSelected(true);
+		startDateDisplay = new Properties();
+		startDateDisplay.put("text.today", "Today");
+		startDateDisplay.put("text.month", "Month");
+		startDateDisplay.put("text.year", "Year");
+		JDatePanelImpl overviewStartDatePanel = new JDatePanelImpl(startDateModel, startDateDisplay);
+		startDatePicker = new JDatePickerImpl(overviewStartDatePanel, new DateLabelFormatter());
+		startDatePicker.setBounds(513, 41, 145, 26);//513, 41, 130, 26
+		addHolidayFrame.add(startDatePicker);
+		
+		
+		// create appointment calendar
+		endDateModel = new SqlDateModel();
+		endDateModel.setDate(now.getYear(), now.getMonthValue() - 1, now.getDayOfMonth());
+		endDateModel.setSelected(true);
+		endDateDisplay = new Properties();
+		endDateDisplay.put("text.today", "Today");
+		endDateDisplay.put("text.month", "Month");
+		endDateDisplay.put("text.year", "Year");
+		JDatePanelImpl overviewEndDatePanel = new JDatePanelImpl(endDateModel, endDateDisplay);
+		endDatePicker = new JDatePickerImpl(overviewEndDatePanel, new DateLabelFormatter());
+		endDatePicker.setBounds(513, 41, 145, 26);//513, 41, 130, 26
+		addHolidayFrame.add(endDatePicker);
+		
+		addHolidayFrame.add(addTitle);
+		addHolidayFrame.add(startDate);
+		addHolidayFrame.add(startDateText);
+		addHolidayFrame.add(startTime);
+		addHolidayFrame.add(startTimeText);
+		addHolidayFrame.add(endDate);
+		addHolidayFrame.add(endDateText);
+		addHolidayFrame.add(endTime);
+		addHolidayFrame.add(endTimeText);
+		addHolidayFrame.add(addHol);
+		
+		GroupLayout layout = new GroupLayout(addHolidayFrame.getContentPane());
+		addHolidayFrame.getContentPane().setLayout(layout);
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+		
+		//horizontal
+		layout.setHorizontalGroup(
+				layout.createParallelGroup()
+					.addComponent(smallErrorLabel)
+					.addComponent(addTitle)
+					.addGroup(layout.createSequentialGroup()
+							.addGroup(layout.createParallelGroup()
+									.addComponent(startDate)
+									.addComponent(startTime)
+									.addComponent(endDate)
+									.addComponent(endTime))
+							.addGroup(layout.createParallelGroup()
+									.addComponent(startDatePicker)
+									.addComponent(startTimeText)
+									.addComponent(endDatePicker)
+									.addComponent(endTimeText)))
+							.addComponent(addHol));
+		
+
+		
+		//vertical 
+		layout.setVerticalGroup(
+				layout.createSequentialGroup()
+					.addComponent(smallErrorLabel)
+					.addComponent(addTitle)
+					.addGroup(layout.createParallelGroup()
+							.addComponent(startDate)
+							.addComponent(startDatePicker))
+					.addGroup(layout.createParallelGroup()
+							.addComponent(startTime)
+							.addComponent(startTimeText))
+					.addGroup(layout.createParallelGroup()
+							.addComponent(endDate)
+							.addComponent(endDatePicker))
+					.addGroup(layout.createParallelGroup()
+							.addComponent(endTime)
+							.addComponent(endTimeText))
+					.addComponent(addHol));
+				
+		addHolidayFrame.pack();
+		centerWindow(addHolidayFrame);
+		addHolidayFrame.setVisible(true);
+		
+		addHol.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				String startDate = startDatePicker.getJFormattedTextField().getText();
+				String startTime = startTimeText.getText();
+				String endDate = endDatePicker.getJFormattedTextField().getText();
+				String endTime = endTimeText.getText();
+				addVacationButtonActionPerformed(startDate, startTime, endDate, endTime, addHolidayFrame);
+			}
+		});
+		
+	}
+    
+    
+    private static void addHolidayButtonActionPerformed(String startDate, String startTime, String endDate, String endTime, JFrame frame) {
+    	try {
+			CarShopController.createTimeSlot( "holiday", startDate, startTime, endDate, endTime);
+			smallErrorMessage = null;
+			frame.setVisible(false);
+		} catch (InvalidInputException e) {
+			smallErrorMessage = e.getMessage();
+		}
+		refreshData();
+		frame.pack();
+    }
+    
+    private static void addVacationButtonActionPerformed(String startDate, String startTime, String endDate, String endTime, JFrame frame) {
+    	try {
+			CarShopController.createTimeSlot("vacation", startDate, startTime, endDate, endTime);
+			smallErrorMessage = null;
+			frame.setVisible(false);
+		} catch (InvalidInputException e) {
+			smallErrorMessage = e.getMessage();
+		}
+		refreshData();
+		frame.pack();
+    }
+    
 
 	public static void refreshData() {
     	if (errorMessage != null) errorLabel.setText(errorMessage);
