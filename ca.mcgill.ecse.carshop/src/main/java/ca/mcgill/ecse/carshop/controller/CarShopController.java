@@ -2694,6 +2694,7 @@ public class CarShopController {
 				|| (inputStartDateTime.isBefore(startDateTime) && inputEndDateTime.isAfter(endDateTime))
 				|| (inputStartDateTime.isBefore(startDateTime) && startDateTime.isBefore(inputEndDateTime))
 				|| (inputStartDateTime.isBefore(endDateTime) && endDateTime.isBefore(inputEndDateTime))
+				|| (inputStartDateTime.equals(startDateTime) && inputEndDateTime.equals(endDateTime))
 				) {
 			return true;
 		}
