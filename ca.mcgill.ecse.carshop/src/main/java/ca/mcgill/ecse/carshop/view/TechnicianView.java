@@ -59,7 +59,7 @@ public class TechnicianView extends JPanel {
 				frame.returnToLogInPanel();
 			}
 		});
-		logout.setBounds(520, 800, 100, 20);
+		logout.setBounds(532, 754, 100, 20);
 		add(logout);
 		
 		labelNotification = new JLabel();	//here

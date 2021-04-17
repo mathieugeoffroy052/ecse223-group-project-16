@@ -873,38 +873,38 @@ public class CustomerView extends JPanel {
 		CarShopPage frame = (CarShopPage) SwingUtilities.windowForComponent(thisPanel);
 		CarShopController.logOut();
 		frame.returnToLogInPanel();
-		for(int i = 0; i < modelTable.getRowCount(); i++) {
-			modelTable.removeRow(i);
-		}
-		
-		createApptEnterStartTimeTextField.setText("");
-		updateApptEnterNewTimeTextField.setText("");
-
-		name1.removeAllItems();
-		name2.removeAllItems();
-		name3.removeAllItems();
-		name4.removeAllItems();
-		
-		name1.addItem("Select...");
-		name2.addItem("Select...");
-		name3.addItem("Select...");
-		name4.addItem("Select...");
-		
-		name1.setSelectedIndex(0);
-		name2.setSelectedIndex(0);
-		name3.setSelectedIndex(0);
-		name4.setSelectedIndex(0);
-
-		updateStatusCode = 0;
-		confirmTimeButton1.setForeground(Color.black);
-
-		list2_3.removeAll();
-		statusMake.setText("You are logged out.");
-		statusUpdate.setText("You are logged out.");
-		
-		for(int i = 0; i < modelTable.getRowCount(); i++) {
-			modelTable.removeRow(i);
-		}
+//		for(int i = 0; i < modelTable.getRowCount(); i++) {
+//			modelTable.removeRow(i);
+//		}
+//		
+//		createApptEnterStartTimeTextField.setText("");
+//		updateApptEnterNewTimeTextField.setText("");
+//
+//		name1.removeAllItems();
+//		name2.removeAllItems();
+//		name3.removeAllItems();
+//		name4.removeAllItems();
+//		
+//		name1.addItem("Select...");
+//		name2.addItem("Select...");
+//		name3.addItem("Select...");
+//		name4.addItem("Select...");
+//		
+//		name1.setSelectedIndex(0);
+//		name2.setSelectedIndex(0);
+//		name3.setSelectedIndex(0);
+//		name4.setSelectedIndex(0);
+//
+//		updateStatusCode = 0;
+//		confirmTimeButton1.setForeground(Color.black);
+//
+//		list2_3.removeAll();
+//		statusMake.setText("You are logged out.");
+//		statusUpdate.setText("You are logged out.");
+//		
+//		for(int i = 0; i < modelTable.getRowCount(); i++) {
+//			modelTable.removeRow(i);
+//		}
 		
 	}
 	
