@@ -864,7 +864,11 @@ public class CustomerView extends JPanel {
 	private void updateUsernameButtonActionPerformed(ActionEvent evt) {
 		// TODO Auto-generated method stub
 		error = "";
+		try {
 		CarShopController.updateUsername(CarShopApplication.getCurrentUser(), newUsernameTextField.getText());
+		} catch (Exception e) {
+		
+		}
 		error += "New username is "+newUsernameTextField.getText();
 		errorMessage.setText(error);
 	}
@@ -874,7 +878,11 @@ public class CustomerView extends JPanel {
 	private void updatePasswordButtonActionPerformed(ActionEvent evt) throws InterruptedException {
 		// TODO Auto-generated method stub
 		error = "";
+		try {
 		CarShopController.updatePassword(CarShopApplication.getCurrentUser(), newPasswordTextField.getText());
+		} catch (Exception e) {
+			
+		}
 		error += "New password is "+newPasswordTextField.getText();
 		errorMessage.setText(error);
 
