@@ -396,32 +396,53 @@ public class OwnerViewBusinessInfo extends JPanel {
     	if (errorMessage != null) errorLabel.setText(errorMessage);
     	else errorLabel.setText(errorMessage);
     	if (smallErrorMessage != null) smallErrorLabel.setText(smallErrorMessage);
-    	businessName.setText("Name:\t" + CarShopController.getBusinessName());
-    	email.setText("Email:\t" + CarShopController.getBusinessEmail());
-    	phoneNum.setText("Phone #:\t" + CarShopController.getBusinessPhone());
-    	address.setText("Address:\t" + CarShopController.getBusinessAddress());
+    	try {
+    		// all throw exceptions if business is null
+			businessName.setText("Name:\t" + CarShopController.getBusinessName());
+	    	email.setText("Email:\t" + CarShopController.getBusinessEmail());
+	    	phoneNum.setText("Phone #:\t" + CarShopController.getBusinessPhone());
+	    	address.setText("Address:\t" + CarShopController.getBusinessAddress());
 
-    	TOBusinessHoursCS = CarShopController.getBusinessHours();
-    	stringBusinessHours = listBHToString(TOBusinessHoursCS);
-    	TOHolidaysCS = CarShopController.getHolidays();
-    	stringHolidays = listTSToString(TOHolidaysCS);
-    	TOVacationsCS = CarShopController.getVacations();
-    	stringVacations = listTSToString(TOVacationsCS);
-    	
+	    	// get all TO business hours
+	    	TOBusinessHoursCS = CarShopController.getBusinessHours();
+	    	// put them all into a string
+	    	stringBusinessHours = listBHToString(TOBusinessHoursCS);
+	    	
+	    	// get all TO holidays
+	    	TOHolidaysCS = CarShopController.getHolidays();
+	    	// convert all holidays to a string
+	    	stringHolidays = listTSToString(TOHolidaysCS);
+	    	
+	    	// get all TO vacations
+	    	TOVacationsCS = CarShopController.getVacations();
+	    	// convert them all to a string (same method as before)
+	    	stringVacations = listTSToString(TOVacationsCS);
+	    	
+		} catch (Exception e) {
+			errorLabel.setText(e.getMessage());
+		}
+
     	bhm.clear();
     	hm.clear();
     	vm.clear();
     	
-    	for (String s : stringBusinessHours) {
-    		bhm.addElement(s);
+    	// condition check
+    	if(stringBusinessHours!=null) {
+	    	for (String s : stringBusinessHours) {
+	    		bhm.addElement(s);
+	    	}
     	}
     	
-    	for (String s : stringHolidays) {
-    		hm.addElement(s);
+    	if(stringHolidays!=null) {
+	    	for (String s : stringHolidays) {
+	    		hm.addElement(s);
+	    	}
     	}
     	
-    	for (String s : stringVacations) {
-    		vm.addElement(s);
+    	if(stringVacations!=null) {
+	    	for (String s : stringVacations) {
+	    		vm.addElement(s);
+	    	}
     	}
 
     }
@@ -566,7 +587,7 @@ private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
 	public static String[] listBHToString(List<TOBusinessHour> list) {
     	String[] newStringArray = new String[list.size()];
     	int index = 0;
-    	if (list.get(0) == null) return null;
+    	if (list.size()==0) return newStringArray;
     	for (TOBusinessHour bh : list) {
     		String info = bh.getDayOfWeek() 
     				+ ": " + CarShopController.timeToString(bh.getStartTime()) 
@@ -580,7 +601,7 @@ private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
 	public static String[] listTSToString(List<TOTimeSlot> list) {
     	String[] newStringArray = new String[list.size()];
     	int index = 0;
-    	if (list.get(0) == null) return null;	
+    	if (list.size() == 0) return newStringArray;	
     	for (TOTimeSlot ts : list) {
     		String info = "From " + CarShopController.dateToString(ts.getStartDate()) 
 	    		+ " at " + CarShopController.timeToString(ts.getStartTime()) 
@@ -593,7 +614,13 @@ private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
     }
     
     
-    
+    public static String splitBasedOnTab(String str) {
+    	String[] arr = str.split("\t");
+    	if(arr.length>1) {
+    		return arr[1];
+    	}
+    	return "";
+    }
     
     //action methods
     private void updateBusinessInfoActionPerformed(ActionEvent evt) {
@@ -602,14 +629,24 @@ private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
 		smallErrorLabel.setForeground(Color.RED);
 		JLabel updateTitle = new JLabel("Update Business Information");
 		updateTitle.setFont(new Font("Arial", Font.BOLD, 22));
+		
+		// have to split the string
 		JLabel name = new JLabel("Name:");
-		JTextField nameText = new JTextField(businessName.getText());
+		JTextField nameText = new JTextField(splitBasedOnTab(this.businessName.getText()));
+		
+		// have to split the string
 		JLabel address = new JLabel("Address:");
-		JTextField addressText = new JTextField(this.address.getText());
+		JTextField addressText = new JTextField(splitBasedOnTab(this.address.getText()));
+
+		// have to split the string
 		JLabel phoneNum = new JLabel("Phone Number:");
-		JFormattedTextField phoneNumText = new JFormattedTextField(this.phoneNum.getText());
+		JFormattedTextField phoneNumText = new JFormattedTextField(splitBasedOnTab(this.phoneNum.getText()));
+
+		// have to split the string
 		JLabel email = new JLabel("Email:");
-		JTextField emailText = new JTextField(this.email.getText());
+		JTextField emailText = new JTextField(splitBasedOnTab(this.email.getText()));
+
+
 		JButton updateInfo = new JButton("Update");
 		
 		updateBusinessInfo.add(updateTitle);
