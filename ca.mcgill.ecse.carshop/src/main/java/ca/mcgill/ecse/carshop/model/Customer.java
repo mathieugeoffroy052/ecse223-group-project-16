@@ -202,10 +202,6 @@ public class Customer extends User implements Serializable
     noShowCounter++;
   }
 
-
-  /**
-   * private static final long serialVersionUID = -7403802774454467836L;
-   */
   // line 64 "../../../../../CarShopPersistence.ump"
    public static  void reinitializeUniqueUsernames(List<Customer> customers){
     User.setUsersByUsername(new HashMap<String, User>());
@@ -220,5 +216,13 @@ public class Customer extends User implements Serializable
     return super.toString() + "["+
             "noShowCounter" + ":" + getNoShowCounter()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "carShop = "+(getCarShop()!=null?Integer.toHexString(System.identityHashCode(getCarShop())):"null");
-  }
+  }  
+  //------------------------
+  // DEVELOPER CODE - PROVIDED AS-IS
+  //------------------------
+  
+  // line 61 "../../../../../CarShopPersistence.ump"
+  private static final long serialVersionUID = 6227264410249041622L ;
+
+  
 }

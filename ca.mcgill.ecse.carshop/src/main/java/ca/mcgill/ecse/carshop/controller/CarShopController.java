@@ -37,9 +37,20 @@ public class CarShopController {
 	public CarShopController() {
 	}
 	
+	public static Time getSystemTime() {
+		return CarShopApplication.getSystemTime();
+	}
+	
+	public static User getUser() {
+		return CarShopApplication.getUser();
+	}
 	
 	public static void logOut() {
 		CarShopApplication.logOut();
+	}
+	
+	public static CarShop getCarShop() {
+		return CarShopApplication.getCarShop();
 	}
 	
 	public static String getCurrentUser() {

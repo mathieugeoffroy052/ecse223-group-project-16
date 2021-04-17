@@ -425,5 +425,13 @@ public class Business implements Serializable
             "phoneNumber" + ":" + getPhoneNumber()+ "," +
             "email" + ":" + getEmail()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "carShop = "+(getCarShop()!=null?Integer.toHexString(System.identityHashCode(getCarShop())):"null");
-  }
+  }  
+  //------------------------
+  // DEVELOPER CODE - PROVIDED AS-IS
+  //------------------------
+  
+  // line 27 "../../../../../CarShopPersistence.ump"
+  private static final long serialVersionUID = 8896099581655989380L ;
+
+  
 }
