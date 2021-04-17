@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.sql.Time;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Properties;
@@ -395,10 +396,10 @@ public class OwnerViewBusinessInfo extends JPanel {
     	if (errorMessage != null) errorLabel.setText(errorMessage);
     	else errorLabel.setText(errorMessage);
     	if (smallErrorMessage != null) smallErrorLabel.setText(smallErrorMessage);
-    	businessName.setText(CarShopController.getBusinessName());
-    	email.setText(CarShopController.getBusinessEmail());
-    	phoneNum.setText(CarShopController.getBusinessPhone());
-    	address.setText(CarShopController.getBusinessAddress());
+    	businessName.setText("Name:\t" + CarShopController.getBusinessName());
+    	email.setText("Email:\t" + CarShopController.getBusinessEmail());
+    	phoneNum.setText("Phone #:\t" + CarShopController.getBusinessPhone());
+    	address.setText("Address:\t" + CarShopController.getBusinessAddress());
 
     	TOBusinessHoursCS = CarShopController.getBusinessHours();
     	stringBusinessHours = listBHToString(TOBusinessHoursCS);
@@ -522,8 +523,8 @@ private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
 		updateWeeklyHoursButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				String dayOfWeek = (String)(dayPicker.getSelectedItem());
-				String startTime = CarShopController.dateToString( new java.sql.Date(model.getDate().getTime()));
-				String endTime = CarShopController.dateToString(new java.sql.Date(model2.getDate().getTime()));
+				String startTime = CarShopController.timeToString(new Time (model.getDate().getTime()));
+				String endTime = CarShopController.timeToString(new Time (model2.getDate().getTime()));
 				String oldDay = updatingBH.getDayOfWeek();
 				String oldStartTime = CarShopController.timeToString(updatingBH.getStartTime());
 				updateWeeklyHoursButtonActionPerformed(evt, oldDay, oldStartTime, dayOfWeek, startTime, endTime, updateWeeklyHours);
@@ -785,8 +786,8 @@ private void updateWeeklyHoursActionPerformed(ActionEvent evt) {
 		addWeeklyHoursButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				String dayOfWeek = (String)(dayPicker.getSelectedItem());
-				String startTime = CarShopController.dateToString( new java.sql.Date(model.getDate().getTime()));
-				String endTime = CarShopController.dateToString(new java.sql.Date(model2.getDate().getTime()));
+				String startTime = CarShopController.timeToString( new Time(model.getDate().getTime()));
+				String endTime = CarShopController.timeToString(new Time(model2.getDate().getTime()));
 				addWeeklyHoursButtonActionPerformed(evt, dayOfWeek, startTime, endTime, addWeeklyHours);
 			}
 		});
