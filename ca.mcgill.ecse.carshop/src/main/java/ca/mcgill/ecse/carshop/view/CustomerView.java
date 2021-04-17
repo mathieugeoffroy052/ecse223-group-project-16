@@ -26,7 +26,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-import ca.mcgill.ecse.carshop.application.CarShopApplication;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.TOAppointment;
 import ca.mcgill.ecse.carshop.controller.TOBookableService;
@@ -496,7 +495,7 @@ public class CustomerView extends JPanel {
 		name2.addItem("Select...");
 		name4.addItem("Select...");
 		TOAppointments = new ArrayList<>();
-		for (TOAppointment appt : CarShopController.getCustomerAppointments(CarShopApplication.getCurrentUser())) {
+		for (TOAppointment appt : CarShopController.getCustomerAppointments(CarShopController.getCurrentUser())) {
 			TOAppointments.add(appt);
 			name2.addItem(appt.getServiceName());
 			name4.addItem(appt.getServiceName());
@@ -553,7 +552,7 @@ public class CustomerView extends JPanel {
 				for(int i = TOAppointments.size()-1; i >= 0; i--) {	// remove all appointments
 					TOAppointments.remove(i);
 				}
-				for (TOAppointment appt : CarShopController.getCustomerAppointments(CarShopApplication.getCurrentUser())) {	// get all appointments from customer
+				for (TOAppointment appt : CarShopController.getCustomerAppointments(CarShopController.getCurrentUser())) {	// get all appointments from customer
 					// add to appointment selection (combo box)
 					name2.addItem(appt.getServiceName());
 					name4.addItem(appt.getServiceName());
@@ -706,9 +705,9 @@ public class CustomerView extends JPanel {
 		for(String s : list) {
 			optServices += s+",";
 		}
-		String customer = CarShopApplication.getCurrentUser();
+		String customer = CarShopController.getCurrentUser();
 		String sbName = name1.getItemAt(name1.getSelectedIndex());
-		String currentDateAndTime = CarShopApplication.getSystemDateTime();
+		String currentDateAndTime = CarShopController.getSystemDateTime();
 		String monthString = String.valueOf(createApptDateText.getMonth()+1);
 		if((createApptDateText.getMonth()+1)<10) monthString = "0"+(createApptDateText.getMonth()+1);
 		String dayString = String.valueOf(createApptDateText.getDay());
@@ -750,10 +749,10 @@ public class CustomerView extends JPanel {
 				return;
 			}
 			else if(updateStatusCode == 1) {	// serv1 -> serv2
-				String timeOfChange = CarShopApplication.getSystemDateTime();
+				String timeOfChange = CarShopController.getSystemDateTime();
 				String serviceName = name3.getItemAt(name3.getSelectedIndex());
 				String prevServName = name2.getItemAt(name2.getSelectedIndex());
-				String username = CarShopApplication.getCurrentUser();
+				String username = CarShopController.getCurrentUser();
 				TOAppointment prevTOAppt = null;
 				for(TOAppointment toa : TOAppointments) {
 					if(toa.getServiceName().equals(prevServName)) {
@@ -763,9 +762,9 @@ public class CustomerView extends JPanel {
 				CarShopController.updateAppointmentCase1(username, prevTOAppt, serviceName, timeOfChange);
 			}
 			else if(updateStatusCode == 2) {	// time1 -> time2
-				String timeOfChange = CarShopApplication.getSystemDateTime();
+				String timeOfChange = CarShopController.getSystemDateTime();
 				String prevServName = name2.getItemAt(name2.getSelectedIndex());
-				String username = CarShopApplication.getCurrentUser();
+				String username = CarShopController.getCurrentUser();
 				TOAppointment prevTOAppt = null;
 				for(TOAppointment toa : TOAppointments) {
 					if(toa.getServiceName().equals(prevServName)) {
@@ -784,8 +783,8 @@ public class CustomerView extends JPanel {
 				CarShopController.updateAppointmentCase2(username, prevTOAppt, dateString, time, timeOfChange);
 			} 
 			else if(updateStatusCode == 3) {	// addOptServices
-				String timeOfChange = CarShopApplication.getSystemDateTime();
-				String username = CarShopApplication.getCurrentUser();
+				String timeOfChange = CarShopController.getSystemDateTime();
+				String username = CarShopController.getCurrentUser();
 				String servName = name2.getItemAt(name2.getSelectedIndex());
 				List<String> list = list2_3.getSelectedValuesList();
 				String optServices = "";
@@ -818,10 +817,10 @@ public class CustomerView extends JPanel {
 
 	private void cancelButtonActionPerformed(ActionEvent evt) {
 		error = "";
-		String username = CarShopApplication.getCurrentUser();
+		String username = CarShopController.getCurrentUser();
 
 		try {
-			String currentDateAndTime = CarShopApplication.getSystemDateTime();
+			String currentDateAndTime = CarShopController.getSystemDateTime();
 			String servName = name4.getItemAt(name4.getSelectedIndex());
 			TOAppointment prevTOAppt = null;
 			for(TOAppointment toa : TOAppointments) {
@@ -843,7 +842,7 @@ public class CustomerView extends JPanel {
 	private void updateUsernameButtonActionPerformed(ActionEvent evt) {
 		error = "";
 		try {
-		CarShopController.updateUsername(CarShopApplication.getCurrentUser(), newUsernameTextField.getText());
+		CarShopController.updateUsername(CarShopController.getCurrentUser(), newUsernameTextField.getText());
 		} catch (Exception e) {
 		
 		}
@@ -856,7 +855,7 @@ public class CustomerView extends JPanel {
 	private void updatePasswordButtonActionPerformed(ActionEvent evt) throws InterruptedException {
 		error = "";
 		try {
-		CarShopController.updatePassword(CarShopApplication.getCurrentUser(), newPasswordTextField.getText());
+		CarShopController.updatePassword(CarShopController.getCurrentUser(), newPasswordTextField.getText());
 		} catch (Exception e) {
 			
 		}
@@ -869,7 +868,7 @@ public class CustomerView extends JPanel {
 	
 	private void logOutButtonActionPerformed(ActionEvent evt) {
 		error = "";
-		CarShopApplication.logOut();
+		CarShopController.logOut();
 		error += "Now logged out. Close application and log in again to continue.";
 		errorMessage.setText(error);
 		for(int i = 0; i < modelTable.getRowCount(); i++) {
@@ -994,7 +993,7 @@ public class CustomerView extends JPanel {
 		error = "";
 		try {
 			for(TOAppointment TOAppt : TOAppointments) {
-				CarShopController.cancelAppointmentCase1(TOAppt, CarShopApplication.getCurrentUser(), CarShopApplication.getSystemDateTime());
+				CarShopController.cancelAppointmentCase1(TOAppt, CarShopController.getCurrentUser(), CarShopController.getSystemDateTime());
 			}
 			CarShopController.deleteCustomerAccount(newUsername);
 			frame.setVisible(false);

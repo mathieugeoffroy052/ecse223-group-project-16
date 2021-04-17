@@ -37,6 +37,19 @@ public class CarShopController {
 	public CarShopController() {
 	}
 	
+	
+	public static void logOut() {
+		CarShopApplication.logOut();
+	}
+	
+	public static String getCurrentUser() {
+		return CarShopApplication.getCurrentUser();
+	}
+	
+	public static String getSystemDateTime() {
+		return CarShopApplication.getSystemDateTime();
+	}
+	
 	@SuppressWarnings("static-access")
 	public static List<TOComboItem> getOptServicesWithName(String apptName) throws Exception {
 
@@ -2946,7 +2959,6 @@ public class CarShopController {
 			weekday = DayOfWeek.Friday;
 		}
 		//need to remove the old business hour, but this is becoming a bit of an issue
-		//TODO
 		//i think this works correctly, but unsure...
 		Time newGarageStart = stringToTime(newStart);
 		Time newGarageEnd = stringToTime(newEnd);
@@ -3073,7 +3085,6 @@ public class CarShopController {
 	}
 
 	public static boolean checkIfPasswordCorrect(String newUsername, String newPassword) throws InvalidInputException {
-		// TODO Auto-generated method stub
 		Customer c = (Customer) Customer.getWithUsername(newUsername);
 		if(c.getUsername().equals(newUsername) && !c.getPassword().equals(newPassword)) throw new InvalidInputException("Password is incorrect!");
 
@@ -3081,7 +3092,6 @@ public class CarShopController {
 	}
 
 	public static void getCustomerByUsername(String newUsername) throws InvalidInputException {
-		// TODO Auto-generated method stub
 		try {
 			Customer.getWithUsername(newUsername);
 		} catch (Exception e) {
@@ -3096,7 +3106,6 @@ public class CarShopController {
 	}
 
 	public static void deleteCustomerAccount(String newUsername) throws InvalidInputException {
-		// TODO Auto-generated method stub
 		for(Customer c : CarShopApplication.getCarShop().getCustomers()) {
 			if(c.getUsername().equals(newUsername)) {
 				c.delete();
@@ -3111,7 +3120,6 @@ public class CarShopController {
 	}
 
 	public static void updatePassword(String currentUser, String text) throws InvalidInputException {
-		// TODO Auto-generated method stub
 		Customer.getWithUsername(currentUser).setPassword(text);
 		//Persistence
 		try {
@@ -3122,7 +3130,6 @@ public class CarShopController {
 	}
 
 	public static void updateUsername(String currentUser, String text) throws InvalidInputException {
-		// TODO Auto-generated method stub
 		Customer.getWithUsername(currentUser).setUsername(text);
 		//Persistence
 		try {
