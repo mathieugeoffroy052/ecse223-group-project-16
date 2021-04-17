@@ -2859,6 +2859,7 @@ public class CarShopController {
 		}
 	}
 	
+
 	public static List<TOCarshopService> getCarshopServices() {
 		List<TOCarshopService> toReturn = new ArrayList<>();
 		CarShop carShop = CarShopApplication.getCarShop();
@@ -2909,4 +2910,55 @@ public class CarShopController {
 		return toReturn;
 	}
 
+	public static void changeGarageBusinessHour(String day, String startTime, String endTime, String type, CarShop cs) throws InvalidInputException {
+
+
+		DayOfWeek dayOfWeek = CarShopController.getWeekDay(day);
+		int toCheck = 0;
+		List<BusinessHour> businessHours = cs.getBusiness().getBusinessHours();
+		for(int i=0; i<businessHours.size();i++) {
+			BusinessHour bh = businessHours.get(i);
+			if(bh.getDayOfWeek().toString().equals(day)) {
+				if(bh.getEndTime().before(stringToTime(endTime))) {
+					throw new IllegalArgumentException("Garage opening hours must be within weekly business hours");
+				}
+				if(bh.getStartTime().after(stringToTime(startTime))) {
+					throw new IllegalArgumentException("Garage opening hours must be within weekly business hours");
+				}
+				if(stringToTime(startTime).after(stringToTime(endTime))){
+					throw new IllegalArgumentException("Opening time must be before end time");
+				}
+				
+				//need to check if the hours im trying to set are vacation days, maybe....
+				if(dayOfWeek.equals(BusinessHour.DayOfWeek.Monday)) toCheck = 0; 
+				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Tuesday)) toCheck = 1;
+				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Wednesday)) toCheck = 2;
+				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Thursday)) toCheck = 3;
+				else if(dayOfWeek.equals(BusinessHour.DayOfWeek.Friday)) toCheck = 4;
+				else throw new InvalidInputException("The opening hours are not within the opening hours of the business");
+				// converts from string to time with method in the controller
+				Time ourStartTime = CarShopController.stringToTime(startTime);
+				Time ourEndTime = CarShopController.stringToTime(endTime);
+				Technician technician = CarShopController.findTechnician(type, cs);		
+				// "The opening hours cannot overlap"
+				Garage garage = technician.getGarage();
+				
+				garage.getBusinessHour(toCheck).setStartTime(ourStartTime);
+				//persistence
+				try {
+					CarShopPersistence.save(cs);
+				}catch(RuntimeException e) {
+					throw new InvalidInputException(e.getMessage());
+				}
+				garage.getBusinessHour(toCheck).setEndTime(ourEndTime);
+				//persistence
+				try {
+					CarShopPersistence.save(cs);
+				}catch(RuntimeException e) {
+					throw new InvalidInputException(e.getMessage());
+				}
+				break;				
+			}
+		}
+	}
 }
