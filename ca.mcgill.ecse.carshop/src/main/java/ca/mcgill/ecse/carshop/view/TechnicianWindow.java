@@ -9,7 +9,7 @@ import javax.swing.table.DefaultTableModel;
 
 
 public class TechnicianWindow {
-
+	// UI elements
 	private JFrame frame;
 	private JTable table;
 	private JTextField txtSetNewOpening;
@@ -23,11 +23,9 @@ public class TechnicianWindow {
 	private JLabel lblNewLabel_5;
 	private JLabel lblNewLabel_6;
 	private JLabel lblNewLabel_7;
-	private JComboBox comboBox;
+	private JComboBox<String> comboBox;
 	private JButton btnNewButton;
 	private JLabel lblNewLabel_2;
-	private JTable overviewTable;
-	private JScrollPane overviewScrollPane;
 	private JLabel errorMessage;
 
 	/**
@@ -57,6 +55,7 @@ public class TechnicianWindow {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	@SuppressWarnings({ "serial", "unchecked", "rawtypes" })
 	private void initializeTechnicianView() {
 		frame = new JFrame();
 		frame.setBounds(400, 400, 1000, 1000);
@@ -71,14 +70,11 @@ public class TechnicianWindow {
 		lblNewLabel_1.setBounds(60, 129, 97, 16);
 		frame.getContentPane().add(lblNewLabel_1);
 		
-//		String[][] data = {{"", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"},{"Opening", "", "", "", "", ""},{"Closing", "", "", "", "", ""}};
-//		String[] column = {"","","","","",""};
 		table = new JTable();
 		table.setBounds(60, 177, 572, 57);
 		frame.getContentPane().add(table);
 		
 		
-		JTable scheduleTable = new JTable();
 		//make the table non editable (for the user. the table will still get updated):
 		DefaultTableModel scheduleModelTable = new DefaultTableModel() {
 			@Override
@@ -123,7 +119,7 @@ public class TechnicianWindow {
 		lblNewLabel_2.setBounds(60, 321, 153, 16);
 		frame.getContentPane().add(lblNewLabel_2);
 		
-		comboBox = new JComboBox();
+		comboBox = new JComboBox<String>();
 		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"}));
 		comboBox.setBounds(60, 349, 130, 27);
 		frame.getContentPane().add(comboBox);

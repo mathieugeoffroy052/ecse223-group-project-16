@@ -225,10 +225,6 @@ public abstract class BookableService implements Serializable
     }
   }
 
-
-  /**
-   * private static final long serialVersionUID = 2315072607928790501L;
-   */
   // line 16 "../../../../../CarShopPersistence.ump"
    public static  void reinitializeBookableServiceList(List<BookableService> bookableServices){
     bookableservicesByName = new HashMap<String, BookableService>();
@@ -256,5 +252,13 @@ public abstract class BookableService implements Serializable
     return super.toString() + "["+
             "name" + ":" + getName()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "carShop = "+(getCarShop()!=null?Integer.toHexString(System.identityHashCode(getCarShop())):"null");
-  }
+  }  
+  //------------------------
+  // DEVELOPER CODE - PROVIDED AS-IS
+  //------------------------
+  
+  // line 13 "../../../../../CarShopPersistence.ump"
+  private static final long serialVersionUID = 2315072607928790501L ;
+
+  
 }

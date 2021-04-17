@@ -37,6 +37,30 @@ public class CarShopController {
 	public CarShopController() {
 	}
 	
+	public static Time getSystemTime() {
+		return CarShopApplication.getSystemTime();
+	}
+	
+	public static User getUser() {
+		return CarShopApplication.getUser();
+	}
+	
+	public static void logOut() {
+		CarShopApplication.logOut();
+	}
+	
+	public static CarShop getCarShop() {
+		return CarShopApplication.getCarShop();
+	}
+	
+	public static String getCurrentUser() {
+		return CarShopApplication.getCurrentUser();
+	}
+	
+	public static String getSystemDateTime() {
+		return CarShopApplication.getSystemDateTime();
+	}
+	
 	@SuppressWarnings("static-access")
 
 	public static List<TOComboItem> getOptServicesWithName(String apptName) throws Exception {
@@ -705,6 +729,10 @@ public class CarShopController {
 	//method that sets up business enters information into system
 	public static void setUpBusinessInfo(String nameString, String address, String phoneNumber, String emailAddress) 
 			throws InvalidInputException {
+		
+		if (CarShopApplication.getCarShop().getBusiness() == null) {
+			throw new InvalidInputException("The business doesn't exist yet");
+		}
 		//checks if it's owner entering the information
 		if (!hasAuthorization()) {
 			throw new InvalidInputException("No permission to set up business information");
@@ -736,6 +764,10 @@ public class CarShopController {
 	//method that creates hours for business
 	public static void createBusinessHour(String day, String startTime, String endTime) throws InvalidInputException {
 		//checks if it's owner entering the information
+		if (CarShopApplication.getCarShop().getBusiness() == null) {
+			throw new InvalidInputException("The business doesn't exist yet");
+		}
+		
 		if (!hasAuthorization()) {
 			throw new InvalidInputException("No permission to update business information");
 		}
@@ -762,10 +794,15 @@ public class CarShopController {
 		}
 	}
 
-	//method to create holidays
+	//method to create holidays // doesnt have proper checks
 	public static void createHoliday(String startDate, String startTime, String endDate, String endTime)
 			throws InvalidInputException {
 		//checks if it's owner entering the information
+		
+		if (CarShopApplication.getCarShop().getBusiness() == null) {
+			throw new InvalidInputException("The business doesn't exist yet");
+		}
+		
 		if (!hasAuthorization()) {
 			throw new InvalidInputException("No permission to set up business information");
 		}
@@ -782,9 +819,13 @@ public class CarShopController {
 			throw new InvalidInputException(e.getMessage());
 		}
 	}
-	//method to create vacations
+	//method to create vacations // doesnt have proper checks
 	public static void createVacation(String startDate, String startTime, String endDate, String endTime)
 			throws InvalidInputException {
+		if (CarShopApplication.getCarShop().getBusiness() == null) {
+			throw new InvalidInputException("The business doesn't exist yet");
+		}
+		
 		//checks if it's owner entering the information
 		if (!hasAuthorization()) {
 			throw new InvalidInputException("No permission to set up business information");
@@ -806,6 +847,9 @@ public class CarShopController {
 	//method that creates time slots
 	public static void createTimeSlot(String type, String startDate, String startTime, String endDate, String endTime)
 			throws InvalidInputException {
+		if (CarShopApplication.getCarShop().getBusiness() == null) {
+			throw new InvalidInputException("The business doesn't exist yet");
+		}
 		//checks if it's owner entering the information
 		CarShop carShop = CarShopApplication.getCarShop();
 		if (!hasAuthorization()) {
@@ -858,7 +902,8 @@ public class CarShopController {
 		CarShop carShop = CarShopApplication.getCarShop();
 		Business business = carShop.getBusiness();
 		if (business == null) {
-			throw new InvalidInputException("Set up a business first");
+			carShop.setBusiness(new Business("", "", "", "", carShop));
+			business = carShop.getBusiness();
 		}
 		//checks if the inputs are null or empty
 		if (nameString == null || nameString.length() == 0 || address == null || address.length() == 0
@@ -1051,8 +1096,9 @@ public class CarShopController {
 	}
 
 	//returning the business hours
-	public static List<TOBusinessHour> getBusinessHours(){
+	public static List<TOBusinessHour> getBusinessHours() throws Exception{
 		Business business = CarShopApplication.getCarShop().getBusiness();
+		if(business == null) throw new Exception("Business does not exist yet!");
 		List<BusinessHour> businessHours = business.getBusinessHours();
 		List<TOBusinessHour> toBusinessHours = new ArrayList<>();
 		for (BusinessHour businessHour : businessHours) {
@@ -1064,8 +1110,9 @@ public class CarShopController {
 	}
 	
 	//returning the holidays
-	public static List<TOTimeSlot> getHolidays() {
+	public static List<TOTimeSlot> getHolidays() throws Exception {
 		Business business = CarShopApplication.getCarShop().getBusiness();
+		if(business == null) throw new Exception("Business does not exist yet!");
 		List<TimeSlot> holidaySlots = business.getHolidays();
 		List<TOTimeSlot> toHolidays = new ArrayList<>();
 		for (TimeSlot holiday : holidaySlots) {
@@ -1077,8 +1124,9 @@ public class CarShopController {
 	}
 	
 	//returning the vacations
-	public static List<TOTimeSlot> getVacations() {
+	public static List<TOTimeSlot> getVacations() throws Exception {
 		Business business = CarShopApplication.getCarShop().getBusiness();
+		if(business == null) throw new Exception("Business does not exist yet!");
 		List<TimeSlot> vacationSlots = business.getVacations();
 		List<TOTimeSlot> toVacations = new ArrayList<>();
 		for (TimeSlot vacation : vacationSlots) {
@@ -1143,7 +1191,7 @@ public class CarShopController {
 
 	//making sure that the start date is before the end date
 	private static boolean startDateBeforeEndDate(Date startDate, Date endDate) {
-		return startDate.before(endDate);
+		return !startDate.after(endDate);
 	}
 
 	// check if business hour conflicts
@@ -1795,7 +1843,7 @@ public class CarShopController {
 
 				for (BookableService bookableService : bookableServiceList) {	//find service and change parameters
 					if (bookableService instanceof Service) {
-						if (bookableService.hasWithName(service)) {
+						if (bookableService.getName().equals(service)) {
 							((Service) bookableService).setName(name);
 							((Service) bookableService).setDuration(newIntDuration);
 							((Service) bookableService).setGarage(currentGar);
@@ -2681,6 +2729,7 @@ public class CarShopController {
 				|| (inputStartDateTime.isBefore(startDateTime) && inputEndDateTime.isAfter(endDateTime))
 				|| (inputStartDateTime.isBefore(startDateTime) && startDateTime.isBefore(inputEndDateTime))
 				|| (inputStartDateTime.isBefore(endDateTime) && endDateTime.isBefore(inputEndDateTime))
+				|| (inputStartDateTime.equals(startDateTime) && inputEndDateTime.equals(endDateTime))
 				) {
 			return true;
 		}
@@ -2764,32 +2813,50 @@ public class CarShopController {
 		return toAppointments;
 	}
 	
-	/**
-	 * method to get the business name
-	 */
-	public static String getBusinessName() {
-		String name = CarShopApplication.getCarShop().getBusiness().getName();
+
+	public static String getBusinessName() throws Exception {
+		String name = "";
+		try {
+			CarShopApplication.getCarShop().getBusiness().getName();
+		} catch (Exception e) {
+			throw new Exception("Business does not exist yet!");
+		}
+		name = CarShopApplication.getCarShop().getBusiness().getName();
 		return name;
 	}
-	/**
-	 * method to get the business email
-	 */
-	public static String getBusinessEmail() {
-		String email = CarShopApplication.getCarShop().getBusiness().getEmail();
+	
+	public static String getBusinessEmail() throws Exception {
+		String email = "";
+		try {
+			CarShopApplication.getCarShop().getBusiness().getEmail();		
+		} catch (NullPointerException e) {
+			throw new Exception("Business does not exist yet!");
+		}
+		
+		email = CarShopApplication.getCarShop().getBusiness().getEmail();
 		return email;
 	}
-	/**
-	 * method to get the business phone
-	 */
-	public static String getBusinessPhone() {
-		String phone = CarShopApplication.getCarShop().getBusiness().getPhoneNumber();
+	
+	public static String getBusinessPhone() throws Exception {
+		String phone = "";
+		try {
+			CarShopApplication.getCarShop().getBusiness().getPhoneNumber();
+		} catch (NullPointerException e) {
+			throw new Exception("Business does not exist yet!");
+		}
+		phone = CarShopApplication.getCarShop().getBusiness().getPhoneNumber();
 		return phone;
 	}
-	/**
-	 * method to get the business address
-	 */
-	public static String getBusinessAddress() {
-		String address = CarShopApplication.getCarShop().getBusiness().getAddress();
+	
+	public static String getBusinessAddress() throws Exception {
+		
+		String address = "";
+		try {
+		CarShopApplication.getCarShop().getBusiness().getAddress();
+		} catch (NullPointerException e) {
+			throw new Exception("Business does not exist yet!");
+		}
+		address = CarShopApplication.getCarShop().getBusiness().getAddress();
 		return address;
 	}
 
@@ -3003,7 +3070,6 @@ public class CarShopController {
 			weekday = DayOfWeek.Friday;
 		}
 		//need to remove the old business hour, but this is becoming a bit of an issue
-		//TODO
 		//i think this works correctly, but unsure...
 		Time newGarageStart = stringToTime(newStart);
 		Time newGarageEnd = stringToTime(newEnd);
@@ -3048,10 +3114,7 @@ public class CarShopController {
 		return toReturn;
 	}
 	
-	/**
-	 * method to get list of service combos
-	 */
-	public static List<TOCarshopCombo> getCarshopServiceCOmbos() {
+	public static List<TOCarshopCombo> getCarshopServiceCombos() {
 		List<TOCarshopCombo> toReturn = new ArrayList<>();
 		CarShop carShop = CarShopApplication.getCarShop();
 		
@@ -3088,11 +3151,13 @@ public class CarShopController {
 
 		DayOfWeek dayOfWeek = CarShopController.getWeekDay(day);
 		int toCheck = 0;
+		if(cs.getBusiness()==null) throw new InvalidInputException("No business has been created yet!");
 		List<BusinessHour> businessHours = cs.getBusiness().getBusinessHours();
-		//gets all business hour sizes
+		boolean found = false;
 		for(int i=0; i<businessHours.size();i++) {
 			BusinessHour bh = businessHours.get(i);
 			if(bh.getDayOfWeek().toString().equals(day)) {
+				found = true;
 				if(bh.getEndTime().before(stringToTime(endTime))) {
 					throw new IllegalArgumentException("Garage opening hours must be within weekly business hours");
 				}
@@ -3116,7 +3181,23 @@ public class CarShopController {
 				Technician technician = CarShopController.findTechnician(type, cs);		
 				// "The opening hours cannot overlap"
 				Garage garage = technician.getGarage();
-				
+				if(garage.getBusinessHours().size()==0) {
+					BusinessHour bh1 = new BusinessHour(DayOfWeek.Monday, null, null, cs);
+					garage.addBusinessHour(bh1);
+					
+					BusinessHour bh2 = new BusinessHour(DayOfWeek.Tuesday, null, null, cs);
+					garage.addBusinessHour(bh2);
+					
+					BusinessHour bh3 = new BusinessHour(DayOfWeek.Wednesday, null, null, cs);
+					garage.addBusinessHour(bh3);
+					
+					BusinessHour bh4 = new BusinessHour(DayOfWeek.Thursday, null, null, cs);
+					garage.addBusinessHour(bh4);
+					
+					BusinessHour bh5 = new BusinessHour(DayOfWeek.Friday, null, null, cs);
+					garage.addBusinessHour(bh5);		
+				}
+
 				garage.getBusinessHour(toCheck).setStartTime(ourStartTime);
 				//persistence
 				try {
@@ -3134,13 +3215,13 @@ public class CarShopController {
 				break;				
 			}
 		}
+		if(found == false) throw new InvalidInputException("Garage opening hours must be within weekly business hours");
+
 	}
 	/**
 	 * method to check the password
 	 */
 	public static boolean checkIfPasswordCorrect(String newUsername, String newPassword) throws InvalidInputException {
-		// TODO Auto-generated method stub
-		
 		Customer c = (Customer) Customer.getWithUsername(newUsername);
 		if(c.getUsername().equals(newUsername) && !c.getPassword().equals(newPassword)) throw new InvalidInputException("Password is incorrect!");
 		//password is equivalent
@@ -3151,7 +3232,6 @@ public class CarShopController {
 	 * @param newUsername
 	 */
 	public static void getCustomerByUsername(String newUsername) throws InvalidInputException {
-		// TODO Auto-generated method stub
 		try {
 			Customer.getWithUsername(newUsername);
 		} catch (Exception e) {
@@ -3169,9 +3249,6 @@ public class CarShopController {
 	 * @param newUsername
 	 */
 	public static void deleteCustomerAccount(String newUsername) throws InvalidInputException {
-		// TODO Auto-generated method stub
-		
-		//getting list of customers
 		for(Customer c : CarShopApplication.getCarShop().getCustomers()) {
 			if(c.getUsername().equals(newUsername)) {
 				c.delete();
@@ -3190,7 +3267,6 @@ public class CarShopController {
 	 * @param text
 	 */
 	public static void updatePassword(String currentUser, String text) throws InvalidInputException {
-		// TODO Auto-generated method stub
 		Customer.getWithUsername(currentUser).setPassword(text);
 		//Persistence
 		try {
@@ -3205,7 +3281,6 @@ public class CarShopController {
 	 * @param text
 	 */
 	public static void updateUsername(String currentUser, String text) throws InvalidInputException {
-		// TODO Auto-generated method stub
 		Customer.getWithUsername(currentUser).setUsername(text);
 		//Persistence
 		try {

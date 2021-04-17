@@ -323,5 +323,13 @@ public class Garage implements Serializable
       existingTechnician.setGarage(null);
     }
   }
+  
+  //------------------------
+  // DEVELOPER CODE - PROVIDED AS-IS
+  //------------------------
+  
+  // line 74 "../../../../../CarShopPersistence.ump"
+  private static final long serialVersionUID = 7847326538821622675L ;
 
+  
 }

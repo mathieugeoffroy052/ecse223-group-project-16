@@ -1,6 +1,5 @@
 package ca.mcgill.ecse.carshop.view;
 
-//import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -26,7 +25,7 @@ import ca.mcgill.ecse.carshop.controller.TOAppointment;
 import ca.mcgill.ecse.carshop.controller.TOServiceBooking;
 
 @SuppressWarnings("serial")
-public class OwnerViewAppointmentNode extends JPanel {
+public class ServiceSelectionNode extends JPanel {
 
 	// UI elements
 	private JLabel errorMessage;
@@ -55,7 +54,7 @@ public class OwnerViewAppointmentNode extends JPanel {
 	private String status;
 	private List<TOServiceBooking> toServiceBookings;
 
-	public OwnerViewAppointmentNode(String customer, String service, Date date, Time time, String status,
+	public ServiceSelectionNode(String customer, String service, Date date, Time time, String status,
 			List<TOServiceBooking> toServiceBookings, TOAppointment toAppt) {
 		
 		this.customer = customer;
