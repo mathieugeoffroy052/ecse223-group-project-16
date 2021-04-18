@@ -21,6 +21,7 @@ import ca.mcgill.ecse.carshop.application.CarShopApplication.AccountType;
 import ca.mcgill.ecse.carshop.controller.CarShopController;
 import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 
+@SuppressWarnings("serial")
 public class LogInView extends JPanel {
 
 	// Variables declaration
@@ -35,9 +36,6 @@ public class LogInView extends JPanel {
 		private JTextField textUsername;		//username text box
 		private JLabel errorMessage;			//error popup label
 		private String error;
-		private OwnerView ownerView;			//the owner view
-		private CustomerView customerView;		//the customer view
-		private TechnicianView technicianView;	//the technician view
 		private JButton buttonSignup;
 		private JLabel labelApplication;
 		private JLabel labelInstructions1;
@@ -61,7 +59,6 @@ public class LogInView extends JPanel {
 				@SuppressWarnings({ "deprecation", "static-access" })
 				@Override
 				public void actionPerformed(ActionEvent evt) {
-					//TODO 
 					String username = textUsername.getText();
 					String password = textPassword.getText();
 					error = null;

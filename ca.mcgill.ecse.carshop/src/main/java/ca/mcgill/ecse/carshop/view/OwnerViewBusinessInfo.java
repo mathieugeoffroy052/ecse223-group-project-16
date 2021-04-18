@@ -24,14 +24,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
-//import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SwingConstants;
-//import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DateFormatter;
 
 import org.jdatepicker.impl.JDatePanelImpl;
@@ -56,11 +54,10 @@ public class OwnerViewBusinessInfo extends JPanel {
     private static JLabel email;
     private static JLabel address;
     private static JButton updateBusinessInfo;
+    
     //weekly business hours
-
     private static JLabel businessHoursTitle;
     private static JList<String> weeklySchedule; //list to hold weekly schedule (no scrolling)
-//    private static TOBusinessHour[] weeklyHours = new TOBusinessHour[1]; //transfer object for business hours TODO
     private static List<TOBusinessHour> TOBusinessHoursCS;
     private static String[] stringBusinessHours;
     private static DefaultListModel<String> bhm;
@@ -69,7 +66,6 @@ public class OwnerViewBusinessInfo extends JPanel {
     //holidays
     private static JLabel holidayTitle;
     private static JList<String> upcomingHolidays; //list to show all the upcoming holidays
-//    private static TOTimeSlot[] carshopHolidays = new TOTimeSlot[0]; //TO for holidays TODO
     private static List<TOTimeSlot> TOHolidaysCS;
     private static String[] stringHolidays;
     private static DefaultListModel<String> hm;
@@ -79,7 +75,6 @@ public class OwnerViewBusinessInfo extends JPanel {
     //vacations
     private static JLabel vacationTitle;
     private static JList<String> upcomingVacations; //list to show all upcoming vacations
-//    private static TOTimeSlot[] carshopVacations = new TOTimeSlot[0]; //TO for vacations TODO
     private static List<TOTimeSlot> TOVacationsCS;
     private static String[] stringVacations;
     private static DefaultListModel<String> vm;
@@ -307,8 +302,8 @@ public class OwnerViewBusinessInfo extends JPanel {
         	JFrame updateHolidayFrame = new JFrame();
         	int selectedIndex = upcomingHolidays.getSelectedIndex(); //get index from list which is the same as in the array
         	errorMessage = null;
-        	TOTimeSlot updatingHol = TOHolidaysCS.get(selectedIndex); //get the object from the array
-        	LocalDate now = LocalDate.now();
+
+        	TOTimeSlot updatingHol = TOHolidaysCS.get(selectedIndex);
     		smallErrorLabel = new JLabel();
     		smallErrorLabel.setForeground(Color.RED);
     		JLabel addTitle = new JLabel("Update Vacation");
@@ -328,9 +323,7 @@ public class OwnerViewBusinessInfo extends JPanel {
     		startTimePicker.setEditor(editorst);
     		
     		JLabel startTime = new JLabel("Start Time:");
-    		JTextField startTimeText = new JTextField("08:00");
     		JLabel endDate = new JLabel("End Date:");
-    		@SuppressWarnings("static-access")
     		
     		
     		SpinnerDateModel modelet = new SpinnerDateModel();
@@ -482,7 +475,6 @@ public class OwnerViewBusinessInfo extends JPanel {
     	int selectedIndex = upcomingVacations.getSelectedIndex();
     	errorMessage = null;
     	TOTimeSlot updatingVaca = TOVacationsCS.get(selectedIndex);
-    	LocalDate now = LocalDate.now();
 		smallErrorLabel = new JLabel();
 		smallErrorLabel.setForeground(Color.RED);
 		JLabel addTitle = new JLabel("Update Vacation");
@@ -502,9 +494,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 		startTimePicker.setEditor(editorst);
 		
 		JLabel startTime = new JLabel("Start Time:");
-		JTextField startTimeText = new JTextField("08:00");
 		JLabel endDate = new JLabel("End Date:");
-		@SuppressWarnings("static-access")
 		
 		
 		SpinnerDateModel modelet = new SpinnerDateModel();
@@ -649,6 +639,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 		frame.pack();
 	}
 
+	@SuppressWarnings("deprecation")
 	private void addHolidayActionPerformed(ActionEvent evt) {
     	JFrame addHolidayFrame = new JFrame();
     	LocalDate now = LocalDate.now();
@@ -670,7 +661,6 @@ public class OwnerViewBusinessInfo extends JPanel {
 		
 		JLabel startTime = new JLabel("Start Time:");
 		JLabel endDate = new JLabel("End Date:");
-		@SuppressWarnings("static-access")
 		
 		
 		SpinnerDateModel modelet = new SpinnerDateModel();
@@ -815,9 +805,7 @@ public class OwnerViewBusinessInfo extends JPanel {
 		startTimePicker.setEditor(editorst);
 		
 		JLabel startTime = new JLabel("Start Time:");
-		JTextField startTimeText = new JTextField("08:00");
 		JLabel endDate = new JLabel("End Date:");
-		@SuppressWarnings("static-access")
 		
 		
 		SpinnerDateModel modelet = new SpinnerDateModel();

@@ -19,7 +19,7 @@ import ca.mcgill.ecse.carshop.view.CarShopPage;
 
 public class CarShopApplication {
 	private static CarShop carShop = null;	//all applications are associated with the same CarShop carShop
-	private static User user = null;	//might need to remove static
+	private static User user = null;		//might need to remove static
 	public static AccountType accountType = null;
 	private static boolean isLoggedIn = false;
 	private static Date systemDate = null;
@@ -30,7 +30,6 @@ public class CarShopApplication {
 
 		public static CarShop getCarShop() {
 			if(carShop == null) {
-				//carShop = new CarShop();
 				carShop = (CarShop) CarShopPersistence.load();	//load previously stored information
 			}
 			return carShop;
@@ -162,7 +161,6 @@ public class CarShopApplication {
 		
 		public static void main(String[] args) throws Exception {
 			//start UI
-//			setUp();
 			java.awt.EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					try {
@@ -179,7 +177,6 @@ public class CarShopApplication {
 		}
 		
 		private static CarShop setUp() throws Exception {
-			// TODO Auto-generated method stub
 			// getting the carshop loads it
 			CarShop cs = getCarShop();
 			cs.delete();

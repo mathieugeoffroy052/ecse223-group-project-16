@@ -8,12 +8,10 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -31,6 +29,7 @@ import ca.mcgill.ecse.carshop.controller.InvalidInputException;
 import ca.mcgill.ecse.carshop.controller.TOCarshopCombo;
 import ca.mcgill.ecse.carshop.controller.TOCarshopService;
 
+@SuppressWarnings("serial")
 public class OwnerViewServices extends JPanel {
 	// UI elements 
 	private JLabel errorLabel;
@@ -356,7 +355,7 @@ public class OwnerViewServices extends JPanel {
 				String newName = nameText.getText();
 				String newDuration = durationText.getText();
 				try {
-					int duration = Integer.parseInt(newDuration);
+					Integer.parseInt(newDuration);
 				} catch (Exception e) {
 					errorMessage = e.getMessage();
 				}
@@ -463,7 +462,7 @@ public class OwnerViewServices extends JPanel {
 					String newName = nameText.getText();
 					String newDuration = durationText.getText();
 					try {
-						int duration = Integer.parseInt(newDuration);
+						Integer.parseInt(newDuration);
 					} catch (Exception e) {
 						errorMessage = e.getMessage();
 					}
@@ -523,6 +522,7 @@ public class OwnerViewServices extends JPanel {
 				defaultTableModel.setColumnIdentifiers(tableCol);
 
 				comboServiceTable = new JTable(defaultTableModel) {
+					@SuppressWarnings({ "unchecked", "rawtypes" })
 					@Override
 					public Class getColumnClass(int column) {
 						switch (column) {
@@ -675,6 +675,7 @@ public class OwnerViewServices extends JPanel {
 				defaultTableModel.setColumnIdentifiers(tableCol);
 
 				comboServiceTable = new JTable(defaultTableModel) {
+					@SuppressWarnings({ "unchecked", "rawtypes" })
 					@Override
 					public Class getColumnClass(int column) {
 						switch (column) {
