@@ -302,10 +302,12 @@ public class OwnerViewBusinessInfo extends JPanel {
     // Action listeners and update methods
     private void updateHolidayActionPerformed(ActionEvent e) {
     	try {
+    		
+    		//create frame
         	JFrame updateHolidayFrame = new JFrame();
-        	int selectedIndex = upcomingHolidays.getSelectedIndex();
+        	int selectedIndex = upcomingHolidays.getSelectedIndex(); //get index from list which is the same as in the array
         	errorMessage = null;
-        	TOTimeSlot updatingHol = TOHolidaysCS.get(selectedIndex);
+        	TOTimeSlot updatingHol = TOHolidaysCS.get(selectedIndex); //get the object from the array
         	LocalDate now = LocalDate.now();
     		smallErrorLabel = new JLabel();
     		smallErrorLabel.setForeground(Color.RED);
@@ -313,7 +315,7 @@ public class OwnerViewBusinessInfo extends JPanel {
     		addTitle.setFont(new Font("Arial", Font.BOLD, 22));
     		JLabel startDate = new JLabel("Start Date:");
     		
-    		
+    		//create spinners for times
     		SpinnerDateModel modelst = new SpinnerDateModel();
     		modelst.setValue(updatingHol.getStartTime());
     		
@@ -346,7 +348,7 @@ public class OwnerViewBusinessInfo extends JPanel {
     		JButton updateHol = new JButton("Update");
     		
     		
-
+    		//date pickers (calendars) for dates
     		SqlDateModel startDateModel;
     		Properties startDateDisplay;
     		JDatePickerImpl startDatePicker;
@@ -367,7 +369,7 @@ public class OwnerViewBusinessInfo extends JPanel {
     		updateHolidayFrame.add(startDatePicker);
     		
     		
-    		// create appointment calendar
+    		//date picker
     		endDateModel = new SqlDateModel();
     		endDateModel.setValue(updatingHol.getEndDate());
     		endDateModel.setSelected(true);
@@ -440,7 +442,7 @@ public class OwnerViewBusinessInfo extends JPanel {
     		updateHolidayFrame.setVisible(true);
         	
     		
-    		
+    		//action listener for button in frame
     		updateHol.addActionListener(new java.awt.event.ActionListener() {
     			public void actionPerformed(java.awt.event.ActionEvent evt) {
     				String startDate = startDatePicker.getJFormattedTextField().getText();
