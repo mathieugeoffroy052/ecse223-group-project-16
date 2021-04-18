@@ -95,58 +95,58 @@ public class OwnerViewBusinessInfo extends JPanel {
     	errorLabel = new JLabel(errorMessage);
     	errorLabel.setForeground(Color.RED);
     	
-    	businessInfoTitle = new JLabel("Business Information");
+    	businessInfoTitle = new JLabel("Business Information");  //business info title
     	businessInfoTitle.setFont(new Font("Arial", Font.BOLD, 22));
-		businessName = new JLabel();
+		businessName = new JLabel(); //business info name, email etc..
 	    phoneNum = new JLabel();
 	    email = new JLabel();
 	    address = new JLabel();
-	    updateBusinessInfo = new JButton("Update");
+	    updateBusinessInfo = new JButton("Update"); //update business info button
 	    
-	    businessHoursTitle = new JLabel("Weekly Business Hours");
+	    businessHoursTitle = new JLabel("Weekly Business Hours"); //weekly business hours title
 	    businessHoursTitle.setFont(new Font("Arial", Font.BOLD, 22));
-	    bhm = new DefaultListModel<String>();
-	    weeklySchedule = new JList<String>(bhm);
-	    weeklySchedule.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	    weeklySchedule.setLayoutOrientation(JList.VERTICAL);
+	    bhm = new DefaultListModel<String>(); //model for weekly business hours list
+	    weeklySchedule = new JList<String>(bhm); //list for weekly business hours
+	    weeklySchedule.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);//set list selection to only one at a time
+	    weeklySchedule.setLayoutOrientation(JList.VERTICAL);//set type of list to only vertical
 	    weeklySchedule.setVisibleRowCount(7); //for 7 days in a week
-	    addWeeklyHours = new JButton("Add");
+	    addWeeklyHours = new JButton("Add"); //add and update business hours button
 	    updateWeeklyHours = new JButton("Update");
 	    
-	    holidayTitle = new JLabel("Holidays");
+	    holidayTitle = new JLabel("Holidays"); //holidays title
 	    holidayTitle.setFont(new Font("Arial", Font.BOLD, 22));
-	    hm = new DefaultListModel<String>();
-	    upcomingHolidays = new JList<String>(hm); 
-	    upcomingHolidays.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	    upcomingHolidays.setLayoutOrientation(JList.VERTICAL);
-	    upcomingHolidays.setVisibleRowCount(10); //to change later
-	    holidayScroller = new JScrollPane(upcomingHolidays);
-	    holidayScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-	    Dimension dHoliday = upcomingHolidays.getPreferredSize();
+	    hm = new DefaultListModel<String>();//model for holiday list
+	    upcomingHolidays = new JList<String>(hm); //holiday list
+	    upcomingHolidays.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);//select only one item
+	    upcomingHolidays.setLayoutOrientation(JList.VERTICAL);//vertical list type
+	    upcomingHolidays.setVisibleRowCount(10); //arbitrary number of default columns visible 
+	    holidayScroller = new JScrollPane(upcomingHolidays); //make list scrollable with js crollpane
+	    holidayScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS); //allways show scroll bar
+	    Dimension dHoliday = upcomingHolidays.getPreferredSize(); //get size of list for dimensions of scroller
 	    holidayScroller.setPreferredSize(new Dimension(dHoliday.width, dHoliday.height));
-	    addHoliday = new JButton("Add");
+	    addHoliday = new JButton("Add");//add and update buttons for holiday
 	    updateHoliday = new JButton("Update");
 	    
-	    vacationTitle = new JLabel("Vacations");
+	    vacationTitle = new JLabel("Vacations"); //vacation title
 	    vacationTitle.setFont(new Font("Arial", Font.BOLD, 22));
-	    vm = new DefaultListModel<String>();
-	    upcomingVacations = new JList<String>(vm); 
-	    upcomingVacations.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	    upcomingVacations.setLayoutOrientation(JList.VERTICAL);
-	    upcomingVacations.setVisibleRowCount(10); //to change later
-	    vacationScroller = new JScrollPane(upcomingVacations);
-	    vacationScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);	
-	    Dimension dVacation = vacationScroller.getPreferredSize();
+	    vm = new DefaultListModel<String>(); //model for vacation list
+	    upcomingVacations = new JList<String>(vm); //vacation list
+	    upcomingVacations.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); //single selection list type
+	    upcomingVacations.setLayoutOrientation(JList.VERTICAL); //vertical list type
+	    upcomingVacations.setVisibleRowCount(10); //arbitrary number for number of visible columns
+	    vacationScroller = new JScrollPane(upcomingVacations); //make list scrollable
+	    vacationScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);	//always show scroll bar
+	    Dimension dVacation = vacationScroller.getPreferredSize(); //set scroll pane to size of list
 	    vacationScroller.setPreferredSize(new Dimension(dVacation.width, dVacation.height));
-	    addVacation = new JButton("Add");
+	    addVacation = new JButton("Add"); //add and update buttons
 	    updateVacation = new JButton("Update");
 	    
-		JSeparator horizontalLineMiddle1 = new JSeparator();
+		JSeparator horizontalLineMiddle1 = new JSeparator(); //lines to seperate sections
 		JSeparator horizontalLineMiddle2 = new JSeparator();
 		JSeparator horizontalLineBottom = new JSeparator();
 		JSeparator verticalLineLine = new JSeparator(SwingConstants.VERTICAL);
 		
-		
+		//add all JComponents
 	    this.add(businessInfoTitle);
 
 	    this.add(businessName);
