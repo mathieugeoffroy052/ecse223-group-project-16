@@ -730,9 +730,9 @@ public class CarShopController {
 	public static void setUpBusinessInfo(String nameString, String address, String phoneNumber, String emailAddress) 
 			throws InvalidInputException {
 		
-		if (CarShopApplication.getCarShop().getBusiness() == null) {
-			throw new InvalidInputException("The business doesn't exist yet");
-		}
+//		if (CarShopApplication.getCarShop().getBusiness() == null) {
+//			throw new InvalidInputException("The business doesn't exist yet");
+//		}
 		//checks if it's owner entering the information
 		if (!hasAuthorization()) {
 			throw new InvalidInputException("No permission to set up business information");

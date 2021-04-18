@@ -20,7 +20,6 @@ public class TechnicianView extends JPanel {
 	// UI elements
 	private static final long serialVersionUID = -3425184928730692407L;
 
-//	private JFrame frame;
 	private JPanel thisPanel = this;
 	private JTable table;
 	private JTextField txtSetNewOpening;
@@ -78,7 +77,7 @@ public class TechnicianView extends JPanel {
 		table = new JTable();
 		table.setBounds(60, 177, 572, 57);
 		add(table);
-//		JTable scheduleTable = new JTable();
+
 		//make the table non editable (for the user. the table will still get updated):
 		DefaultTableModel scheduleModelTable = new DefaultTableModel() {
 			@Override
@@ -139,7 +138,7 @@ public class TechnicianView extends JPanel {
 				if(error!=null) {
 					errorMessage.setText(error);
 				}
-				if(!(openingTime == null||(closingTime == null))) {
+				if(!(openingTime == null|| closingTime == null)) {
 					String day = (String) comboBox.getSelectedItem();
 					
 					int columnToChange = 0;
@@ -177,24 +176,19 @@ public class TechnicianView extends JPanel {
 					if(error!=null) {
 						errorMessage.setText(error);
 					}
-					if(!openingTime.equals("")) {
-						try {
-							error = "";
-							String op = openingTime.toString();
-							String cl = closingTime.toString();
-							String user = CarShopController.getCurrentUser();
-							CarShopController.changeGarageBusinessHour(day, op, cl,user , CarShopController.getCarShop());
-						} catch (Exception e1) {
-							error = e1.getMessage();
-						}
-						if(error!=null) {
-							errorMessage.setText(error);
-						}
+					try {
+						error = "";
+						String op = openingTime.toString();
+						String cl = closingTime.toString();
+						String user = CarShopController.getCurrentUser();
+						CarShopController.changeGarageBusinessHour(day, op, cl,user , CarShopController.getCarShop());
+					} catch (Exception e1) {
+						error = e1.getMessage();
 					}
-					if(!closingTime.toString().equals("")) {
-//						rowToChange2 = 1;
-//						scheduleModelTable.setValueAt(closingTime, rowToChange2, columnToChange);
+					if(error!=null) {
+						errorMessage.setText(error);
 					}
+
 				}
 				labelNotification.setText("");
 				txtSetNewOpening.setText("");
