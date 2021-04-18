@@ -32,6 +32,7 @@ public class OwnerViewAppointments extends JPanel {
 	private JLabel titleJLabel;
 	
 	private JLabel errorLabel;
+	private JLabel warningLabel;
 	
 	private JLabel selectDateLabel;
 	private JTextField selectDateTxt;
@@ -47,8 +48,6 @@ public class OwnerViewAppointments extends JPanel {
 		
 		initComponents();
 		
-		
-		
 	}
 	
 	public void initComponents() {
@@ -59,6 +58,8 @@ public class OwnerViewAppointments extends JPanel {
 		errorLabel = new JLabel();
 		errorLabel.setForeground(Color.RED);
 		error = "";
+		warningLabel = new JLabel();
+		warningLabel.setFont(new Font("Arial", Font.BOLD, 16));
 		
 		if (date == null || dateString == null || dateString == "" || dateString.length() == 0) {
 			appointments = CarShopController.getAppointmentsOwner();
@@ -93,6 +94,11 @@ public class OwnerViewAppointments extends JPanel {
 				
 			}
 		}
+		if (appointmentNodes.size() == 0) {
+			warningLabel.setText("There are no appointments");
+		} else {
+			warningLabel.setText("");
+		}
 		
 		titleJLabel = new JLabel("Appointments");
 		titleJLabel.setFont(new Font("Arial", Font.BOLD, 22));
@@ -110,14 +116,17 @@ public class OwnerViewAppointments extends JPanel {
 						.addGroup(groupLayout.createSequentialGroup()
 								.addComponent(selectDateLabel)
 								.addComponent(selectDateTxt)
-								.addComponent(dateButton));
+								.addComponent(dateButton))
+						.addComponent(warningLabel);
+		
 		
 		sequentialGroup.addComponent(titleJLabel)
 			.addComponent(errorLabel)
 			.addGroup(groupLayout.createParallelGroup()
 				.addComponent(selectDateLabel)
 				.addComponent(selectDateTxt)
-				.addComponent(dateButton));
+				.addComponent(dateButton))
+			.addComponent(warningLabel);
 		
 		for(int i = 0; i < appointmentNodes.size(); i++) {
 			parallelGroup.addComponent(appointmentNodes.get(i));
